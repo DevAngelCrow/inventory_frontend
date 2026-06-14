@@ -1,0 +1,56 @@
+@import 'tailwindcss';
+@import 'tailwindcss-primeui';
+@import 'primeicons/primeicons.css';
+@theme {
+  --breakpoint-xs: 325px;
+}
+
+@font-face {
+  font-family: 'MuseoSans';
+  src: url('/src/core/assets/fonts/MuseoSans.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+body {
+  font-family: 'MuseoSans', sans-serif;
+  @apply text-primary
+}
+
+h1 {
+  @apply text-4xl font-bold;
+}
+h2 {
+  @apply text-3xl font-semibold;
+}
+h3 {
+  @apply text-2xl font-semibold;
+}
+h4 {
+  @apply text-xl font-medium;
+}
+h5 {
+  @apply text-lg font-medium;
+}
+h6 {
+  @apply text-base font-medium;
+}
+
+*::-webkit-scrollbar {
+  @apply w-1.5 bg-transparent h-1;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-surface-200 rounded-full;
+}
+
+*::-webkit-scrollbar-thumb {
+  @apply bg-primary-950 rounded-xl;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  @apply bg-surface-600;
+}
+
+

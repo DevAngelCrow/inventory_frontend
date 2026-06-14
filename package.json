@@ -1,0 +1,73 @@
+{
+  "name": "vue-3-template",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "build:prod": "npm run check && npm run build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .ts,.vue",
+    "lint:fix": "eslint . --ext .ts,.vue --fix",
+    "format": "prettier --write .",
+    "check:types": "vue-tsc --noEmit",
+    "check": "npm run lint && npm run check:types && npm run format",
+    "preview:build": "npm run build && npm run preview",
+    "clean": "rm -rf dist .vite cache node_modules package-lock.json && npm cache clean --force && npm install",
+    "check:node": "check-node-version --node '>=18.18.0'",
+    "dev:setup": "([ -f .env.local ] || cp .env.example .env.local) && npm run pre-commit && npm run commitlint && cd documentation-astro && npm install && cd ..",
+    "prepare": "husky install",
+    "pre-commit": "printf '#!/bin/sh\\n. \"$(dirname \"$0\")/_/husky.sh\"\\nnpx lint-staged\\n' > .husky/pre-commit",
+    "commitlint": "printf '#!/bin/sh\\n. \"$(dirname \"$0\")/_/husky.sh\"\\nnpx --no -- commitlint --edit \"$1\"\\n' > .husky/commit-msg",
+    "dev:docs": "cd documentation-astro && npm run dev"
+  },
+  "lint-staged": {
+    "*.{ts,vue}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "dependencies": {
+    "@commitlint/types": "^19.8.1",
+    "@primeuix/themes": "^1.2.1",
+    "@tailwindcss/vite": "^4.1.11",
+    "@vee-validate/yup": "^4.15.1",
+    "@vueuse/core": "^13.5.0",
+    "axios": "^1.10.0",
+    "dayjs": "^1.11.13",
+    "jwt-decode": "^4.0.0",
+    "pinia": "^3.0.3",
+    "primeicons": "^7.0.0",
+    "primevue": "^4.3.6",
+    "tailwindcss": "^4.1.11",
+    "tailwindcss-primeui": "^0.6.1",
+    "vee-validate": "^4.15.1",
+    "vue": "^3.5.17",
+    "vue-router": "^4.5.1",
+    "yup": "^1.6.1"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.30.1",
+    "@typescript-eslint/eslint-plugin": "^8.36.0",
+    "@typescript-eslint/parser": "^8.36.0",
+    "@vitejs/plugin-vue": "^6.0.0",
+    "@vue/tsconfig": "^0.7.0",
+    "eslint": "^9.30.1",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-vue": "^10.3.0",
+    "husky": "^8.0.0",
+    "lint-staged": "^16.1.2",
+    "prettier": "^3.6.2",
+    "typescript": "~5.8.3",
+    "vite": "^7.0.2",
+    "vite-plugin-vue-devtools": "^7.7.7",
+    "vue-eslint-parser": "^10.2.0",
+    "vue-tsc": "^2.2.10"
+  }
+}
