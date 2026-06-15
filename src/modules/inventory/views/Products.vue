@@ -33,7 +33,7 @@
             :options="categoriesOptions"
             option-label="name"
             label="Categoría"
-            v-model="filter.id_category"
+            v-model="filter.category_id"
             optionValue="id"
           />
           <AppSelect

@@ -1,7 +1,7 @@
 export const routesCustomers = [
   {
-    path: 'customers',
-    name: 'customers',
+    path: '/customers/list',
+    name: 'customers-list',
     component: () => import('@/modules/customers/views/Customers.vue'),
   },
 ];

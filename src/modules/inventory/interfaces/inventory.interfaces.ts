@@ -31,7 +31,7 @@ export interface ProductResponse {
   image_url?: string;
   notes?: string;
   active: boolean;
-  id_category: string;
+  category_id: string;
   created_at?: string;
   updated_at?: string;
   ctl_product_category?: {
@@ -55,7 +55,7 @@ export interface ProductForm {
   image_url?: string;
   notes?: string;
   active?: boolean;
-  id_category: string;
+  category_id: string;
 }
 
 export interface ProductMaintenanceResponse {

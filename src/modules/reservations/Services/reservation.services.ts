@@ -52,38 +52,37 @@ const putReservation = async (id: string, data: ReservationForm) => {
   return response;
 };
 
-const confirmReservation = async (id: string) => {
-  const response = await httpClient.patch<ApiPostResponse>(
-    `reservations/${id}/confirm`
+const confirmReservation = async (id: string): Promise<ApiResponseGeneric<any>> => {
+  const response = await httpClient.patch<ApiResponseGeneric<any>>(
+    `reservations/${id}/status`, { status: 'CONFIRMED' }
   );
   return response;
 };
 
-const cancelReservation = async (id: string, reason: string) => {
-  const response = await httpClient.patch<ApiPostResponse>(
-    `reservations/${id}/cancel`,
-    { reason }
+const cancelReservation = async (id: string, reason: string): Promise<ApiResponseGeneric<any>> => {
+  const response = await httpClient.patch<ApiResponseGeneric<any>>(
+    `reservations/${id}/status`, { status: 'CANCELLED', reason }
   );
   return response;
 };
 
-const markInTransit = async (id: string) => {
-  const response = await httpClient.patch<ApiPostResponse>(
-    `reservations/${id}/transit`
+const markInTransit = async (id: string): Promise<ApiResponseGeneric<any>> => {
+  const response = await httpClient.patch<ApiResponseGeneric<any>>(
+    `reservations/${id}/status`, { status: 'CONFIRMED' }
   );
   return response;
 };
 
-const markDelivered = async (id: string) => {
-  const response = await httpClient.patch<ApiPostResponse>(
-    `reservations/${id}/delivered`
+const markDelivered = async (id: string): Promise<ApiResponseGeneric<any>> => {
+  const response = await httpClient.patch<ApiResponseGeneric<any>>(
+    `reservations/${id}/status`, { status: 'DELIVERED' }
   );
   return response;
 };
 
-const markPickedUp = async (id: string) => {
-  const response = await httpClient.patch<ApiPostResponse>(
-    `reservations/${id}/picked-up`
+const markPickedUp = async (id: string): Promise<ApiResponseGeneric<any>> => {
+  const response = await httpClient.patch<ApiResponseGeneric<any>>(
+    `reservations/${id}/status`, { status: 'RETURNED' }
   );
   return response;
 };

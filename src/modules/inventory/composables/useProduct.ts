@@ -11,8 +11,7 @@ import inventoryServices from '../Services/inventory.services';
 
 type filterType = {
   filter_name?: string;
-  sku?: string;
-  id_category?: string;
+  category_id?: string;
   active?: boolean | 'Todos';
 };
 
@@ -68,7 +67,7 @@ export function useProduct() {
       weight_lbs: yup.number().typeError('El peso debe ser un número').min(0).nullable(),
       image_url: yup.string().max(500).nullable(),
       notes: yup.string().nullable(),
-      id_category: yup.string().required('La categoría es requerida'),
+      category_id: yup.string().required('La categoría es requerida'),
       active: yup.boolean(),
     }),
   });
@@ -153,13 +152,13 @@ export function useProduct() {
   const [weight_lbs, weightLbsAttrs] = defineField('weight_lbs');
   const [image_url, imageUrlAttrs] = defineField('image_url');
   const [notes, notesAttrs] = defineField('notes');
-  const [id_category, idCategoryAttrs] = defineField('id_category');
+  const [category_id, categoryIdAttrs] = defineField('category_id');
   const [active, activeAttrs] = defineField('active');
 
   const filter = reactive<filterType>({
     filter_name: undefined,
     sku: undefined,
-    id_category: undefined,
+    category_id: undefined,
     active: undefined,
   });
   const findRegex = /[^a-zA-ZáÁéÉíÍóÓúÚñÑ.0-9 -]/g;
@@ -172,7 +171,7 @@ export function useProduct() {
         per_page: pagination.per_page,
         filter_name: filter.filter_name,
         sku: filter.sku,
-        id_category: filter.id_category === 'Todos' ? undefined : filter.id_category,
+        category_id: filter.category_id === 'Todos' ? undefined : filter.category_id,
         active: filter.active === 'Todos' ? undefined : filter.active as boolean | undefined,
       };
       const response = await inventoryServices.getProducts(params);
@@ -204,10 +203,8 @@ export function useProduct() {
   const addProduct = async (form: ProductForm) => {
     try {
       startLoading();
-      const response = await inventoryServices.postProduct({
-        ...form,
-        active: true,
-      });
+      const { id, active, ...body } = form;
+      const response = await inventoryServices.postProduct(body);
       if (response.status === 201) {
         getProducts();
         alert.showAlert({
@@ -227,7 +224,7 @@ export function useProduct() {
   const editProduct = async (form: ProductForm) => {
     try {
       startLoading();
-      const { id, ...body } = form;
+      const { id, active, ...body } = form;
       const response = await inventoryServices.putProduct(id!, body);
       if (response.status === 200) {
         getProducts();
@@ -282,7 +279,7 @@ export function useProduct() {
   const cleanSearch = () => {
     filter.filter_name = undefined;
     filter.sku = undefined;
-    filter.id_category = undefined;
+    filter.category_id = undefined;
     filter.active = undefined;
     getProducts();
   };
@@ -301,7 +298,7 @@ export function useProduct() {
     setFieldValue('weight_lbs', value?.weight_lbs ? Number(value?.weight_lbs) : undefined);
     setFieldValue('image_url', value?.image_url);
     setFieldValue('notes', value?.notes);
-    setFieldValue('id_category', value?.id_category);
+    setFieldValue('category_id', value?.category_id);
     setFieldValue('active', value?.active);
   };
 
@@ -351,8 +348,8 @@ export function useProduct() {
     imageUrlAttrs,
     notes,
     notesAttrs,
-    id_category,
-    idCategoryAttrs,
+    category_id,
+    categoryIdAttrs,
     active,
     activeAttrs,
     alert,

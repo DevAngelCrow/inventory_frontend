@@ -10,4 +10,13 @@ export const routesBilling: RouteRecordRaw[] = [
       requiresAuth: true,
     },
   },
+  {
+    path: '/billing/payments',
+    name: 'billing-payments',
+    component: () => import('@/modules/payments/views/Payments.vue'),
+    meta: {
+      title: 'Pagos',
+      requiresAuth: true,
+    },
+  },
 ];
