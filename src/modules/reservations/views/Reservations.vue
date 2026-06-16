@@ -117,7 +117,7 @@
                   class="rounded-full text-green-600"
                   variant="text"
                   icon="pi pi-check"
-                  @click="changeStatus(data.id, 'confirm')"
+                  @click="confirmAction(data.id, 'confirm')"
                   v-tooltip.bottom="'Confirmar Alquiler'"
                 ></Button>
                 <Button
@@ -125,7 +125,7 @@
                   class="rounded-full text-blue-600"
                   variant="text"
                   icon="pi pi-truck"
-                  @click="changeStatus(data.id, 'transit')"
+                  @click="confirmAction(data.id, 'transit')"
                   v-tooltip.bottom="'En camino (Despacho)'"
                 ></Button>
                 <Button
@@ -133,7 +133,7 @@
                   class="rounded-full text-yellow-600"
                   variant="text"
                   icon="pi pi-home"
-                  @click="changeStatus(data.id, 'delivered')"
+                  @click="confirmAction(data.id, 'delivered')"
                   v-tooltip.bottom="'Entregado en sitio'"
                 ></Button>
                 <Button
@@ -141,7 +141,7 @@
                   class="rounded-full text-purple-600"
                   variant="text"
                   icon="pi pi-directions"
-                  @click="changeStatus(data.id, 'picked-up')"
+                  @click="confirmAction(data.id, 'picked-up')"
                   v-tooltip.bottom="'Recogido (post-evento)'"
                 ></Button>
                 <Button
@@ -200,6 +200,21 @@
       @close-modal="closeInspectionModal"
       @inspection-registered="getReservations"
     />
+    <!-- Modal for action confirmations -->
+    <AppModal
+      :show="actionModal.show"
+      :title="actionModal.title"
+      title-btn-confirm="Confirmar"
+      title-btn-cancel="Cancelar"
+      width="30rem"
+      @close-modal="actionModal.show = false"
+      @update:show="(val) => actionModal.show = val"
+      @confirm-modal="executeAction"
+    >
+      <div class="py-4 text-center text-lg">
+        {{ actionModal.message }}
+      </div>
+    </AppModal>
   </div>
 </template>
 <script setup lang="ts">
@@ -299,6 +314,34 @@ const confirmCancellation = async () => {
   if (!cancelDialog.reason.trim()) return;
   await changeStatus(cancelDialog.id, 'cancel', cancelDialog.reason);
   cancelDialog.show = false;
+};
+
+const actionModal = reactive({
+  show: false,
+  id: '',
+  action: '' as 'confirm' | 'transit' | 'delivered' | 'picked-up',
+  title: '',
+  message: '',
+});
+
+const confirmAction = (id: string, action: 'confirm' | 'transit' | 'delivered' | 'picked-up') => {
+  const map: Record<string, { header: string; message: string }> = {
+    'confirm': { header: 'Confirmar Alquiler', message: '¿Estás seguro de que deseas confirmar esta reserva?' },
+    'transit': { header: 'Marcar En Camino', message: '¿Estás seguro de marcar esta reserva como "En camino"?' },
+    'delivered': { header: 'Marcar Entregado', message: '¿Estás seguro de marcar esta reserva como "Entregado"?' },
+    'picked-up': { header: 'Marcar Recogido', message: '¿Estás seguro de marcar esta reserva como "Recogido"?' },
+  };
+  const config = map[action];
+  actionModal.id = id;
+  actionModal.action = action;
+  actionModal.title = config.header;
+  actionModal.message = config.message;
+  actionModal.show = true;
+};
+
+const executeAction = async () => {
+  await changeStatus(actionModal.id, actionModal.action);
+  actionModal.show = false;
 };
 
 // Payment Modal State

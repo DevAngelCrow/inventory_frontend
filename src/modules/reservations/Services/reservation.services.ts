@@ -85,16 +85,24 @@ const markPickedUp = async (id: string) => {
 };
 
 const registerInspection = async (id: string, data: any) => {
+  // Map payload to backend DTO expectations
+  const backendData = {
+    ...data,
+    id_reservation: id,
+    damage_items: data.damageItems,
+  };
+  delete backendData.damageItems;
+
   const response = await httpClient.post<ApiPostResponse>(
-    `reservations/${id}/inspection`,
-    data
+    `inspections`,
+    backendData
   );
   return response;
 };
 
 const getInspection = async (id: string) => {
   const response = await httpClient.get<ApiResponseGeneric<any>>(
-    `reservations/${id}/inspection`
+    `inspections?filter_reservation=${id}`
   );
   return response.data;
 };

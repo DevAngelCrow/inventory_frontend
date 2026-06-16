@@ -54,8 +54,14 @@ export function usePayment() {
     try {
       startLoading();
       const resp = await paymentServices.getPaymentsByReservation(reservationId);
-      if (resp && resp.data && resp.data.items) {
-        reservationPayments.value = resp.data.items;
+      if (resp && resp.data && resp.data.data) {
+        reservationPayments.value = resp.data.data.map((p: any) => {
+          const method = paymentMethodsList.value.find((m: any) => m.id === p.id_payment_method);
+          return {
+            ...p,
+            ctl_payment_method: method ? { name: method.name } : { name: 'N/A' }
+          };
+        });
       } else {
         reservationPayments.value = [];
       }
@@ -69,7 +75,16 @@ export function usePayment() {
   const submitPayment = async (form: PaymentForm) => {
     try {
       startLoading();
-      const response = await paymentServices.registerPayment(form);
+      
+      const method = paymentMethodsList.value.find(m => m.id === form.id_payment_method);
+      const payload: any = {
+        ...form,
+        payment_method_code: method ? method.code : 'CASH',
+        id_currency: '00000000-0000-0000-0000-000000000000', // Default currency UUID
+        payment_date: new Date().toISOString(),
+      };
+      
+      const response = await paymentServices.registerPayment(payload);
       if (response.status === 201 || response.status === 200) {
         alert.showAlert({
           type: 'success',
