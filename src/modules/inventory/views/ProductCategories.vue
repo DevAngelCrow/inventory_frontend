@@ -9,7 +9,7 @@
             @update:modelValue="validateAlphaInput(filter.filter_name)"
             v-debounce:700.keydown.enter="() => findCategory(filter)" />
           <AppSelect class="w-full sm:w-[150px] min-w-0 flex-shrink-0" :options="statusOptions" option-label="name"
-            label="Estado" v-model="filter.status" optionValue="value" />
+            label="Estado" v-model="filter.active" optionValue="value" />
           <Button class="flex-shrink-0 rounded-md" v-debounce:700.click="() => findCategory(filter)">Buscar</Button>
           <Button class="flex-shrink-0 rounded-md" outlined v-debounce:700.click="cleanSearch" label="Limpiar"
             :icon="iconFilter"></Button>

@@ -6,7 +6,7 @@ import { TableHeaders } from '@/core/interfaces';
 import { useAlertStore, useLoaderStore } from '@/core/store';
 import { sanitizedValueInput } from '@/core/utils/inputTextValidations';
 
-import { CustomerResponse, CustomerForm } from '../interfaces/customer.interfaces';
+import { CustomerResponse, CustomerForm, CustomerHistoryResponse } from '../interfaces/customer.interfaces';
 import customerServices from '../Services/customer.services';
 
 type filterType = { filter?: string; active?: boolean | 'Todos' };
@@ -40,15 +40,15 @@ export function useCustomer() {
       phone: yup
         .string()
         .required('El teléfono es requerido'),
-      phone_secondary: yup.string().nullable(),
-      company_name: yup.string().nullable(),
-      tax_id: yup.string().nullable(),
-      address_line1: yup.string().nullable(),
-      address_line2: yup.string().nullable(),
-      city: yup.string().nullable(),
-      state: yup.string().nullable(),
-      zip_code: yup.string().nullable(),
-      notes: yup.string().nullable(),
+      phone_secondary: yup.string().nullable().transform((value) => (value === '' ? null : value)),
+      company_name: yup.string().nullable().transform((value) => (value === '' ? null : value)),
+      tax_id: yup.string().nullable().transform((value) => (value === '' ? null : value)),
+      address_line1: yup.string().nullable().transform((value) => (value === '' ? null : value)),
+      address_line2: yup.string().nullable().transform((value) => (value === '' ? null : value)),
+      city: yup.string().nullable().transform((value) => (value === '' ? null : value)),
+      state: yup.string().nullable().transform((value) => (value === '' ? null : value)),
+      zip_code: yup.string().nullable().transform((value) => (value === '' ? null : value)),
+      notes: yup.string().nullable().transform((value) => (value === '' ? null : value)),
       active: yup.boolean(),
     }),
   });
@@ -102,7 +102,7 @@ export function useCustomer() {
   ]);
 
   const customers = ref<CustomerResponse[]>([]);
-  const customerHistory = ref<any[]>([]);
+  const customerHistory = ref<CustomerHistoryResponse[]>([]);
   const pagination = reactive({
     page: 1,
     per_page: 10,
@@ -224,7 +224,7 @@ export function useCustomer() {
       startLoading();
       const response = await customerServices.getCustomerHistory(id);
       if (response.statusCode === 200) {
-        customerHistory.value = response.data;
+        customerHistory.value = response.data.data;
       }
     } catch (error) {
       console.error(error);

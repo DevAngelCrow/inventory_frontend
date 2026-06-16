@@ -5,7 +5,7 @@ import * as yup from 'yup';
 import { TableHeaders } from '@/core/interfaces';
 import { useAlertStore, useLoaderStore } from '@/core/store';
 
-import { ProductMaintenanceResponse, ProductMaintenanceForm, ProductResponse } from '../interfaces/inventory.interfaces';
+import { ProductMaintenanceResponse, ProductMaintenanceForm, ProductResponse, CreateMaintenancePayload, ResolveMaintenancePayload, UpdateMaintenancePayload } from '../interfaces/inventory.interfaces';
 import inventoryServices from '../Services/inventory.services';
 
 type filterType = {
@@ -54,7 +54,7 @@ export function useMaintenance() {
 
   const headers = ref<TableHeaders[]>([
     {
-      field: 'mnt_product.name',
+      field: 'id_product',
       header: 'Producto',
       sortable: false,
       alignHeaders: 'start',
@@ -163,7 +163,14 @@ export function useMaintenance() {
   const addMaintenance = async (form: ProductMaintenanceForm) => {
     try {
       startLoading();
-      const { id, resolved, ...createPayload } = form;
+      const createPayload: CreateMaintenancePayload = {
+        description: form.description,
+        cost: form.cost,
+        quantity: form.quantity,
+        date_start: form.date_start,
+        date_end: form.date_end,
+        id_product: form.id_product,
+      };
       const response = await inventoryServices.postMaintenance(createPayload);
       if (response.status === 201) {
         getMaintenances();
@@ -184,20 +191,39 @@ export function useMaintenance() {
   const editMaintenance = async (form: ProductMaintenanceForm) => {
     try {
       startLoading();
-      const { id, date_end, cost } = form;
-      if (!date_end) {
-        alert.showAlert({ type: 'error', title: 'Fecha de resolución es requerida', show: true });
-        return false;
+      const { id, date_end, cost, resolved, description, quantity, date_start, id_product } = form;
+
+      const updatePayload: UpdateMaintenancePayload = {
+        description,
+        quantity,
+        date_start,
+        id_product,
+        cost,
+      };
+
+      const updateResponse = await inventoryServices.putMaintenance(id!, updatePayload);
+
+      if (resolved) {
+        if (!date_end) {
+          alert.showAlert({ type: 'error', title: 'Fecha de resolución es requerida para resolver', show: true });
+          finishLoading();
+          return false;
+        }
+        const resolvePayload: ResolveMaintenancePayload = {
+          date_end,
+          cost,
+        };
+        await inventoryServices.resolveMaintenance(id!, resolvePayload);
       }
-      const response = await inventoryServices.resolveMaintenance(id!, { date_end, cost });
-      if (response.status === 200) {
+
+      if (updateResponse.status === 200) {
         getMaintenances();
         alert.showAlert({
           type: 'success',
-          title: `${response.data.message || 'Mantenimiento actualizado con éxito'}`,
+          title: `Mantenimiento ${resolved ? 'resuelto' : 'actualizado'} con éxito`,
           show: true,
         });
-        return response.data;
+        return updateResponse.data;
       }
     } catch (error) {
       console.error(error);

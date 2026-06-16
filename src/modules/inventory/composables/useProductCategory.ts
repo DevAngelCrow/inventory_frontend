@@ -6,10 +6,13 @@ import { TableHeaders } from '@/core/interfaces';
 import { useAlertStore, useLoaderStore } from '@/core/store';
 import { sanitizedValueInput } from '@/core/utils/inputTextValidations';
 
-import { ProductCategoryResponse, ProductCategoryForm } from '../interfaces/inventory.interfaces';
+import { ProductCategoryResponse, ProductCategoryForm, CreateCategoryPayload, UpdateCategoryPayload } from '../interfaces/inventory.interfaces';
 import inventoryServices from '../Services/inventory.services';
 
-type filterType = { filter_name?: string; status?: boolean | 'Todos' };
+type filterType = {
+  filter_name?: string;
+  active?: boolean | 'Todos';
+};
 
 export function useProductCategory() {
   const {
@@ -82,7 +85,7 @@ export function useProductCategory() {
     },
   ]);
 
-  const categories = ref<ProductCategoryResponse[] | undefined>([]);
+  const categories = ref<ProductCategoryResponse[]>([]);
   const pagination = reactive({
     page: 1,
     per_page: 10,
@@ -100,7 +103,7 @@ export function useProductCategory() {
 
   const filter = reactive<filterType>({
     filter_name: undefined,
-    status: undefined,
+    active: undefined,
   });
   const findRegex = /[^a-zA-ZáÁéÉíÍóÓúÚñÑ.0-9 ]/g;
 
@@ -111,7 +114,7 @@ export function useProductCategory() {
         page: pagination.page,
         per_page: pagination.per_page,
         filter_name: filter.filter_name,
-        active: filter.status === 'Todos' ? undefined : filter.status,
+        active: filter.active === 'Todos' || filter.active === '' ? undefined : (filter.active ?? undefined),
       };
       const response = await inventoryServices.getCategories(params);
 
@@ -131,11 +134,12 @@ export function useProductCategory() {
   const addCategory = async (form: ProductCategoryForm) => {
     try {
       startLoading();
-      const response = await inventoryServices.postCategory({
+      const createPayload: CreateCategoryPayload = {
         name: form.name,
         description: form.description,
         icon: form.icon,
-      });
+      };
+      const response = await inventoryServices.postCategory(createPayload);
       if (response.status === 201) {
         getCategories();
         alert.showAlert({
@@ -155,8 +159,13 @@ export function useProductCategory() {
   const editCategory = async (form: ProductCategoryForm) => {
     try {
       startLoading();
-      const { id, active, ...body } = form;
-      const response = await inventoryServices.putCategory(id!, body);
+      const { id, name, description, icon } = form;
+      const updatePayload: UpdateCategoryPayload = {
+        name,
+        description,
+        icon,
+      };
+      const response = await inventoryServices.putCategory(id!, updatePayload);
       if (response.status === 200) {
         getCategories();
         alert.showAlert({
@@ -209,12 +218,12 @@ export function useProductCategory() {
   const cleanSearch = () => {
     if (
       (!filter.filter_name || filter.filter_name === '') &&
-      filter.status === undefined
+      filter.active === undefined
     ) {
       return;
     }
     filter.filter_name = undefined;
-    filter.status = undefined;
+    filter.active = 'Todos';
     getCategories();
   };
 
@@ -227,7 +236,7 @@ export function useProductCategory() {
   };
 
   const findCategory = (value: filterType) => {
-    if (value.filter_name || value.status !== undefined) {
+    if (value.filter_name || value.active !== undefined) {
       getCategories();
     }
   };

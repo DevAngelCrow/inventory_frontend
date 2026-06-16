@@ -3,26 +3,34 @@ import { ApiResponseGeneric } from '@/core/services/interfaces/apiResponseGeneri
 import { ApiPostResponse } from '@/core/services/apiPostResponse.interface';
 import {
   ProductCategoryResponse,
-  ProductCategoryForm,
   ProductResponse,
   ProductForm,
   ProductMaintenanceResponse,
   ProductMaintenanceForm,
+  GetCategoriesParams,
+  CreateCategoryPayload,
+  UpdateCategoryPayload,
+  CreateProductPayload,
+  UpdateProductPayload,
+  CreateMaintenancePayload,
+  UpdateMaintenancePayload,
+  ResolveMaintenancePayload,
 } from '../interfaces/inventory.interfaces';
 
 // --- CATEGORIES ---
-const getCategories = async (params?: {
-  page?: number;
-  per_page?: number;
-  filter_name?: string | null;
-  status?: boolean | null;
-}): Promise<ApiResponseGeneric<ProductCategoryResponse>> => {
-  const queryParams: any = {
+const getCategories = async (
+  params?: GetCategoriesParams
+): Promise<ApiResponseGeneric<ProductCategoryResponse>> => {
+  const queryParams: Record<string, any> = {
     page: params?.page,
     per_page: params?.per_page,
     filter_name: params?.filter_name,
-    active: params?.status,
+    active: params?.active,
   };
+
+  // Remove undefined values to avoid sending empty params
+  Object.keys(queryParams).forEach(key => queryParams[key] === undefined && delete queryParams[key]);
+
   const response = await httpClient.get<ApiResponseGeneric<ProductCategoryResponse>>(
     'inventory/categories',
     queryParams
@@ -30,7 +38,7 @@ const getCategories = async (params?: {
   return response.data;
 };
 
-const postCategory = async (data: ProductCategoryForm) => {
+const postCategory = async (data: CreateCategoryPayload) => {
   const response = await httpClient.post<ApiPostResponse>(
     'inventory/categories',
     data
@@ -38,7 +46,7 @@ const postCategory = async (data: ProductCategoryForm) => {
   return response;
 };
 
-const putCategory = async (id: string, data: ProductCategoryForm) => {
+const putCategory = async (id: string, data: UpdateCategoryPayload) => {
   const response = await httpClient.put<ApiPostResponse>(
     `inventory/categories/${id}`,
     data
@@ -59,17 +67,20 @@ const getProducts = async (params?: {
   per_page?: number;
   filter_name?: string | null;
   sku?: string | null;
-  id_category?: string | null;
+  category_id?: string | null;
   active?: boolean | null;
 }): Promise<ApiResponseGeneric<ProductResponse>> => {
-  const queryParams: any = {
+  const queryParams: Record<string, string | number | boolean | null | undefined> = {
     page: params?.page,
     per_page: params?.per_page,
     filter_name: params?.filter_name,
     filter_sku: params?.sku,
-    filter_category: params?.id_category,
+    filter_category: params?.category_id,
     active: params?.active,
   };
+
+  // Remove undefined values
+  Object.keys(queryParams).forEach(key => queryParams[key] === undefined && delete queryParams[key]);
   const response = await httpClient.get<ApiResponseGeneric<ProductResponse>>(
     'inventory/products',
     queryParams
@@ -77,7 +88,7 @@ const getProducts = async (params?: {
   return response.data;
 };
 
-const postProduct = async (data: ProductForm) => {
+const postProduct = async (data: CreateProductPayload) => {
   const response = await httpClient.post<ApiPostResponse>(
     'inventory/products',
     data
@@ -85,7 +96,7 @@ const postProduct = async (data: ProductForm) => {
   return response;
 };
 
-const putProduct = async (id: string, data: ProductForm) => {
+const putProduct = async (id: string, data: UpdateProductPayload) => {
   const response = await httpClient.put<ApiPostResponse>(
     `inventory/products/${id}`,
     data
@@ -107,14 +118,19 @@ const getMaintenances = async (params?: {
   id_product?: string | null;
   resolved?: boolean | null;
 }): Promise<ApiResponseGeneric<ProductMaintenanceResponse>> => {
+  const queryParams: Record<string, string | number | boolean | null | undefined> = {
+    ...params,
+  };
+  Object.keys(queryParams).forEach(key => queryParams[key] === undefined && delete queryParams[key]);
+
   const response = await httpClient.get<ApiResponseGeneric<ProductMaintenanceResponse>>(
     'inventory/maintenance',
-    params
+    queryParams
   );
   return response.data;
 };
 
-const postMaintenance = async (data: ProductMaintenanceForm) => {
+const postMaintenance = async (data: CreateMaintenancePayload) => {
   const response = await httpClient.post<ApiPostResponse>(
     'inventory/maintenance',
     data
@@ -122,7 +138,15 @@ const postMaintenance = async (data: ProductMaintenanceForm) => {
   return response;
 };
 
-const resolveMaintenance = async (id: string, data: { date_end: string, cost?: number }) => {
+const putMaintenance = async (id: string, data: UpdateMaintenancePayload) => {
+  const response = await httpClient.put<ApiPostResponse>(
+    `inventory/maintenance/${id}`,
+    data
+  );
+  return response;
+};
+
+const resolveMaintenance = async (id: string, data: ResolveMaintenancePayload) => {
   const response = await httpClient.patch<ApiPostResponse>(
     `inventory/maintenance/${id}/resolve`,
     data
@@ -141,5 +165,6 @@ export default {
   toggleProduct,
   getMaintenances,
   postMaintenance,
+  putMaintenance,
   resolveMaintenance,
 };

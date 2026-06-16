@@ -11,15 +11,16 @@ const registerPayment = async (data: PaymentForm) => {
   return response;
 };
 
-const getPaymentsByReservation = async (reservationId: string): Promise<{ data: PaymentResponse[] }> => {
-  const response = await httpClient.get<{ data: PaymentResponse[] }>(
-    `payments/reservation/${reservationId}`
+const getPaymentsByReservation = async (reservationId: string) => {
+  const response = await httpClient.get<any>(
+    'payments',
+    { filter_reservation: reservationId }
   );
   return response.data;
 };
 
-const getPaymentMethods = async (): Promise<ApiResponseGeneric<PaymentMethodResponse>> => {
-  const response = await httpClient.get<ApiResponseGeneric<PaymentMethodResponse>>(
+const getPaymentMethods = async () => {
+  const response = await httpClient.get<any>(
     'payments/methods'
   );
   return response.data;

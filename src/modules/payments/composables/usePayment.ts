@@ -42,8 +42,8 @@ export function usePayment() {
   const loadPaymentMethods = async () => {
     try {
       const resp = await paymentServices.getPaymentMethods();
-      if (resp.statusCode === 200) {
-        paymentMethodsList.value = resp.data.data.filter((m) => m.active);
+      if (resp && resp.data) {
+        paymentMethodsList.value = resp.data.filter((m: any) => m.active);
       }
     } catch (error) {
       console.error(error);
@@ -54,7 +54,11 @@ export function usePayment() {
     try {
       startLoading();
       const resp = await paymentServices.getPaymentsByReservation(reservationId);
-      reservationPayments.value = resp.data;
+      if (resp && resp.data && resp.data.items) {
+        reservationPayments.value = resp.data.items;
+      } else {
+        reservationPayments.value = [];
+      }
     } catch (error) {
       console.error(error);
     } finally {

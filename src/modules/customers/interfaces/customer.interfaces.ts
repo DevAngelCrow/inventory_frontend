@@ -36,3 +36,13 @@ export interface CustomerForm {
   notes?: string;
   active?: boolean;
 }
+
+export interface CustomerHistoryResponse {
+  id: string;
+  id_customer: string;
+  field_name: string;
+  old_value: string | null;
+  new_value: string | null;
+  changed_by: string;
+  created_at: string;
+}

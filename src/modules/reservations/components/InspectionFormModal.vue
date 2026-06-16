@@ -11,7 +11,7 @@
           <span class="block"><strong>Cliente:</strong> {{ reservation?.mnt_customer?.first_name }} {{ reservation?.mnt_customer?.last_name }}</span>
         </div>
         <div class="text-right">
-          <span class="block text-gray-600">Total Alquiler: ${{ Number(reservation?.total || 0).toFixed(2) }}</span>
+          <span class="block text-gray-600">Total Alquiler: ${{ Number(reservation?.total_amount || 0).toFixed(2) }}</span>
           <span class="block text-red-600 font-bold">Saldo Pendiente: ${{ Number(reservation?.balance_due || 0).toFixed(2) }}</span>
         </div>
       </div>
@@ -90,7 +90,7 @@
   </AppModal>
 </template>
 <script setup lang="ts">
-import { computed, inject, onMounted, reactive, ref, watch } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import { DataTable, Column, Button } from 'primevue';
 
 import AppModal from '@/core/components/AppModal.vue';
@@ -163,7 +163,7 @@ const damageTypeOptions = ref([
 ]);
 
 const reservationProducts = computed(() => {
-  return props.reservation?.mnt_reservation_item || [];
+  return props.reservation?.items || [];
 });
 
 watch(() => props.modalState.show, (newVal) => {
@@ -177,7 +177,7 @@ watch(() => props.modalState.show, (newVal) => {
 });
 
 const getProductName = (id_product: string) => {
-  const item = reservationProducts.value.find((p) => p.id_product === id_product);
+  const item = reservationProducts.value.find((p: any) => p.id_product === id_product);
   return item?.mnt_product?.name || 'Mobiliario';
 };
 

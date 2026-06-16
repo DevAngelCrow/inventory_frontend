@@ -29,6 +29,18 @@
             v-model="filter.status"
             optionValue="value"
           />
+          <AppDatePicker
+            class="w-full sm:w-[180px] min-w-0"
+            id="filter_start_date"
+            label="Fecha Inicio"
+            v-model="filter.start_date"
+          />
+          <AppDatePicker
+            class="w-full sm:w-[180px] min-w-0"
+            id="filter_end_date"
+            label="Fecha Fin"
+            v-model="filter.end_date"
+          />
           <Button
             class="rounded-md"
             v-debounce:700.click="getReservations"
@@ -57,107 +69,107 @@
         class="w-full"
         :headers="headers"
         :items="reservations"
-        :paginator="true"
-        :per_page="pagination.per_page"
-        :total_items="pagination.total_items"
-        :page="pagination.page"
-        :show-per-page-options="true"
-        :per-page-options="[10, 20, 50, 100]"
-        @page-update="handlePagination"
-        @per-page-update="handlePerPagePagination"
-      >
-        <template #body-event_start="{ data }">
-          {{ FormatDate(data.event_start, 'DD/MM/YYYY hh:mm a') }}
-        </template>
-        <template #body-total="{ data }">
-          ${{ Number(data.total).toFixed(2) }}
-        </template>
-        <template #body-balance_due="{ data }">
-          <span :class="{'text-red-500 font-bold': Number(data.balance_due) > 0}">
-            ${{ Number(data.balance_due).toFixed(2) }}
-          </span>
-        </template>
-        <template #body-status="{ data }">
-          <AppStatusChip
-            :status="getStatusBoolean(data.status)"
-            :label="getStatusLabel(data.status)"
-          />
-        </template>
-        <template #body-acciones="{ data }">
-          <div class="flex gap-0 justify-center flex-wrap">
-            <Button
-              class="rounded-full"
-              variant="text"
-              icon="pi pi-eye"
-              @click="navigateToView(data.id)"
-              v-tooltip.bottom="'Ver Detalle'"
-            ></Button>
-            <Button
-              class="rounded-full"
-              variant="text"
-              icon="pi pi-pencil"
-              @click="navigateToEdit(data.id)"
-              v-tooltip.bottom="'Editar'"
-              :disabled="data.status !== 'DRAFT' && data.status !== 'CONFIRMED'"
-            ></Button>
-            <Button
-              v-if="data.status === 'DRAFT'"
-              class="rounded-full text-green-600"
-              variant="text"
-              icon="pi pi-check"
-              @click="changeStatus(data.id, 'confirm')"
-              v-tooltip.bottom="'Confirmar Alquiler'"
-            ></Button>
-            <Button
-              v-if="data.status === 'CONFIRMED'"
-              class="rounded-full text-blue-600"
-              variant="text"
-              icon="pi pi-truck"
-              @click="changeStatus(data.id, 'transit')"
-              v-tooltip.bottom="'En camino (Despacho)'"
-            ></Button>
-            <Button
-              v-if="data.status === 'IN_TRANSIT'"
-              class="rounded-full text-yellow-600"
-              variant="text"
-              icon="pi pi-home"
-              @click="changeStatus(data.id, 'delivered')"
-              v-tooltip.bottom="'Entregado en sitio'"
-            ></Button>
-            <Button
-              v-if="data.status === 'DELIVERED'"
-              class="rounded-full text-purple-600"
-              variant="text"
-              icon="pi pi-directions"
-              @click="changeStatus(data.id, 'picked-up')"
-              v-tooltip.bottom="'Recogido (post-evento)'"
-            ></Button>
-            <Button
-              v-if="data.status === 'PICKED_UP'"
-              class="rounded-full text-teal-600"
-              variant="text"
-              icon="pi pi-shield"
-              @click="openInspectionModal(data)"
-              v-tooltip.bottom="'Registrar Inspección de Daños'"
-            ></Button>
-            <Button
-              v-if="data.status === 'DRAFT' || data.status === 'CONFIRMED'"
-              class="rounded-full text-red-600"
-              variant="text"
-              icon="pi pi-ban"
-              @click="openCancelDialog(data)"
-              v-tooltip.bottom="'Cancelar Reserva'"
-            ></Button>
-            <Button
-              v-if="data.status !== 'DRAFT' && data.status !== 'CANCELLED' && Number(data.balance_due) > 0"
-              class="rounded-full text-green-700"
-              variant="text"
-              icon="pi pi-dollar"
-              @click="openPaymentModal(data)"
-              v-tooltip.bottom="'Registrar Pago'"
-            ></Button>
-          </div>
-        </template>
+            :paginator="true"
+            :per_page="pagination.per_page"
+            :total_items="pagination.total_items"
+            :page="pagination.page"
+            :show-per-page-options="true"
+            :per-page-options="[10, 20, 50, 100]"
+            @page-update="handlePagination"
+            @per-page-update="handlePerPagePagination"
+          >
+            <template #body-event_start="{ data }">
+              {{ FormatDate(data.event_start, 'DD/MM/YYYY hh:mm a') }}
+            </template>
+            <template #body-total_amount="{ data }">
+              ${{ Number(data.total_amount).toFixed(2) }}
+            </template>
+            <template #body-balance_due="{ data }">
+              <span :class="{'text-red-500 font-bold': Number(data.balance_due) > 0}">
+                ${{ Number(data.balance_due).toFixed(2) }}
+              </span>
+            </template>
+            <template #body-status="{ data }">
+              <AppStatusChip
+                :status="getStatusBoolean(data.status)"
+                :label="getStatusLabel(data.status)"
+              />
+            </template>
+            <template #body-acciones="{ data }">
+              <div class="flex gap-0 justify-center flex-wrap">
+                <Button
+                  class="rounded-full"
+                  variant="text"
+                  icon="pi pi-eye"
+                  @click="navigateToView(data.id)"
+                  v-tooltip.bottom="'Ver Detalle'"
+                ></Button>
+                <Button
+                  class="rounded-full"
+                  variant="text"
+                  icon="pi pi-pencil"
+                  @click="navigateToEdit(data.id)"
+                  v-tooltip.bottom="'Editar'"
+                  :disabled="data.status !== 'DRAFT' && data.status !== 'CONFIRMED'"
+                ></Button>
+                <Button
+                  v-if="data.status === 'DRAFT'"
+                  class="rounded-full text-green-600"
+                  variant="text"
+                  icon="pi pi-check"
+                  @click="changeStatus(data.id, 'confirm')"
+                  v-tooltip.bottom="'Confirmar Alquiler'"
+                ></Button>
+                <Button
+                  v-if="data.status === 'CONFIRMED'"
+                  class="rounded-full text-blue-600"
+                  variant="text"
+                  icon="pi pi-truck"
+                  @click="changeStatus(data.id, 'transit')"
+                  v-tooltip.bottom="'En camino (Despacho)'"
+                ></Button>
+                <Button
+                  v-if="data.status === 'IN_TRANSIT'"
+                  class="rounded-full text-yellow-600"
+                  variant="text"
+                  icon="pi pi-home"
+                  @click="changeStatus(data.id, 'delivered')"
+                  v-tooltip.bottom="'Entregado en sitio'"
+                ></Button>
+                <Button
+                  v-if="data.status === 'DELIVERED'"
+                  class="rounded-full text-purple-600"
+                  variant="text"
+                  icon="pi pi-directions"
+                  @click="changeStatus(data.id, 'picked-up')"
+                  v-tooltip.bottom="'Recogido (post-evento)'"
+                ></Button>
+                <Button
+                  v-if="data.status === 'PICKED_UP'"
+                  class="rounded-full text-teal-600"
+                  variant="text"
+                  icon="pi pi-shield"
+                  @click="openInspectionModal(data)"
+                  v-tooltip.bottom="'Registrar Inspección de Daños'"
+                ></Button>
+                <Button
+                  v-if="data.status === 'DRAFT' || data.status === 'CONFIRMED'"
+                  class="rounded-full text-red-600"
+                  variant="text"
+                  icon="pi pi-ban"
+                  @click="openCancelDialog(data)"
+                  v-tooltip.bottom="'Cancelar Reserva'"
+                ></Button>
+                <Button
+                  v-if="data.status !== 'DRAFT' && data.status !== 'CANCELLED' && Number(data.balance_due) > 0"
+                  class="rounded-full text-green-700"
+                  variant="text"
+                  icon="pi pi-dollar"
+                  @click="openPaymentModal(data)"
+                  v-tooltip.bottom="'Registrar Pago'"
+                ></Button>
+              </div>
+            </template>
       </AppDataTable>
     </section>
 
@@ -201,6 +213,7 @@ import AppTitle from '@/core/components/AppTitle.vue';
 import AppSelect from '@/core/components/AppSelect.vue';
 import AppDataTable from '@/core/components/AppDataTable.vue';
 import AppStatusChip from '@/core/components/AppStatusChip.vue';
+import AppDatePicker from '@/core/components/AppDatePicker.vue';
 import { FormatDate } from '@/core/utils/dates';
 
 import { useReservation } from '../composables/useReservation';

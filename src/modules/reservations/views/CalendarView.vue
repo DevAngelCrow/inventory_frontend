@@ -1,14 +1,11 @@
 <template>
   <div class="py-5 px-5 h-full max-h-full flex items-start justify-center">
-    <section
-      id="calendar_view_content"
-      class="w-full xl:w-[90%] flex flex-col gap-6"
-    >
+    <section id="calendar_view_content" class="w-full xl:w-[90%] flex flex-col gap-6">
       <AppTitle title="Agenda de Entregas y Eventos" />
 
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <!-- Calendar Picker Card (Left) -->
-        <Card class="lg:col-span-1">
+        <AppCard class="lg:col-span-1">
           <template #title>
             <h3>Seleccionar Fecha</h3>
           </template>
@@ -32,10 +29,10 @@
               </div>
             </div>
           </template>
-        </Card>
+        </AppCard>
 
         <!-- Events Agenda Timeline (Right) -->
-        <Card class="lg:col-span-3">
+        <AppCard class="lg:col-span-3">
           <template #title>
             <div class="flex justify-between items-center">
               <h3>Cronograma del Día: {{ agendaDateFormatted }}</h3>
@@ -55,15 +52,13 @@
               </div>
 
               <div v-else class="flex flex-col gap-4">
-                <div
-                  v-for="(event, idx) in filteredAgendaItems"
-                  :key="idx"
+                <div v-for="(event, idx) in filteredAgendaItems" :key="idx"
                   class="border-l-4 p-4 rounded-r-lg bg-gray-50 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-xs hover:shadow-md transition-all duration-200"
-                  :class="getTimelineBorderClass(event.type)"
-                >
+                  :class="getTimelineBorderClass(event.type)">
                   <div class="flex flex-col gap-1">
                     <div class="flex items-center gap-2 flex-wrap">
-                      <span class="text-sm font-semibold uppercase tracking-wider px-2 py-0.5 rounded text-white" :class="getTimelineBadgeClass(event.type)">
+                      <span class="text-sm font-semibold uppercase tracking-wider px-2 py-0.5 rounded text-white"
+                        :class="getTimelineBadgeClass(event.type)">
                         {{ getTimelineTypeLabel(event.type) }}
                       </span>
                       <span class="text-xs text-gray-500">
@@ -72,7 +67,8 @@
                     </div>
                     <span class="text-lg font-bold">{{ event.reservation.reservation_number }}</span>
                     <span class="text-sm text-gray-700">
-                      <strong>Cliente:</strong> {{ event.reservation.mnt_customer?.first_name }} {{ event.reservation.mnt_customer?.last_name }}
+                      <strong>Cliente:</strong> {{ event.reservation.mnt_customer?.first_name }} {{
+                        event.reservation.mnt_customer?.last_name }}
                     </span>
                     <span class="text-xs text-gray-600" v-if="event.reservation.delivery_address">
                       <strong>Dirección:</strong> {{ event.reservation.delivery_address }}
@@ -80,13 +76,14 @@
                   </div>
 
                   <div class="flex items-center gap-2">
-                    <Button icon="pi pi-eye" outlined rounded severity="secondary" size="small" @click="viewReservation(event.reservation.id)" />
+                    <Button icon="pi pi-eye" outlined rounded severity="secondary" size="small"
+                      @click="viewReservation(event.reservation.id)" />
                   </div>
                 </div>
               </div>
             </div>
           </template>
-        </Card>
+        </AppCard>
       </div>
     </section>
   </div>
@@ -94,10 +91,12 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { Card, DatePicker, Button } from 'primevue';
+import { DatePicker, Button } from 'primevue';
 import dayjs from 'dayjs';
 
 import AppTitle from '@/core/components/AppTitle.vue';
+import AppCard from '@/core/components/AppCard.vue';
+
 import reservationServices from '../Services/reservation.services';
 import { ReservationResponse } from '../interfaces/reservation.interfaces';
 
@@ -116,8 +115,8 @@ const loadEvents = async () => {
     const start = dayjs(selectedDate.value).startOf('month').toISOString();
     const end = dayjs(selectedDate.value).endOf('month').toISOString();
     const resp = await reservationServices.getReservations({
-      start_date: dayjs(selectedDate.value).startOf('month').toISOString(),
-      end_date: dayjs(selectedDate.value).endOf('month').toISOString(),
+      start_date: start,
+      end_date: end,
       per_page: 100,
     });
     if (resp.statusCode === 200) {

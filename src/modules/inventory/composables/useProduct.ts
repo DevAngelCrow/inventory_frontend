@@ -6,11 +6,12 @@ import { TableHeaders } from '@/core/interfaces';
 import { useAlertStore, useLoaderStore } from '@/core/store';
 import { sanitizedValueInput } from '@/core/utils/inputTextValidations';
 
-import { ProductResponse, ProductForm, ProductCategoryResponse } from '../interfaces/inventory.interfaces';
+import { ProductResponse, ProductForm, ProductCategoryResponse, CreateProductPayload, UpdateProductPayload } from '../interfaces/inventory.interfaces';
 import inventoryServices from '../Services/inventory.services';
 
 type filterType = {
   filter_name?: string;
+  sku?: string;
   category_id?: string;
   active?: boolean | 'Todos';
 };
@@ -104,7 +105,7 @@ export function useProduct() {
       width: 10,
     },
     {
-      field: 'ctl_product_category.name',
+      field: 'category_id',
       header: 'Categoría',
       sortable: false,
       alignHeaders: 'start',
@@ -170,8 +171,8 @@ export function useProduct() {
         page: pagination.page,
         per_page: pagination.per_page,
         filter_name: filter.filter_name,
-        filter_sku: filter.sku,
-        filter_category: filter.category_id === 'Todos' ? undefined : filter.category_id,
+        sku: filter.sku,
+        category_id: filter.category_id === 'Todos' ? undefined : filter.category_id,
         active: filter.active === 'Todos' ? undefined : filter.active as boolean | undefined,
       };
       const response = await inventoryServices.getProducts(params);
@@ -203,8 +204,22 @@ export function useProduct() {
   const addProduct = async (form: ProductForm) => {
     try {
       startLoading();
-      const { id, active, ...body } = form;
-      const response = await inventoryServices.postProduct(body);
+      const createPayload: CreateProductPayload = {
+        name: form.name,
+        description: form.description,
+        sku: form.sku,
+        rental_price: form.rental_price,
+        replacement_cost: form.replacement_cost,
+        total_stock: form.total_stock,
+        min_stock_alert: form.min_stock_alert,
+        color: form.color,
+        dimensions: form.dimensions,
+        weight_lbs: form.weight_lbs,
+        image_url: form.image_url,
+        notes: form.notes,
+        category_id: form.category_id,
+      };
+      const response = await inventoryServices.postProduct(createPayload);
       if (response.status === 201) {
         getProducts();
         alert.showAlert({
@@ -224,8 +239,22 @@ export function useProduct() {
   const editProduct = async (form: ProductForm) => {
     try {
       startLoading();
-      const { id, active, ...body } = form;
-      const response = await inventoryServices.putProduct(id!, body);
+      const updatePayload: UpdateProductPayload = {
+        name: form.name,
+        description: form.description,
+        sku: form.sku,
+        rental_price: form.rental_price,
+        replacement_cost: form.replacement_cost,
+        total_stock: form.total_stock,
+        min_stock_alert: form.min_stock_alert,
+        color: form.color,
+        dimensions: form.dimensions,
+        weight_lbs: form.weight_lbs,
+        image_url: form.image_url,
+        notes: form.notes,
+        category_id: form.category_id,
+      };
+      const response = await inventoryServices.putProduct(form.id!, updatePayload);
       if (response.status === 200) {
         getProducts();
         alert.showAlert({
@@ -290,12 +319,12 @@ export function useProduct() {
     setFieldValue('description', value?.description);
     setFieldValue('sku', value?.sku);
     setFieldValue('rental_price', Number(value?.rental_price));
-    setFieldValue('replacement_cost', value?.replacement_cost ? Number(value?.replacement_cost) : undefined);
+    setFieldValue('replacement_cost', value?.replacement_cost !== null && value?.replacement_cost !== undefined ? Number(value?.replacement_cost) : undefined);
     setFieldValue('total_stock', value?.total_stock);
     setFieldValue('min_stock_alert', value?.min_stock_alert);
     setFieldValue('color', value?.color);
     setFieldValue('dimensions', value?.dimensions);
-    setFieldValue('weight_lbs', value?.weight_lbs ? Number(value?.weight_lbs) : undefined);
+    setFieldValue('weight_lbs', value?.weight_lbs !== null && value?.weight_lbs !== undefined ? Number(value?.weight_lbs) : undefined);
     setFieldValue('image_url', value?.image_url);
     setFieldValue('notes', value?.notes);
     setFieldValue('category_id', value?.category_id);

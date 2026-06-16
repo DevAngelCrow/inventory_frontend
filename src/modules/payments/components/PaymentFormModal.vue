@@ -11,7 +11,7 @@
           <span class="block"><strong>Cliente:</strong> {{ reservation?.mnt_customer?.first_name }} {{ reservation?.mnt_customer?.last_name }}</span>
         </div>
         <div class="text-right">
-          <span class="block text-gray-600">Total Alquiler: ${{ Number(reservation?.total || 0).toFixed(2) }}</span>
+          <span class="block text-gray-600">Total Alquiler: ${{ Number(reservation?.total_amount || 0).toFixed(2) }}</span>
           <span class="block text-red-600 font-bold">Saldo Pendiente: ${{ Number(balanceDue).toFixed(2) }}</span>
         </div>
       </div>
@@ -76,7 +76,7 @@
   </AppModal>
 </template>
 <script setup lang="ts">
-import { computed, inject, onMounted, watch } from 'vue';
+import { computed, watch } from 'vue';
 import { DataTable, Column, Button } from 'primevue';
 
 import AppModal from '@/core/components/AppModal.vue';
@@ -91,7 +91,6 @@ import { usePayment } from '../composables/usePayment';
 import { PaymentForm } from '../interfaces/payment.interfaces';
 import { ReservationResponse } from '../../reservations/interfaces/reservation.interfaces';
 
-type PaymentType = ReturnType<typeof usePayment>;
 
 const props = defineProps<{
   modalState: {
@@ -108,12 +107,10 @@ const { startLoading, finishLoading } = useLoaderStore();
 
 const {
   errors,
-  id_reservation,
   id_payment_method,
   amount,
   reference_number,
   notes,
-  idReservationAttrs,
   idPaymentMethodAttrs,
   amountAttrs,
   referenceNumberAttrs,

@@ -69,7 +69,7 @@
         <template #body-date_start="{ data }">
           {{ FormatDate(data.date_start, 'DD/MM/YYYY') }}
         </template>
-        <template #body-mnt_product.name="{ data }">
+        <template #body-id_product="{ data }">
           {{ productsList.find(p => p.id === data.id_product)?.name || '-' }}
         </template>
         <template #body-resolved="{ data }">

@@ -73,9 +73,7 @@ const onSubMit = handleSubmit(async values => {
         success = !!(await addCategory(form));
         break;
       case 'edit':
-        form.id = values.id;
-        form.active = values.active;
-        success = !!(await editCategory(form));
+        success = !!(await editCategory(values as ProductCategoryForm));
         break;
       case 'delete':
         success = !!(await patchCategory(values.id));

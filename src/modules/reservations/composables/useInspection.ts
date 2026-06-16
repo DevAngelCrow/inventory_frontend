@@ -3,8 +3,8 @@ import { computed, ref } from 'vue';
 import * as yup from 'yup';
 
 import { useAlertStore, useLoaderStore } from '@/core/store';
-import { FormatDateToISO, FormatDate } from '@/core/utils/dates';
-import { DamageItem, InspectionForm, ReservationResponse } from '../interfaces/reservation.interfaces';
+import { FormatDateToISO } from '@/core/utils/dates';
+import { DamageItem } from '../interfaces/reservation.interfaces';
 import reservationServices from '../Services/reservation.services';
 
 export function useInspection() {

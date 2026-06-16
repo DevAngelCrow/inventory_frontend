@@ -16,6 +16,16 @@ export interface ProductCategoryForm {
   active?: boolean;
 }
 
+export type CreateCategoryPayload = Omit<ProductCategoryForm, 'id' | 'active'>;
+export type UpdateCategoryPayload = Omit<ProductCategoryForm, 'id' | 'active'>;
+
+export interface GetCategoriesParams {
+  page?: number;
+  per_page?: number;
+  filter_name?: string | null;
+  active?: boolean | null;
+}
+
 export interface ProductResponse {
   id: string;
   name: string;
@@ -34,10 +44,6 @@ export interface ProductResponse {
   category_id: string;
   created_at?: string;
   updated_at?: string;
-  ctl_product_category?: {
-    id: string;
-    name: string;
-  };
 }
 
 export interface ProductForm {
@@ -58,6 +64,9 @@ export interface ProductForm {
   category_id: string;
 }
 
+export type CreateProductPayload = Omit<ProductForm, 'id' | 'active'>;
+export type UpdateProductPayload = Omit<ProductForm, 'id' | 'active'>;
+
 export interface ProductMaintenanceResponse {
   id: string;
   description: string;
@@ -69,11 +78,6 @@ export interface ProductMaintenanceResponse {
   id_product: string;
   created_at?: string;
   updated_at?: string;
-  mnt_product?: {
-    id: string;
-    name: string;
-    sku: string;
-  };
 }
 
 export interface ProductMaintenanceForm {
@@ -86,3 +90,7 @@ export interface ProductMaintenanceForm {
   resolved?: boolean;
   id_product: string;
 }
+
+export type CreateMaintenancePayload = Omit<ProductMaintenanceForm, 'id' | 'resolved' | 'date_end'> & { date_end?: string };
+export type UpdateMaintenancePayload = Omit<ProductMaintenanceForm, 'id' | 'resolved' | 'date_end'> & { cost?: number };
+export type ResolveMaintenancePayload = { date_end: string, cost?: number };

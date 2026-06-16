@@ -1,12 +1,12 @@
 import { useForm } from 'vee-validate';
-import { computed, nextTick, reactive, ref } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import * as yup from 'yup';
 
 import { TableHeaders } from '@/core/interfaces';
 import { useAlertStore, useLoaderStore } from '@/core/store';
 import { FormatDateToISO, FormatDate } from '@/core/utils/dates';
 
-import { ReservationResponse, ReservationForm, ReservationItem } from '../interfaces/reservation.interfaces';
+import { ReservationResponse, ReservationForm } from '../interfaces/reservation.interfaces';
 import reservationServices from '../Services/reservation.services';
 import customerServices from '../../customers/Services/customer.services';
 import inventoryServices from '../../inventory/Services/inventory.services';
@@ -37,24 +37,11 @@ export function useReservation() {
       id_customer: yup.string().required('El cliente es requerido'),
       event_start: yup.string().required('La fecha/hora de inicio es requerida'),
       event_end: yup.string().required('La fecha/hora de fin es requerida'),
-      delivery_datetime: yup.string().nullable(),
-      pickup_datetime: yup.string().nullable(),
-      transit_time_minutes: yup.number().typeError('Debe ser número').integer().default(0),
       delivery_address: yup.string().max(500, 'Dirección muy larga').nullable(),
-      delivery_city: yup.string().max(100).nullable(),
-      delivery_state: yup.string().max(100).nullable(),
-      delivery_zip: yup.string().max(20).nullable(),
-      delivery_notes: yup.string().nullable(),
-      delivery_contact_name: yup.string().max(200).nullable(),
-      delivery_contact_phone: yup.string().max(20).nullable(),
-      event_type: yup.string().max(100).nullable(),
-      venue_name: yup.string().max(200).nullable(),
       discount_amount: yup.number().typeError('Debe ser número').min(0).default(0),
-      discount_reason: yup.string().max(255).nullable(),
       delivery_fee: yup.number().typeError('Debe ser número').min(0).default(0),
       deposit_amount: yup.number().typeError('Debe ser número').min(0).default(0),
       notes: yup.string().nullable(),
-      internal_notes: yup.string().nullable(),
     }),
   });
 
@@ -81,7 +68,7 @@ export function useReservation() {
       alignItems: 'center',
     },
     {
-      field: 'total',
+      field: 'total_amount',
       header: 'Total',
       sortable: false,
       alignHeaders: 'end',
@@ -139,24 +126,11 @@ export function useReservation() {
   const [id_customer, idCustomerAttrs] = defineField('id_customer');
   const [event_start, eventStartAttrs] = defineField('event_start');
   const [event_end, eventEndAttrs] = defineField('event_end');
-  const [delivery_datetime, deliveryDatetimeAttrs] = defineField('delivery_datetime');
-  const [pickup_datetime, pickupDatetimeAttrs] = defineField('pickup_datetime');
-  const [transit_time_minutes, transitTimeMinutesAttrs] = defineField('transit_time_minutes');
   const [delivery_address, deliveryAddressAttrs] = defineField('delivery_address');
-  const [delivery_city, deliveryCityAttrs] = defineField('delivery_city');
-  const [delivery_state, deliveryStateAttrs] = defineField('delivery_state');
-  const [delivery_zip, deliveryZipAttrs] = defineField('delivery_zip');
-  const [delivery_notes, deliveryNotesAttrs] = defineField('delivery_notes');
-  const [delivery_contact_name, deliveryContactNameAttrs] = defineField('delivery_contact_name');
-  const [delivery_contact_phone, deliveryContactPhoneAttrs] = defineField('delivery_contact_phone');
-  const [event_type, eventTypeAttrs] = defineField('event_type');
-  const [venue_name, venueNameAttrs] = defineField('venue_name');
   const [discount_amount, discountAmountAttrs] = defineField('discount_amount');
-  const [discount_reason, discountReasonAttrs] = defineField('discount_reason');
   const [delivery_fee, deliveryFeeAttrs] = defineField('delivery_fee');
   const [deposit_amount, depositAmountAttrs] = defineField('deposit_amount');
   const [notes, notesAttrs] = defineField('notes');
-  const [internal_notes, internalNotesAttrs] = defineField('internal_notes');
 
   const filter = reactive<filterType>({
     status: undefined,
@@ -255,7 +229,7 @@ export function useReservation() {
     cartItems.value = [];
   };
 
-  const saveReservation = async (formValues: any) => {
+  const saveReservation = async (formValues: ReservationForm) => {
     try {
       startLoading();
       if (!cartItems.value.length) {
@@ -268,15 +242,8 @@ export function useReservation() {
       }
 
       // Convert date/time fields to ISO strings
-      // Event start/end contains time in DD/MM/YYYY hh:mm a
       const startIso = FormatDateToISO(formValues.event_start, 'DD/MM/YYYY hh:mm a', true) || '';
       const endIso = FormatDateToISO(formValues.event_end, 'DD/MM/YYYY hh:mm a', true) || '';
-      const deliveryIso = formValues.delivery_datetime
-        ? FormatDateToISO(formValues.delivery_datetime, 'DD/MM/YYYY hh:mm a', true) || undefined
-        : undefined;
-      const pickupIso = formValues.pickup_datetime
-        ? FormatDateToISO(formValues.pickup_datetime, 'DD/MM/YYYY hh:mm a', true) || undefined
-        : undefined;
 
       const payload: any = {
         id_customer: formValues.id_customer,
@@ -339,7 +306,8 @@ export function useReservation() {
           response = await reservationServices.markPickedUp(id);
           break;
       }
-      if (response && (response.status === 200 || response.status === 201)) {
+      // Depending on httpClient return type, it usually has statusCode or status
+      if (response && ((response as any).statusCode === 200 || (response as any).statusCode === 201 || (response as any).status === 200 || (response as any).status === 201)) {
         getReservations();
         alert.showAlert({
           type: 'success',
@@ -367,33 +335,18 @@ export function useReservation() {
     setFieldValue('id_customer', value?.id_customer);
     setFieldValue('event_start', FormatDate(value?.event_start, 'DD/MM/YYYY hh:mm a'));
     setFieldValue('event_end', FormatDate(value?.event_end, 'DD/MM/YYYY hh:mm a'));
-    setFieldValue('delivery_datetime', value?.delivery_datetime ? FormatDate(value?.delivery_datetime, 'DD/MM/YYYY hh:mm a') : undefined);
-    setFieldValue('pickup_datetime', value?.pickup_datetime ? FormatDate(value?.pickup_datetime, 'DD/MM/YYYY hh:mm a') : undefined);
-    setFieldValue('transit_time_minutes', value?.transit_time_minutes);
     setFieldValue('delivery_address', value?.delivery_address);
-    setFieldValue('delivery_city', value?.delivery_city);
-    setFieldValue('delivery_state', value?.delivery_state);
-    setFieldValue('delivery_zip', value?.delivery_zip);
-    setFieldValue('delivery_notes', value?.delivery_notes);
-    setFieldValue('delivery_contact_name', value?.delivery_contact_name);
-    setFieldValue('delivery_contact_phone', value?.delivery_contact_phone);
-    setFieldValue('event_type', value?.event_type);
-    setFieldValue('venue_name', value?.venue_name);
-    setFieldValue('discount_amount', Number(value?.discount_amount));
-    setFieldValue('discount_reason', value?.discount_reason);
-    setFieldValue('delivery_fee', Number(value?.delivery_fee));
     setFieldValue('deposit_amount', Number(value?.deposit_amount));
     setFieldValue('notes', value?.notes);
-    setFieldValue('internal_notes', value?.internal_notes);
 
     // Populate cart
-    cartItems.value = (value?.mnt_reservation_item || []).map((i: any) => ({
+    cartItems.value = (value?.items || []).map((i: any) => ({
       id_product: i.id_product,
       product_name: i.mnt_product?.name || 'Producto',
       sku: i.mnt_product?.sku || '',
       quantity: i.quantity,
       unit_price: Number(i.unit_price),
-      subtotal: Number(i.subtotal),
+      subtotal: Number(i.total_price),
       notes: i.notes,
     }));
   };
@@ -413,24 +366,11 @@ export function useReservation() {
     id_customer, idCustomerAttrs,
     event_start, eventStartAttrs,
     event_end, eventEndAttrs,
-    delivery_datetime, deliveryDatetimeAttrs,
-    pickup_datetime, pickupDatetimeAttrs,
-    transit_time_minutes, transitTimeMinutesAttrs,
     delivery_address, deliveryAddressAttrs,
-    delivery_city, deliveryCityAttrs,
-    delivery_state, deliveryStateAttrs,
-    delivery_zip, deliveryZipAttrs,
-    delivery_notes, deliveryNotesAttrs,
-    delivery_contact_name, deliveryContactNameAttrs,
-    delivery_contact_phone, deliveryContactPhoneAttrs,
-    event_type, eventTypeAttrs,
-    venue_name, venueNameAttrs,
     discount_amount, discountAmountAttrs,
-    discount_reason, discountReasonAttrs,
     delivery_fee, deliveryFeeAttrs,
     deposit_amount, depositAmountAttrs,
     notes, notesAttrs,
-    internal_notes, internalNotesAttrs,
     getReservations,
     loadDependencies,
     addToCart,

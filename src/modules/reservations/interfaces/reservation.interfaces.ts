@@ -3,62 +3,51 @@ import { ProductResponse } from '../../inventory/interfaces/inventory.interfaces
 
 export interface ReservationItem {
   id?: string;
+  id_product: string;
   quantity: number;
   unit_price: number;
-  subtotal: number;
-  notes?: string;
-  id_product: string;
-  mnt_product?: ProductResponse;
+  total_price: number;
+  mnt_product?: {
+    name: string;
+    sku: string;
+  };
 }
 
 export interface ReservationResponse {
   id: string;
-  reservation_number: string;
+  id_customer: string;
+  status: string;
   event_start: string;
   event_end: string;
-  delivery_datetime?: string;
-  pickup_datetime?: string;
-  transit_time_minutes: number;
+  total_amount: number;
   delivery_address?: string;
-  delivery_city?: string;
-  delivery_state?: string;
-  delivery_zip?: string;
-  delivery_notes?: string;
-  delivery_contact_name?: string;
-  delivery_contact_phone?: string;
-  event_type?: string;
-  venue_name?: string;
-  subtotal: number;
-  tax_rate: number;
-  tax_amount: number;
-  discount_amount: number;
-  discount_reason?: string;
-  delivery_fee: number;
-  total: number;
-  deposit_amount: number;
-  balance_due: number;
+  deposit_amount?: number;
+  balance_due?: number;
   notes?: string;
-  internal_notes?: string;
-  status: string;
-  id_customer: string;
-  id_currency: string;
+  items: ReservationItem[];
   created_at?: string;
   updated_at?: string;
-  confirmed_at?: string;
-  cancelled_at?: string;
-  cancellation_reason?: string;
-  mnt_customer?: CustomerResponse;
-  mnt_reservation_item?: ReservationItem[];
+  reservation_number?: string;
+  delivery_datetime?: string;
+  pickup_datetime?: string;
+  transit_time_minutes?: number;
+  mnt_customer?: {
+    first_name: string;
+    last_name: string;
+    email?: string | null;
+    phone?: string | null;
+  };
 }
 
 export interface ReservationForm {
   id?: string;
+  id_customer: string;
   event_start: string;
   event_end: string;
+  delivery_address?: string;
   delivery_datetime?: string;
   pickup_datetime?: string;
-  transit_time_minutes: number;
-  delivery_address?: string;
+  transit_time_minutes?: number;
   delivery_city?: string;
   delivery_state?: string;
   delivery_zip?: string;
@@ -67,16 +56,17 @@ export interface ReservationForm {
   delivery_contact_phone?: string;
   event_type?: string;
   venue_name?: string;
-  discount_amount: number;
+  discount_amount?: number;
   discount_reason?: string;
-  delivery_fee: number;
-  deposit_amount: number;
+  delivery_fee?: number;
+  deposit_amount?: number;
   notes?: string;
   internal_notes?: string;
-  id_customer: string;
   items: {
-    quantity: number;
     id_product: string;
+    quantity: number;
+    unit_price?: number;
+    total_price?: number;
     notes?: string;
   }[];
 }

@@ -1,7 +1,7 @@
 import { httpClient } from '@/core/utils/httpClient';
 import { ApiResponseGeneric } from '@/core/services/interfaces/apiResponseGeneric.interface';
 import { ApiPostResponse } from '@/core/services/apiPostResponse.interface';
-import { CustomerResponse, CustomerForm } from '../interfaces/customer.interfaces';
+import { CustomerResponse, CustomerForm, CustomerHistoryResponse } from '../interfaces/customer.interfaces';
 
 const getCustomers = async (params?: {
   page?: number;
@@ -40,7 +40,7 @@ const toggleCustomer = async (id: string) => {
 };
 
 const getCustomerHistory = async (id: string) => {
-  const response = await httpClient.get<ApiResponseGeneric<any>>(
+  const response = await httpClient.get<ApiResponseGeneric<CustomerHistoryResponse>>(
     `customers/${id}/history`
   );
   return response.data;

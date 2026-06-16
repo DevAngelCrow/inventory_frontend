@@ -26,17 +26,6 @@ const getReservations = async (params?: {
   return response.data;
 };
 
-const getCalendarReservations = async (params: {
-  start: string;
-  end: string;
-}): Promise<{ data: ReservationResponse[] }> => {
-  const response = await httpClient.get<{ data: ReservationResponse[] }>(
-    'reservations/calendar',
-    params
-  );
-  return response.data;
-};
-
 const getReservation = async (id: string): Promise<{ data: ReservationResponse; statusCode: number }> => {
   const response = await httpClient.get<{ data: ReservationResponse; statusCode: number }>(
     `reservations/${id}`
@@ -60,37 +49,37 @@ const putReservation = async (id: string, data: ReservationForm) => {
   return response;
 };
 
-const confirmReservation = async (id: string): Promise<ApiResponseGeneric<any>> => {
+const confirmReservation = async (id: string) => {
   const response = await httpClient.patch<ApiResponseGeneric<any>>(
     `reservations/${id}/status`, { status: 'CONFIRMED' }
   );
   return response;
 };
 
-const cancelReservation = async (id: string, reason: string): Promise<ApiResponseGeneric<any>> => {
+const cancelReservation = async (id: string, reason: string) => {
   const response = await httpClient.patch<ApiResponseGeneric<any>>(
     `reservations/${id}/status`, { status: 'CANCELLED', reason }
   );
   return response;
 };
 
-const markInTransit = async (id: string): Promise<ApiResponseGeneric<any>> => {
+const markInTransit = async (id: string) => {
   const response = await httpClient.patch<ApiResponseGeneric<any>>(
-    `reservations/${id}/status`, { status: 'CONFIRMED' }
+    `reservations/${id}/status`, { status: 'IN_TRANSIT' }
   );
   return response;
 };
 
-const markDelivered = async (id: string): Promise<ApiResponseGeneric<any>> => {
+const markDelivered = async (id: string) => {
   const response = await httpClient.patch<ApiResponseGeneric<any>>(
     `reservations/${id}/status`, { status: 'DELIVERED' }
   );
   return response;
 };
 
-const markPickedUp = async (id: string): Promise<ApiResponseGeneric<any>> => {
+const markPickedUp = async (id: string) => {
   const response = await httpClient.patch<ApiResponseGeneric<any>>(
-    `reservations/${id}/status`, { status: 'RETURNED' }
+    `reservations/${id}/status`, { status: 'PICKED_UP' }
   );
   return response;
 };
@@ -112,7 +101,6 @@ const getInspection = async (id: string) => {
 
 export default {
   getReservations,
-  getCalendarReservations,
   getReservation,
   postReservation,
   putReservation,

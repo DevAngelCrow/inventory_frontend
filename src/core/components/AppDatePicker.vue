@@ -19,9 +19,10 @@
         :disabled
         :readonly
         :placeholder="displayPlaceholder"
-        :manual-input="false"
+        :manual-input="manualInput"
         fluid
         :show-time
+        :step-minute="stepMinute"
         @focus="isFocused = true"
         @blur="isFocused = false"
         :invalid="invalid"
@@ -99,6 +100,14 @@ const props = defineProps({
     default: '',
   },
   showTime: {
+    type: Boolean,
+    default: false,
+  },
+  stepMinute: {
+    type: Number,
+    default: 15,
+  },
+  manualInput: {
     type: Boolean,
     default: false,
   },
