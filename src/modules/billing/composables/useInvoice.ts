@@ -13,7 +13,7 @@ export function useInvoice() {
     try {
       loading.value = true;
       const response = await billingService.getInvoices(params);
-      invoices.value = response.data;
+      invoices.value = (response.data as any).data || response.data; // Handle both paginated and direct array
     } catch (error: any) {
       toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudieron cargar las facturas', life: 3000 });
     } finally {

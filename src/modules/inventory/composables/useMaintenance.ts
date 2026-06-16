@@ -163,7 +163,8 @@ export function useMaintenance() {
   const addMaintenance = async (form: ProductMaintenanceForm) => {
     try {
       startLoading();
-      const response = await inventoryServices.postMaintenance(form);
+      const { id, resolved, ...createPayload } = form;
+      const response = await inventoryServices.postMaintenance(createPayload);
       if (response.status === 201) {
         getMaintenances();
         alert.showAlert({
@@ -183,8 +184,12 @@ export function useMaintenance() {
   const editMaintenance = async (form: ProductMaintenanceForm) => {
     try {
       startLoading();
-      const { id, ...body } = form;
-      const response = await inventoryServices.putMaintenance(id!, body);
+      const { id, date_end, cost } = form;
+      if (!date_end) {
+        alert.showAlert({ type: 'error', title: 'Fecha de resolución es requerida', show: true });
+        return false;
+      }
+      const response = await inventoryServices.resolveMaintenance(id!, { date_end, cost });
       if (response.status === 200) {
         getMaintenances();
         alert.showAlert({

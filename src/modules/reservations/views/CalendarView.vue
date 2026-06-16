@@ -116,8 +116,8 @@ const loadEvents = async () => {
     const start = dayjs(selectedDate.value).startOf('month').toISOString();
     const end = dayjs(selectedDate.value).endOf('month').toISOString();
     const resp = await reservationServices.getReservations({
-      start_date: dayjs(selectedDate.value).startOf('month').format('DD/MM/YYYY'),
-      end_date: dayjs(selectedDate.value).endOf('month').format('DD/MM/YYYY'),
+      start_date: dayjs(selectedDate.value).startOf('month').toISOString(),
+      end_date: dayjs(selectedDate.value).endOf('month').toISOString(),
       per_page: 100,
     });
     if (resp.statusCode === 200) {

@@ -140,8 +140,8 @@ export function useCustomer() {
       const params = {
         page: pagination.page,
         per_page: pagination.per_page,
-        filter: filter.filter,
-        active: filter.active === 'Todos' ? undefined : filter.active as boolean | undefined,
+        filter_name: filter.filter,
+        status: filter.active === 'Todos' ? undefined : filter.active as boolean | undefined,
       };
       const response = await customerServices.getCustomers(params);
 
@@ -161,10 +161,7 @@ export function useCustomer() {
   const addCustomer = async (form: CustomerForm) => {
     try {
       startLoading();
-      const response = await customerServices.postCustomer({
-        ...form,
-        active: true,
-      });
+      const response = await customerServices.postCustomer(form);
       if (response.status === 201) {
         getCustomers();
         alert.showAlert({
@@ -184,7 +181,7 @@ export function useCustomer() {
   const editCustomer = async (form: CustomerForm) => {
     try {
       startLoading();
-      const { id, ...body } = form;
+      const { id, active, ...body } = form;
       const response = await customerServices.putCustomer(id!, body);
       if (response.status === 200) {
         getCustomers();

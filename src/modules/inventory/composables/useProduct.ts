@@ -170,8 +170,8 @@ export function useProduct() {
         page: pagination.page,
         per_page: pagination.per_page,
         filter_name: filter.filter_name,
-        sku: filter.sku,
-        category_id: filter.category_id === 'Todos' ? undefined : filter.category_id,
+        filter_sku: filter.sku,
+        filter_category: filter.category_id === 'Todos' ? undefined : filter.category_id,
         active: filter.active === 'Todos' ? undefined : filter.active as boolean | undefined,
       };
       const response = await inventoryServices.getProducts(params);
@@ -191,7 +191,7 @@ export function useProduct() {
 
   const loadCategories = async () => {
     try {
-      const response = await inventoryServices.getCategories({ active: true, per_page: 100 });
+      const response = await inventoryServices.getCategories({ status: true, per_page: 100 });
       if (response.statusCode === 200) {
         categoriesList.value = response.data.data;
       }

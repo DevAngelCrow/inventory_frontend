@@ -11,9 +11,17 @@ const getReservations = async (params?: {
   start_date?: string | null;
   end_date?: string | null;
 }): Promise<ApiResponseGeneric<ReservationResponse>> => {
+  const queryParams: any = {
+    page: params?.page,
+    per_page: params?.per_page,
+    filter_status: params?.status,
+    filter_customer: params?.id_customer,
+    filter_date_start: params?.start_date,
+    filter_date_end: params?.end_date,
+  };
   const response = await httpClient.get<ApiResponseGeneric<ReservationResponse>>(
     'reservations',
-    params
+    queryParams
   );
   return response.data;
 };

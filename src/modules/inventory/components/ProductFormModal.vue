@@ -9,8 +9,8 @@
       <AppInputText class="w-full min-w-0" id="sku" label="SKU*" v-model="sku" :error-messages="errors.sku"
         v-bind="skuAttrs" :readonly="props.modalState.isReadonly" />
       
-      <AppSelect class="w-full min-w-0" id="id_category" label="Categoría*" v-model="id_category"
-        :error-messages="errors.id_category" v-bind="idCategoryAttrs" :options="categoriesList"
+      <AppSelect class="w-full min-w-0" id="category_id" label="Categoría*" v-model="category_id"
+        :error-messages="errors.category_id" v-bind="categoryIdAttrs" :options="categoriesList"
         optionLabel="name" optionValue="id" :readonly="props.modalState.isReadonly" />
       <AppInputMoney class="w-full min-w-0" id="rental_price" label="Precio de Alquiler*" v-model="rental_price"
         :error-messages="errors.rental_price" v-bind="rentalPriceAttrs" :readonly="props.modalState.isReadonly" />
@@ -103,8 +103,8 @@ const {
   imageUrlAttrs,
   notes,
   notesAttrs,
-  id_category,
-  idCategoryAttrs,
+  category_id,
+  categoryIdAttrs,
   categoriesList,
   handleSubmit,
   addProduct,
@@ -128,7 +128,7 @@ const onSubMit = handleSubmit(async values => {
       weight_lbs: values?.weight_lbs ? Number(values?.weight_lbs) : undefined,
       image_url: values?.image_url,
       notes: values?.notes,
-      id_category: values?.id_category,
+      category_id: values?.category_id,
     };
     let success = false;
     switch (props.modalState.mode) {

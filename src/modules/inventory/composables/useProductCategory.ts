@@ -111,7 +111,7 @@ export function useProductCategory() {
         page: pagination.page,
         per_page: pagination.per_page,
         filter_name: filter.filter_name,
-        status: filter.status === 'Todos' ? undefined : filter.status,
+        active: filter.status === 'Todos' ? undefined : filter.status,
       };
       const response = await inventoryServices.getCategories(params);
 
@@ -132,8 +132,9 @@ export function useProductCategory() {
     try {
       startLoading();
       const response = await inventoryServices.postCategory({
-        ...form,
-        active: true,
+        name: form.name,
+        description: form.description,
+        icon: form.icon,
       });
       if (response.status === 201) {
         getCategories();
@@ -154,7 +155,7 @@ export function useProductCategory() {
   const editCategory = async (form: ProductCategoryForm) => {
     try {
       startLoading();
-      const { id, ...body } = form;
+      const { id, active, ...body } = form;
       const response = await inventoryServices.putCategory(id!, body);
       if (response.status === 200) {
         getCategories();

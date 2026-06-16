@@ -17,9 +17,15 @@ const getCategories = async (params?: {
   filter_name?: string | null;
   status?: boolean | null;
 }): Promise<ApiResponseGeneric<ProductCategoryResponse>> => {
+  const queryParams: any = {
+    page: params?.page,
+    per_page: params?.per_page,
+    filter_name: params?.filter_name,
+    active: params?.status,
+  };
   const response = await httpClient.get<ApiResponseGeneric<ProductCategoryResponse>>(
     'inventory/categories',
-    params
+    queryParams
   );
   return response.data;
 };
@@ -56,9 +62,17 @@ const getProducts = async (params?: {
   id_category?: string | null;
   active?: boolean | null;
 }): Promise<ApiResponseGeneric<ProductResponse>> => {
+  const queryParams: any = {
+    page: params?.page,
+    per_page: params?.per_page,
+    filter_name: params?.filter_name,
+    filter_sku: params?.sku,
+    filter_category: params?.id_category,
+    active: params?.active,
+  };
   const response = await httpClient.get<ApiResponseGeneric<ProductResponse>>(
     'inventory/products',
-    params
+    queryParams
   );
   return response.data;
 };
@@ -108,9 +122,9 @@ const postMaintenance = async (data: ProductMaintenanceForm) => {
   return response;
 };
 
-const putMaintenance = async (id: string, data: ProductMaintenanceForm) => {
-  const response = await httpClient.put<ApiPostResponse>(
-    `inventory/maintenance/${id}`,
+const resolveMaintenance = async (id: string, data: { date_end: string, cost?: number }) => {
+  const response = await httpClient.patch<ApiPostResponse>(
+    `inventory/maintenance/${id}/resolve`,
     data
   );
   return response;
@@ -127,5 +141,5 @@ export default {
   toggleProduct,
   getMaintenances,
   postMaintenance,
-  putMaintenance,
+  resolveMaintenance,
 };

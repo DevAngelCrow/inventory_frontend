@@ -6,8 +6,8 @@ import { CustomerResponse, CustomerForm } from '../interfaces/customer.interface
 const getCustomers = async (params?: {
   page?: number;
   per_page?: number;
-  filter?: string | null;
-  active?: boolean | null;
+  filter_name?: string | null;
+  status?: boolean | null;
 }): Promise<ApiResponseGeneric<CustomerResponse>> => {
   const response = await httpClient.get<ApiResponseGeneric<CustomerResponse>>(
     'customers',

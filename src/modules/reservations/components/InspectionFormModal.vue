@@ -90,7 +90,7 @@
   </AppModal>
 </template>
 <script setup lang="ts">
-import { computed, inject, onMounted, reactive, watch } from 'vue';
+import { computed, inject, onMounted, reactive, ref, watch } from 'vue';
 import { DataTable, Column, Button } from 'primevue';
 
 import AppModal from '@/core/components/AppModal.vue';

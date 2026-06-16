@@ -84,6 +84,9 @@
         <template #body-rental_price="{ data }">
           ${{ Number(data.rental_price).toFixed(2) }}
         </template>
+        <template #body-ctl_product_category.name="{ data }">
+          {{ categoriesList.find(c => c.id === data.category_id)?.name || '-' }}
+        </template>
         <template #body-active="{ data }">
           <AppStatusChip
             :status="data?.active"

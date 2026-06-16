@@ -215,7 +215,7 @@ export function useReservation() {
 
   const loadDependencies = async () => {
     try {
-      const custResp = await customerServices.getCustomers({ active: true, per_page: 100 });
+      const custResp = await customerServices.getCustomers({ status: true, per_page: 100 });
       if (custResp.statusCode === 200) {
         customersList.value = custResp.data.data;
       }
@@ -278,32 +278,20 @@ export function useReservation() {
         ? FormatDateToISO(formValues.pickup_datetime, 'DD/MM/YYYY hh:mm a', true) || undefined
         : undefined;
 
-      const payload: ReservationForm = {
+      const payload: any = {
         id_customer: formValues.id_customer,
         event_start: startIso,
         event_end: endIso,
-        delivery_datetime: deliveryIso,
-        pickup_datetime: pickupIso,
-        transit_time_minutes: Number(formValues.transit_time_minutes || 0),
         delivery_address: formValues.delivery_address,
-        delivery_city: formValues.delivery_city,
-        delivery_state: formValues.delivery_state,
-        delivery_zip: formValues.delivery_zip,
-        delivery_notes: formValues.delivery_notes,
-        delivery_contact_name: formValues.delivery_contact_name,
-        delivery_contact_phone: formValues.delivery_contact_phone,
-        event_type: formValues.event_type,
-        venue_name: formValues.venue_name,
-        discount_amount: Number(formValues.discount_amount || 0),
-        discount_reason: formValues.discount_reason,
-        delivery_fee: Number(formValues.delivery_fee || 0),
+        total_amount: cartTotal.value,
         deposit_amount: Number(formValues.deposit_amount || 0),
+        balance_due: cartBalanceDue.value,
         notes: formValues.notes,
-        internal_notes: formValues.internal_notes,
         items: cartItems.value.map((i) => ({
           id_product: i.id_product,
           quantity: i.quantity,
-          notes: i.notes,
+          unit_price: i.unit_price,
+          total_price: i.subtotal,
         })),
       };
 
@@ -421,6 +409,28 @@ export function useReservation() {
     setFieldError,
     setFieldValue,
     values,
+    id, idAttrs,
+    id_customer, idCustomerAttrs,
+    event_start, eventStartAttrs,
+    event_end, eventEndAttrs,
+    delivery_datetime, deliveryDatetimeAttrs,
+    pickup_datetime, pickupDatetimeAttrs,
+    transit_time_minutes, transitTimeMinutesAttrs,
+    delivery_address, deliveryAddressAttrs,
+    delivery_city, deliveryCityAttrs,
+    delivery_state, deliveryStateAttrs,
+    delivery_zip, deliveryZipAttrs,
+    delivery_notes, deliveryNotesAttrs,
+    delivery_contact_name, deliveryContactNameAttrs,
+    delivery_contact_phone, deliveryContactPhoneAttrs,
+    event_type, eventTypeAttrs,
+    venue_name, venueNameAttrs,
+    discount_amount, discountAmountAttrs,
+    discount_reason, discountReasonAttrs,
+    delivery_fee, deliveryFeeAttrs,
+    deposit_amount, depositAmountAttrs,
+    notes, notesAttrs,
+    internal_notes, internalNotesAttrs,
     getReservations,
     loadDependencies,
     addToCart,
