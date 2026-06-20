@@ -12,7 +12,11 @@
 
         <AppDataTable :headers="headers" :items="invoices" :loading="loading">
           <template #body-status="{ data }">
-            <Tag :value="data.status?.name" :severity="getStatusSeverity(data.status?.code)" />
+            <AppChipStatus
+              :label="data?.status?.name || 'Desconocido'"
+              :backgroundColor="data?.status?.state_color || '#cccccc'"
+              :textColor="data?.status?.text_color || '#ffffff'"
+            />
           </template>
           <template #body-total="{ data }">
             ${{ Number(data.total).toFixed(2) }}
@@ -44,9 +48,10 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { Card, Button, Tag } from 'primevue';
+import { Card, Button } from 'primevue';
 import AppTitle from '@/core/components/AppTitle.vue';
 import AppDataTable from '@/core/components/AppDataTable.vue';
+import AppChipStatus from '@/core/components/AppChipStatus.vue';
 import dayjs from 'dayjs';
 import { useInvoice } from '../composables/useInvoice';
 import type { Invoice } from '../interfaces/billing.interfaces';
@@ -66,16 +71,6 @@ const headers: TableHeaders[] = [
 const formatDate = (dateString: string) => {
   if (!dateString) return '';
   return dayjs(dateString).format('DD/MM/YYYY');
-};
-
-const getStatusSeverity = (status: string | undefined) => {
-  switch (status) {
-    case 'DRAFT': return 'warn';
-    case 'ISSUED': return 'info';
-    case 'PAID': return 'success';
-    case 'VOIDED': return 'danger';
-    default: return 'info';
-  }
 };
 
 const onIssue = async (invoice: Invoice) => {
