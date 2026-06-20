@@ -60,16 +60,17 @@ import AppDataTable from '@/core/components/AppDataTable.vue';
 import dayjs from 'dayjs';
 import { usePayment } from '../composables/usePayment';
 import type { PaymentResponse } from '../interfaces/payment.interfaces';
+import type { TableHeaders } from '@/core/interfaces/datatable.interface';
 
 const { paymentsList, pagination, loadAllPayments, voidExistingPayment } = usePayment();
 
-const headers = [
-  { field: 'payment_number', header: 'N° Pago' },
-  { field: 'reservation', header: 'Reserva' },
-  { field: 'payment_date', header: 'Fecha' },
-  { field: 'amount', header: 'Monto' },
-  { field: 'status', header: 'Estado' },
-  { field: 'acciones', header: 'Acciones' }
+const headers: TableHeaders[] = [
+  { field: 'payment_number', header: 'N° Pago', sortable: false },
+  { field: 'reservation', header: 'Reserva', sortable: false },
+  { field: 'payment_date', header: 'Fecha', sortable: false },
+  { field: 'amount', header: 'Monto', sortable: false },
+  { field: 'status', header: 'Estado', sortable: false },
+  { field: 'acciones', header: 'Acciones', sortable: false }
 ];
 
 const formatDate = (dateString: string) => {

@@ -4,9 +4,7 @@ import { ApiPostResponse } from '@/core/services/apiPostResponse.interface';
 import {
   ProductCategoryResponse,
   ProductResponse,
-  ProductForm,
   ProductMaintenanceResponse,
-  ProductMaintenanceForm,
   GetCategoriesParams,
   CreateCategoryPayload,
   UpdateCategoryPayload,

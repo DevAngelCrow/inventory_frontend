@@ -2,7 +2,7 @@
   <AppModal :title="props.modalState.title" :show="props.modalState.show" :title-btn-cancel="modalButtons.cancelText"
     :title-btn-confirm="modalButtons.confirmText" footer-buttons show-icon-close width="45rem" @close-modal="closeModal"
     @confirm-modal="onSubMit" :showBtnConfirmFooter="props.modalState.mode !== 'view'">
-    <section v-if="props.modalState.mode !== 'delete'" id="body_modal"
+    <section id="body_modal"
       class="flex justify-center items-center flex-wrap flex-row gap-5 py-1.5 w-full">
       
       <AppSelect class="w-full min-w-0" id="id_product" label="Producto*" v-model="id_product"
@@ -43,7 +43,7 @@ import AppDatePicker from '@/core/components/AppDatePicker.vue';
 import AppCheckBox from '@/core/components/AppCheckBox.vue';
 import AppInputextArea from '@/core/components/AppInputextArea.vue';
 import { useLoaderStore } from '@/core/store';
-import { FormatDateToISO, FormatDate } from '@/core/utils/dates';
+import { FormatDateToISO } from '@/core/utils/dates';
 
 import { useMaintenance } from '../composables/useMaintenance';
 import { ProductMaintenanceForm } from '../interfaces/inventory.interfaces';

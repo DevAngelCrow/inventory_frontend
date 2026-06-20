@@ -50,16 +50,17 @@ import AppDataTable from '@/core/components/AppDataTable.vue';
 import dayjs from 'dayjs';
 import { useInvoice } from '../composables/useInvoice';
 import type { Invoice } from '../interfaces/billing.interfaces';
+import type { TableHeaders } from '@/core/interfaces/datatable.interface';
 
 const { loading, invoices, fetchInvoices, issueInvoice, voidInvoice, downloadPdf } = useInvoice();
 
-const headers = [
-  { field: 'invoice_number', header: 'N° Factura' },
-  { field: 'customer', header: 'Cliente' },
-  { field: 'issue_date', header: 'Fecha Emisión' },
-  { field: 'total', header: 'Total' },
-  { field: 'status', header: 'Estado' },
-  { field: 'acciones', header: 'Acciones' }
+const headers: TableHeaders[] = [
+  { field: 'invoice_number', header: 'N° Factura', sortable: false },
+  { field: 'customer', header: 'Cliente', sortable: false },
+  { field: 'issue_date', header: 'Fecha Emisión', sortable: false },
+  { field: 'total', header: 'Total', sortable: false },
+  { field: 'status', header: 'Estado', sortable: false },
+  { field: 'acciones', header: 'Acciones', sortable: false }
 ];
 
 const formatDate = (dateString: string) => {

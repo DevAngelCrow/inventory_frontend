@@ -114,7 +114,7 @@ export function useProductCategory() {
         page: pagination.page,
         per_page: pagination.per_page,
         filter_name: filter.filter_name,
-        active: filter.active === 'Todos' || filter.active === '' ? undefined : (filter.active ?? undefined),
+        active: ((filter.active as any) === 'Todos' || (filter.active as any) === '' ? undefined : (filter.active ?? undefined)) as boolean | undefined,
       };
       const response = await inventoryServices.getCategories(params);
 

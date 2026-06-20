@@ -155,9 +155,6 @@
 import { Card, Button } from 'primevue';
 import { ref, onMounted } from 'vue';
 import AppTitle from '@/core/components/AppTitle.vue';
-import { useRouter } from 'vue-router';
-
-const router = useRouter();
 
 // Mock data para el dashboard - eventualmente vendrá de report.services.ts
 const metricas = ref({

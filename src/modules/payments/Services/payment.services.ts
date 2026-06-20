@@ -1,7 +1,7 @@
 import { httpClient } from '@/core/utils/httpClient';
 import { ApiResponseGeneric } from '@/core/services/interfaces/apiResponseGeneric.interface';
 import { ApiPostResponse } from '@/core/services/apiPostResponse.interface';
-import { PaymentResponse, PaymentMethodResponse, PaymentForm } from '../interfaces/payment.interfaces';
+import { PaymentResponse, PaymentForm } from '../interfaces/payment.interfaces';
 
 const registerPayment = async (data: PaymentForm) => {
   const response = await httpClient.post<ApiPostResponse>(

@@ -1,5 +1,4 @@
-import { CustomerResponse } from '../../customers/interfaces/customer.interfaces';
-import { ProductResponse } from '../../inventory/interfaces/inventory.interfaces';
+
 
 export interface ReservationItem {
   id?: string;

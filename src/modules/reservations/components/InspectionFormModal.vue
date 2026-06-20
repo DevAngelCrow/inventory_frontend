@@ -104,9 +104,7 @@ import { useLoaderStore } from '@/core/store';
 import { FormatDate } from '@/core/utils/dates';
 
 import { useInspection } from '../composables/useInspection';
-import { ReservationResponse, DamageItem } from '../interfaces/reservation.interfaces';
-
-type InspectionType = ReturnType<typeof useInspection>;
+import { ReservationResponse } from '../interfaces/reservation.interfaces';
 
 const props = defineProps<{
   modalState: {
