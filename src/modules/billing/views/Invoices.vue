@@ -10,11 +10,7 @@
           </div>
         </div>
 
-        <AppDataTable
-          :headers="headers"
-          :items="invoices"
-          :loading="loading"
-        >
+        <AppDataTable :headers="headers" :items="invoices" :loading="loading">
           <template #body-status="{ data }">
             <Tag :value="data.status?.name" :severity="getStatusSeverity(data.status?.code)" />
           </template>
@@ -27,29 +23,17 @@
           <template #body-customer="{ data }">
             {{ data.mnt_customer?.first_name }} {{ data.mnt_customer?.last_name }}
           </template>
-          
+
           <template #body-acciones="{ data }">
             <div class="flex gap-2">
-              <Button
-                v-if="data.status?.code === 'DRAFT'"
-                icon="pi pi-check-circle"
-                class="p-button-success p-button-sm p-button-text"
-                v-tooltip.top="'Emitir Factura'"
-                @click="onIssue(data)"
-              />
-              <Button
-                v-if="data.status?.code === 'ISSUED'"
-                icon="pi pi-times-circle"
-                class="p-button-danger p-button-sm p-button-text"
-                v-tooltip.top="'Anular Factura'"
-                @click="onVoid(data)"
-              />
-              <Button
-                icon="pi pi-file-pdf"
-                class="p-button-secondary p-button-sm p-button-text"
-                v-tooltip.top="'Descargar PDF'"
-                @click="onDownload(data)"
-              />
+              <Button v-if="data.status?.code === 'DRAFT'" icon="pi pi-check-circle"
+                class="p-button-success p-button-sm p-button-text" v-tooltip.top="'Emitir Factura'"
+                @click="onIssue(data)" />
+              <Button v-if="data.status?.code === 'ISSUED'" icon="pi pi-times-circle"
+                class="p-button-danger p-button-sm p-button-text" v-tooltip.top="'Anular Factura'"
+                @click="onVoid(data)" />
+              <Button icon="pi pi-file-pdf" class="p-button-secondary p-button-sm p-button-text"
+                v-tooltip.top="'Descargar PDF'" @click="onDownload(data)" />
             </div>
           </template>
         </AppDataTable>
@@ -94,13 +78,13 @@ const getStatusSeverity = (status: string | undefined) => {
 };
 
 const onIssue = async (invoice: Invoice) => {
-  if(confirm(`¿Seguro que desea emitir la factura ${invoice.invoice_number}?`)) {
+  if (confirm(`¿Seguro que desea emitir la factura ${invoice.invoice_number}?`)) {
     await issueInvoice(invoice.id);
   }
 };
 
 const onVoid = async (invoice: Invoice) => {
-  if(confirm(`¿Seguro que desea anular la factura ${invoice.invoice_number}?`)) {
+  if (confirm(`¿Seguro que desea anular la factura ${invoice.invoice_number}?`)) {
     await voidInvoice(invoice.id);
   }
 };

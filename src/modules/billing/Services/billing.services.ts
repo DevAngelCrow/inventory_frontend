@@ -29,7 +29,7 @@ export const billingService = {
   },
 
   downloadPdf: async (id: string): Promise<Blob> => {
-    const response = await httpClient.get(`billing/invoices/${id}/pdf`, undefined, { responseType: 'blob' });
+    const response = await httpClient.instance.get(`billing/invoices/${id}/pdf`, { responseType: 'blob' });
     return response.data;
   }
 };
