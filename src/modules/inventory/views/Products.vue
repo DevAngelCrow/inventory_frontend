@@ -142,9 +142,11 @@ import AppStatusChip from '@/core/components/AppStatusChip.vue';
 import { useProduct } from '../composables/useProduct';
 import { ProductResponse } from '../interfaces/inventory.interfaces';
 import ProductFormModal from '../components/ProductFormModal.vue';
+import { useLoaderStore } from '@/core/store';
 
 const productInstance = useProduct();
 provide('useProduct', productInstance);
+const { startLoading, finishLoading } = useLoaderStore();
 
 const {
   filter,
@@ -236,14 +238,18 @@ const handlePagination = async (page: number) => {
     return;
   }
   pagination.page = page + 1;
-  getProducts();
+  startLoading();
+  await getProducts();
+  finishLoading();
 };
 
 const handlePerPagePagination = async (perPage: number) => {
   if (perPage === pagination.per_page) return;
   pagination.per_page = perPage;
   pagination.page = 1;
-  getProducts();
+  startLoading();
+  await getProducts();
+  finishLoading();
 };
 
 const iconFilter = computed(() => {
@@ -255,7 +261,14 @@ const iconFilter = computed(() => {
 });
 
 onMounted(async () => {
-  await loadCategories();
-  await getProducts();
+  try {
+    startLoading();
+    await loadCategories();
+    await getProducts();
+  } catch (error) {
+    console.error(error);
+  } finally {
+    finishLoading();
+  }
 });
 </script>

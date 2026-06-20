@@ -119,9 +119,11 @@ import { FormatDate } from '@/core/utils/dates';
 import { useMaintenance } from '../composables/useMaintenance';
 import { ProductMaintenanceResponse } from '../interfaces/inventory.interfaces';
 import MaintenanceFormModal from '../components/MaintenanceFormModal.vue';
+import { useLoaderStore } from '@/core/store';
 
 const maintenanceInstance = useMaintenance();
 provide('useMaintenance', maintenanceInstance);
+const { startLoading, finishLoading } = useLoaderStore();
 
 const {
   filter,
@@ -217,14 +219,18 @@ const handlePagination = async (page: number) => {
     return;
   }
   pagination.page = page + 1;
-  getMaintenances();
+  startLoading();
+  await getMaintenances();
+  finishLoading();
 };
 
 const handlePerPagePagination = async (perPage: number) => {
   if (perPage === pagination.per_page) return;
   pagination.per_page = perPage;
   pagination.page = 1;
-  getMaintenances();
+  startLoading();
+  await getMaintenances();
+  finishLoading();
 };
 
 const iconFilter = computed(() => {
@@ -236,7 +242,14 @@ const iconFilter = computed(() => {
 });
 
 onMounted(async () => {
-  await loadProducts();
-  await getMaintenances();
+  try {
+    startLoading();
+    await loadProducts();
+    await getMaintenances();
+  } catch (error) {
+    console.error(error);
+  } finally {
+    finishLoading();
+  }
 });
 </script>

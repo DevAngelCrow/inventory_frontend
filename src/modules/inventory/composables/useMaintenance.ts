@@ -127,7 +127,6 @@ export function useMaintenance() {
 
   const getMaintenances = async () => {
     try {
-      startLoading();
       const params = {
         page: pagination.page,
         per_page: pagination.per_page,
@@ -144,8 +143,6 @@ export function useMaintenance() {
       }
     } catch (error) {
       console.error(error);
-    } finally {
-      finishLoading();
     }
   };
 
@@ -232,10 +229,12 @@ export function useMaintenance() {
     }
   };
 
-  const cleanSearch = () => {
+  const cleanSearch = async () => {
+    startLoading();
     filter.id_product = undefined;
     filter.resolved = undefined;
-    getMaintenances();
+    await getMaintenances();
+    finishLoading();
   };
 
   const setMaintenanceItem = (value: ProductMaintenanceResponse) => {
@@ -249,8 +248,10 @@ export function useMaintenance() {
     setFieldValue('id_product', value?.id_product);
   };
 
-  const findMaintenance = () => {
-    getMaintenances();
+  const findMaintenance = async () => {
+    startLoading();
+    await getMaintenances();
+    finishLoading();
   };
 
   return {

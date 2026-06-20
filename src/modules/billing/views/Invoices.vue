@@ -8,13 +8,11 @@
         </div>
       </div>
 
-      <AppDataTable class="w-full" :headers="headers" :items="invoices" :loading="loading">
+      <AppDataTable class="w-full" :headers="headers" :items="invoices">
         <template #body-status="{ data }">
-          <AppChipStatus
-            :label="data?.status?.name || 'Desconocido'"
+          <AppChipStatus :label="data?.status?.name || 'Desconocido'"
             :backgroundColor="data?.status?.state_color || '#cccccc'"
-            :textColor="data?.status?.text_color || '#ffffff'"
-          />
+            :textColor="data?.status?.text_color || '#ffffff'" />
         </template>
         <template #body-total="{ data }">
           ${{ Number(data.total).toFixed(2) }}
@@ -40,15 +38,31 @@
         </template>
       </AppDataTable>
     </section>
+
+    <AppModal
+      :show="actionModal.show"
+      :title="actionModal.title"
+      title-btn-confirm="Confirmar"
+      title-btn-cancel="Cancelar"
+      width="30rem"
+      @close-modal="actionModal.show = false"
+      @update:show="(val: boolean) => actionModal.show = val"
+      @confirm-modal="executeAction"
+    >
+      <div class="py-4 text-center text-lg">
+        {{ actionModal.message }}
+      </div>
+    </AppModal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, reactive } from 'vue';
 import { Button } from 'primevue';
 import AppTitle from '@/core/components/AppTitle.vue';
 import AppDataTable from '@/core/components/AppDataTable.vue';
 import AppChipStatus from '@/core/components/AppChipStatus.vue';
+import AppModal from '@/core/components/AppModal.vue';
 import dayjs from 'dayjs';
 import { useInvoice } from '../composables/useInvoice';
 import type { Invoice } from '../interfaces/billing.interfaces';
@@ -70,15 +84,38 @@ const formatDate = (dateString: string) => {
   return dayjs(dateString).format('DD/MM/YYYY');
 };
 
-const onIssue = async (invoice: Invoice) => {
-  if (confirm(`¿Seguro que desea emitir la factura ${invoice.invoice_number}?`)) {
-    await issueInvoice(invoice.id);
-  }
+const actionModal = reactive({
+  show: false,
+  title: '',
+  message: '',
+  id: '',
+  actionType: '',
+});
+
+const onIssue = (invoice: Invoice) => {
+  actionModal.id = invoice.id;
+  actionModal.actionType = 'issue';
+  actionModal.title = 'Emitir Factura';
+  actionModal.message = `¿Seguro que desea emitir la factura ${invoice.invoice_number}?`;
+  actionModal.show = true;
 };
 
-const onVoid = async (invoice: Invoice) => {
-  if (confirm(`¿Seguro que desea anular la factura ${invoice.invoice_number}?`)) {
-    await voidInvoice(invoice.id);
+const onVoid = (invoice: Invoice) => {
+  actionModal.id = invoice.id;
+  actionModal.actionType = 'void';
+  actionModal.title = 'Anular Factura';
+  actionModal.message = `¿Seguro que desea anular la factura ${invoice.invoice_number}?`;
+  actionModal.show = true;
+};
+
+const executeAction = async () => {
+  if (actionModal.id) {
+    if (actionModal.actionType === 'issue') {
+      await issueInvoice(actionModal.id);
+    } else if (actionModal.actionType === 'void') {
+      await voidInvoice(actionModal.id);
+    }
+    actionModal.show = false;
   }
 };
 

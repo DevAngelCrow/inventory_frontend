@@ -21,7 +21,8 @@
 
       <AppDataTable class="w-full" :headers="headers" :items="categories" :paginator="true"
         :per_page="pagination.per_page" :total_items="pagination.total_items" :page="pagination.page"
-        :show-per-page-options="true" :per-page-options="[10, 20, 50, 100]" @page-update="handlePagination"
+        :show-per-page-options="true" :per-page-options="[10, 20, 50, 100]" 
+        @page-update="handlePagination"
         @per-page-update="handlePerPagePagination">
         <template #body-icon="{ data }">
           <i :class="data.icon || 'pi pi-tag'" class="text-xl"></i>
@@ -59,9 +60,11 @@ import AppStatusChip from '@/core/components/AppStatusChip.vue';
 import { useProductCategory } from '../composables/useProductCategory';
 import { ProductCategoryResponse } from '../interfaces/inventory.interfaces';
 import CategoryFormModal from '../components/CategoryFormModal.vue';
+import { useLoaderStore } from '@/core/store';
 
 const categoryInstance = useProductCategory();
 provide('useProductCategory', categoryInstance);
+const { startLoading, finishLoading } = useLoaderStore();
 
 const {
   filter,
@@ -144,14 +147,18 @@ const handlePagination = async (page: number) => {
     return;
   }
   pagination.page = page + 1;
-  getCategories();
+  startLoading();
+  await getCategories();
+  finishLoading();
 };
 
 const handlePerPagePagination = async (perPage: number) => {
   if (perPage === pagination.per_page) return;
   pagination.per_page = perPage;
   pagination.page = 1;
-  getCategories();
+  startLoading();
+  await getCategories();
+  finishLoading();
 };
 
 const iconFilter = computed(() => {
@@ -163,6 +170,13 @@ const iconFilter = computed(() => {
 });
 
 onMounted(async () => {
-  await getCategories();
+  try {
+    startLoading();
+    await getCategories();
+  } catch (error) {
+    console.error(error);
+  } finally {
+    finishLoading();
+  }
 });
 </script>

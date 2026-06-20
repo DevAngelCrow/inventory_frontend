@@ -109,7 +109,6 @@ export function useProductCategory() {
 
   const getCategories = async () => {
     try {
-      startLoading();
       const params = {
         page: pagination.page,
         per_page: pagination.per_page,
@@ -126,8 +125,6 @@ export function useProductCategory() {
       }
     } catch (error) {
       console.error(error);
-    } finally {
-      finishLoading();
     }
   };
 
@@ -215,16 +212,18 @@ export function useProductCategory() {
     });
   };
 
-  const cleanSearch = () => {
+  const cleanSearch = async () => {
     if (
       (!filter.filter_name || filter.filter_name === '') &&
       filter.active === undefined
     ) {
       return;
     }
+    startLoading();
     filter.filter_name = undefined;
     filter.active = 'Todos';
-    getCategories();
+    await getCategories();
+    finishLoading();
   };
 
   const setCategoryItem = (value: ProductCategoryResponse) => {
@@ -235,9 +234,11 @@ export function useProductCategory() {
     setFieldValue('active', value?.active);
   };
 
-  const findCategory = (value: filterType) => {
+  const findCategory = async (value: filterType) => {
     if (value.filter_name || value.active !== undefined) {
-      getCategories();
+      startLoading();
+      await getCategories();
+      finishLoading();
     }
   };
 

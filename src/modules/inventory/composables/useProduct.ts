@@ -166,7 +166,6 @@ export function useProduct() {
 
   const getProducts = async () => {
     try {
-      startLoading();
       const params = {
         page: pagination.page,
         per_page: pagination.per_page,
@@ -185,8 +184,6 @@ export function useProduct() {
       }
     } catch (error) {
       console.error(error);
-    } finally {
-      finishLoading();
     }
   };
 
@@ -305,12 +302,14 @@ export function useProduct() {
     });
   };
 
-  const cleanSearch = () => {
+  const cleanSearch = async () => {
+    startLoading();
     filter.filter_name = undefined;
     filter.sku = undefined;
     filter.category_id = undefined;
     filter.active = undefined;
-    getProducts();
+    await getProducts();
+    finishLoading();
   };
 
   const setProductItem = (value: ProductResponse) => {
@@ -331,8 +330,10 @@ export function useProduct() {
     setFieldValue('active', value?.active);
   };
 
-  const findProduct = () => {
-    getProducts();
+  const findProduct = async () => {
+    startLoading();
+    await getProducts();
+    finishLoading();
   };
 
   return {
