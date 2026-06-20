@@ -10,7 +10,13 @@ export interface Invoice {
   delivery_fee: number;
   damage_charges: number;
   total: number;
-  status: 'DRAFT' | 'ISSUED' | 'PAID' | 'VOIDED';
+  status: {
+    id: string;
+    code: string;
+    name: string;
+    state_color: string;
+    text_color: string;
+  };
   notes: string | null;
   id_reservation: string;
   id_customer: string;

@@ -42,6 +42,7 @@ export function useReservation() {
       delivery_fee: yup.number().typeError('Debe ser número').min(0).default(0),
       deposit_amount: yup.number().typeError('Debe ser número').min(0).default(0),
       notes: yup.string().nullable(),
+      status: yup.string().nullable(),
     }),
   });
 
@@ -131,6 +132,7 @@ export function useReservation() {
   const [delivery_fee, deliveryFeeAttrs] = defineField('delivery_fee');
   const [deposit_amount, depositAmountAttrs] = defineField('deposit_amount');
   const [notes, notesAttrs] = defineField('notes');
+  const [status] = defineField('status');
 
   const filter = reactive<filterType>({
     status: undefined,
@@ -254,6 +256,7 @@ export function useReservation() {
         deposit_amount: Number(formValues.deposit_amount || 0),
         balance_due: cartBalanceDue.value,
         notes: formValues.notes,
+        ...(formValues.id ? { status: (typeof formValues.status === 'object' ? (formValues.status as any)?.code : formValues.status) || 'DRAFT' } : {}),
         items: cartItems.value.map((i) => ({
           id_product: i.id_product,
           quantity: i.quantity,
@@ -338,6 +341,7 @@ export function useReservation() {
     setFieldValue('delivery_address', value?.delivery_address);
     setFieldValue('deposit_amount', Number(value?.deposit_amount));
     setFieldValue('notes', value?.notes);
+    setFieldValue('status', value?.status);
 
     // Populate cart
     cartItems.value = (value?.items || []).map((i: any) => ({
@@ -371,6 +375,7 @@ export function useReservation() {
     delivery_fee, deliveryFeeAttrs,
     deposit_amount, depositAmountAttrs,
     notes, notesAttrs,
+    status,
     getReservations,
     loadDependencies,
     addToCart,

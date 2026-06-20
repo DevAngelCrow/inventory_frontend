@@ -11,6 +11,14 @@ const registerPayment = async (data: PaymentForm) => {
   return response;
 };
 
+const getPayments = async (params?: any) => {
+  const response = await httpClient.get<ApiResponseGeneric<PaymentResponse>>(
+    'payments',
+    params
+  );
+  return response.data;
+};
+
 const getPaymentsByReservation = async (reservationId: string) => {
   const response = await httpClient.get<any>(
     'payments',
@@ -35,7 +43,9 @@ const voidPayment = async (id: string) => {
 
 export default {
   registerPayment,
+  getPayments,
   getPaymentsByReservation,
   getPaymentMethods,
   voidPayment,
 };
+

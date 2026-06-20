@@ -1,5 +1,5 @@
 import { useForm } from 'vee-validate';
-import { ref } from 'vue';
+import { ref, reactive } from 'vue';
 import * as yup from 'yup';
 
 import { useAlertStore, useLoaderStore } from '@/core/store';
@@ -29,6 +29,12 @@ export function usePayment() {
 
   const paymentMethodsList = ref<PaymentMethodResponse[]>([]);
   const reservationPayments = ref<PaymentResponse[]>([]);
+  const paymentsList = ref<PaymentResponse[]>([]);
+  const pagination = reactive({
+    page: 1,
+    per_page: 10,
+    total_items: 0,
+  });
 
   const { startLoading, finishLoading } = useLoaderStore();
   const alert = useAlertStore();
@@ -72,6 +78,28 @@ export function usePayment() {
     }
   };
 
+  const loadAllPayments = async () => {
+    try {
+      startLoading();
+      const params = {
+        page: pagination.page,
+        per_page: pagination.per_page,
+      };
+      const resp = await paymentServices.getPayments(params);
+      if (resp && resp.data) {
+        paymentsList.value = (resp.data as any).data || resp.data;
+        if ((resp.data as any).total_items) {
+          pagination.total_items = (resp.data as any).total_items;
+          pagination.page = (resp.data as any).current_page;
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      finishLoading();
+    }
+  };
+
   const submitPayment = async (form: PaymentForm) => {
     try {
       startLoading();
@@ -100,7 +128,7 @@ export function usePayment() {
     }
   };
 
-  const voidExistingPayment = async (id: string, reservationId: string) => {
+  const voidExistingPayment = async (id: string, reservationId?: string) => {
     try {
       startLoading();
       const response = await paymentServices.voidPayment(id);
@@ -110,7 +138,11 @@ export function usePayment() {
           title: 'Pago anulado con éxito',
           show: true,
         });
-        await loadPaymentsForReservation(reservationId);
+        if (reservationId) {
+          await loadPaymentsForReservation(reservationId);
+        } else {
+          await loadAllPayments();
+        }
         return true;
       }
     } catch (error) {
@@ -128,6 +160,7 @@ export function usePayment() {
     setFieldValue,
     loadPaymentMethods,
     loadPaymentsForReservation,
+    loadAllPayments,
     submitPayment,
     voidExistingPayment,
     id_reservation,
@@ -142,5 +175,7 @@ export function usePayment() {
     notesAttrs,
     paymentMethodsList,
     reservationPayments,
+    paymentsList,
+    pagination,
   };
 }

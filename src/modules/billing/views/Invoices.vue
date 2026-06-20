@@ -16,7 +16,7 @@
           :loading="loading"
         >
           <template #body-status="{ data }">
-            <Tag :value="data.status" :severity="getStatusSeverity(data.status)" />
+            <Tag :value="data.status?.name" :severity="getStatusSeverity(data.status?.code)" />
           </template>
           <template #body-total="{ data }">
             ${{ Number(data.total).toFixed(2) }}
@@ -31,14 +31,14 @@
           <template #body-acciones="{ data }">
             <div class="flex gap-2">
               <Button
-                v-if="data.status === 'DRAFT'"
+                v-if="data.status?.code === 'DRAFT'"
                 icon="pi pi-check-circle"
                 class="p-button-success p-button-sm p-button-text"
                 v-tooltip.top="'Emitir Factura'"
                 @click="onIssue(data)"
               />
               <Button
-                v-if="data.status === 'ISSUED'"
+                v-if="data.status?.code === 'ISSUED'"
                 icon="pi pi-times-circle"
                 class="p-button-danger p-button-sm p-button-text"
                 v-tooltip.top="'Anular Factura'"
@@ -83,7 +83,7 @@ const formatDate = (dateString: string) => {
   return dayjs(dateString).format('DD/MM/YYYY');
 };
 
-const getStatusSeverity = (status: string) => {
+const getStatusSeverity = (status: string | undefined) => {
   switch (status) {
     case 'DRAFT': return 'warn';
     case 'ISSUED': return 'info';

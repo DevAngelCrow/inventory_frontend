@@ -4,7 +4,7 @@ import type { Invoice, GenerateInvoicePayload } from '../interfaces/billing.inte
 
 export const billingService = {
   getInvoices: async (params?: any): Promise<ApiResponseGeneric<Invoice[]>> => {
-    const response = await httpClient.get<ApiResponseGeneric<Invoice[]>>('billing/invoices', { params });
+    const response = await httpClient.get<ApiResponseGeneric<Invoice[]>>('billing/invoices', params);
     return response.data;
   },
 
@@ -19,17 +19,17 @@ export const billingService = {
   },
 
   issueInvoice: async (id: string): Promise<ApiResponseGeneric<Invoice>> => {
-    const response = await httpClient.post<ApiResponseGeneric<Invoice>>(`billing/invoices/${id}/issue`);
+    const response = await httpClient.patch<ApiResponseGeneric<Invoice>>(`billing/invoices/${id}/issue`);
     return response.data;
   },
 
   voidInvoice: async (id: string): Promise<ApiResponseGeneric<Invoice>> => {
-    const response = await httpClient.post<ApiResponseGeneric<Invoice>>(`billing/invoices/${id}/void`);
+    const response = await httpClient.patch<ApiResponseGeneric<Invoice>>(`billing/invoices/${id}/void`);
     return response.data;
   },
 
   downloadPdf: async (id: string): Promise<Blob> => {
-    const response = await httpClient.get(`billing/invoices/${id}/pdf`, { responseType: 'blob' });
+    const response = await httpClient.get(`billing/invoices/${id}/pdf`, undefined, { responseType: 'blob' });
     return response.data;
   }
 };

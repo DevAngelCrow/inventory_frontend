@@ -16,7 +16,13 @@ export interface ReservationItem {
 export interface ReservationResponse {
   id: string;
   id_customer: string;
-  status: string;
+  status: {
+    id: string;
+    code: string;
+    name: string;
+    state_color: string;
+    text_color: string;
+  };
   event_start: string;
   event_end: string;
   total_amount: number;

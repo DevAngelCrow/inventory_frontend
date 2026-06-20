@@ -56,14 +56,14 @@
           </Column>
           <Column field="status" header="Estado">
             <template #body="{ data }">
-              <span :class="data.status === 'COMPLETED' ? 'text-green-600' : 'text-red-500'">
-                {{ data.status === 'COMPLETED' ? 'Completado' : 'Anulado' }}
+              <span :class="data.status?.code === 'COMPLETED' ? 'text-green-600' : 'text-red-500'">
+                {{ data.status?.name || (data.status?.code === 'COMPLETED' ? 'Completado' : 'Anulado') }}
               </span>
             </template>
           </Column>
           <Column header="Acciones" headerStyle="width: 10%; text-align: center" bodyStyle="text-align: center">
             <template #body="{ data }">
-              <Button v-if="data.status === 'COMPLETED'" icon="pi pi-ban" severity="danger" variant="text" rounded
+              <Button v-if="data.status?.code === 'COMPLETED'" icon="pi pi-ban" severity="danger" variant="text" rounded
                 v-tooltip.bottom="'Anular transacción'" @click="voidPayment(data.id)" />
             </template>
           </Column>

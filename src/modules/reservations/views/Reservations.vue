@@ -91,8 +91,8 @@
             </template>
             <template #body-status="{ data }">
               <AppStatusChip
-                :status="getStatusBoolean(data.status)"
-                :label="getStatusLabel(data.status)"
+                :status="getStatusBoolean(data.status?.code)"
+                :label="data.status?.name"
               />
             </template>
             <template #body-acciones="{ data }">
@@ -110,10 +110,10 @@
                   icon="pi pi-pencil"
                   @click="navigateToEdit(data.id)"
                   v-tooltip.bottom="'Editar'"
-                  :disabled="data.status !== 'DRAFT' && data.status !== 'CONFIRMED'"
+                  :disabled="data.status?.code !== 'DRAFT' && data.status?.code !== 'CONFIRMED'"
                 ></Button>
                 <Button
-                  v-if="data.status === 'DRAFT'"
+                  v-if="data.status?.code === 'DRAFT'"
                   class="rounded-full text-green-600"
                   variant="text"
                   icon="pi pi-check"
@@ -121,7 +121,7 @@
                   v-tooltip.bottom="'Confirmar Alquiler'"
                 ></Button>
                 <Button
-                  v-if="data.status === 'CONFIRMED'"
+                  v-if="data.status?.code === 'CONFIRMED'"
                   class="rounded-full text-blue-600"
                   variant="text"
                   icon="pi pi-truck"
@@ -129,7 +129,7 @@
                   v-tooltip.bottom="'En camino (Despacho)'"
                 ></Button>
                 <Button
-                  v-if="data.status === 'IN_TRANSIT'"
+                  v-if="data.status?.code === 'IN_TRANSIT'"
                   class="rounded-full text-yellow-600"
                   variant="text"
                   icon="pi pi-home"
@@ -137,7 +137,7 @@
                   v-tooltip.bottom="'Entregado en sitio'"
                 ></Button>
                 <Button
-                  v-if="data.status === 'DELIVERED'"
+                  v-if="data.status?.code === 'DELIVERED'"
                   class="rounded-full text-purple-600"
                   variant="text"
                   icon="pi pi-directions"
@@ -145,7 +145,7 @@
                   v-tooltip.bottom="'Recogido (post-evento)'"
                 ></Button>
                 <Button
-                  v-if="data.status === 'PICKED_UP'"
+                  v-if="data.status?.code === 'PICKED_UP'"
                   class="rounded-full text-teal-600"
                   variant="text"
                   icon="pi pi-shield"
@@ -153,7 +153,7 @@
                   v-tooltip.bottom="'Registrar Inspección de Daños'"
                 ></Button>
                 <Button
-                  v-if="data.status === 'DRAFT' || data.status === 'CONFIRMED'"
+                  v-if="data.status?.code === 'DRAFT' || data.status?.code === 'CONFIRMED'"
                   class="rounded-full text-red-600"
                   variant="text"
                   icon="pi pi-ban"
@@ -161,7 +161,7 @@
                   v-tooltip.bottom="'Cancelar Reserva'"
                 ></Button>
                 <Button
-                  v-if="data.status !== 'DRAFT' && data.status !== 'CANCELLED' && Number(data.balance_due) > 0"
+                  v-if="data.status?.code !== 'DRAFT' && data.status?.code !== 'CANCELLED' && Number(data.balance_due) > 0"
                   class="rounded-full text-green-700"
                   variant="text"
                   icon="pi pi-dollar"

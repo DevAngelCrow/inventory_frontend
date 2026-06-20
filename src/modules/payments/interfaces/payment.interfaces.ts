@@ -12,7 +12,13 @@ export interface PaymentResponse {
   payment_date: string;
   reference_number?: string;
   notes?: string;
-  status: string;
+  status: {
+    id: string;
+    code: string;
+    name: string;
+    state_color: string;
+    text_color: string;
+  };
   id_reservation: string;
   id_payment_method: string;
   ctl_payment_method?: PaymentMethodResponse;
