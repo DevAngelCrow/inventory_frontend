@@ -95,10 +95,11 @@ export function useInvoice() {
       
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `Factura_${invoiceNumber}.pdf`);
-      document.body.appendChild(link);
+      link.download = `Factura_${invoiceNumber}.pdf`;
+      link.target = '_blank'; // Fallback to avoid navigation if download attribute is ignored
+      
+      // Dispatch click without appending to DOM to avoid router interception
       link.click();
-      link.parentNode?.removeChild(link);
       
       toast.add({ severity: 'success', summary: 'Éxito', detail: 'Descargando factura', life: 3000 });
     } catch (error: any) {
