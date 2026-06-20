@@ -1,59 +1,57 @@
 <template>
-  <AppTitle title="Pagos" />
-  <div class="w-full flex flex-col gap-6">
-    <Card>
-      <template #content>
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-semibold">Historial de Pagos</h2>
-          <div class="flex gap-2">
-            <!-- Add future filters here -->
-          </div>
+  <div class="py-5 px-5 h-full max-h-full flex items-start justify-center">
+    <section id="payments_content" class="w-full xl:w-[95%] flex flex-col flex-wrap gap-5">
+      <div class="w-full flex flex-row gap-3 flex-wrap items-center">
+        <AppTitle title="Pagos" class="w-full md:w-auto flex justify-center items-center" />
+        <div id="inputs" class="flex rounded-lg py-0.5 px-0.5 gap-3 flex-wrap grow lg:grow-0 w-full">
+          <!-- Add future filters here -->
         </div>
+      </div>
 
-        <AppDataTable
-          :headers="headers"
-          :items="paymentsList"
-          :paginator="true"
-          :per_page="pagination.per_page"
-          :total_items="pagination.total_items"
-          :page="pagination.page"
-          :show-per-page-options="true"
-          :per-page-options="[10, 20, 50]"
-          :loading="loader.isLoading"
-          @page-update="handlePagination"
-          @per-page-update="handlePerPagePagination"
-        >
-          <template #body-payment_date="{ data }">
-            {{ formatDate(data.payment_date) }}
-          </template>
-          <template #body-amount="{ data }">
-            ${{ Number(data.amount).toFixed(2) }}
-          </template>
-          <template #body-status="{ data }">
-            <AppChipStatus
-              :label="data?.status?.name || 'Desconocido'"
-              :backgroundColor="data?.status?.state_color || '#cccccc'"
-              :textColor="data?.status?.text_color || '#ffffff'"
+      <AppDataTable
+        class="w-full"
+        :headers="headers"
+        :items="paymentsList"
+        :paginator="true"
+        :per_page="pagination.per_page"
+        :total_items="pagination.total_items"
+        :page="pagination.page"
+        :show-per-page-options="true"
+        :per-page-options="[10, 20, 50]"
+        :loading="loader.isLoading"
+        @page-update="handlePagination"
+        @per-page-update="handlePerPagePagination"
+      >
+        <template #body-payment_date="{ data }">
+          {{ formatDate(data.payment_date) }}
+        </template>
+        <template #body-amount="{ data }">
+          ${{ Number(data.amount).toFixed(2) }}
+        </template>
+        <template #body-status="{ data }">
+          <AppChipStatus
+            :label="data?.status?.name || 'Desconocido'"
+            :backgroundColor="data?.status?.state_color || '#cccccc'"
+            :textColor="data?.status?.text_color || '#ffffff'"
+          />
+        </template>
+        <template #body-reservation="{ data }">
+          {{ data.mnt_reservation?.reservation_number || data.id_reservation }}
+        </template>
+        
+        <template #body-acciones="{ data }">
+          <div class="flex gap-2">
+            <Button
+              v-if="data.status?.code !== 'VOIDED'"
+              icon="pi pi-ban"
+              class="p-button-danger p-button-sm p-button-text"
+              v-tooltip.top="'Anular Pago'"
+              @click="onVoid(data)"
             />
-          </template>
-          <template #body-reservation="{ data }">
-            {{ data.mnt_reservation?.reservation_number || data.id_reservation }}
-          </template>
-          
-          <template #body-acciones="{ data }">
-            <div class="flex gap-2">
-              <Button
-                v-if="data.status?.code !== 'VOIDED'"
-                icon="pi pi-ban"
-                class="p-button-danger p-button-sm p-button-text"
-                v-tooltip.top="'Anular Pago'"
-                @click="onVoid(data)"
-              />
-            </div>
-          </template>
-        </AppDataTable>
-      </template>
-    </Card>
+          </div>
+        </template>
+      </AppDataTable>
+    </section>
 
     <AppModal
       :show="actionModal.show"
@@ -65,7 +63,9 @@
       @update:show="(val: boolean) => actionModal.show = val"
       @confirm-modal="executeAction"
     >
-      {{ actionModal.message }}
+      <div class="py-4 text-center text-lg">
+        {{ actionModal.message }}
+      </div>
     </AppModal>
   </div>
 </template>
