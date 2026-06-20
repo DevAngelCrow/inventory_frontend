@@ -1,175 +1,76 @@
 <template>
   <div class="py-5 px-5 h-full max-h-full flex items-start justify-center">
-    <section
-      id="reservations_content"
-      class="w-full xl:w-[95%] flex flex-col flex-wrap gap-5"
-    >
+    <section id="reservations_content" class="w-full xl:w-[95%] flex flex-col flex-wrap gap-5">
       <div class="w-full flex flex-row gap-3 flex-wrap items-center">
-        <AppTitle
-          title="Reservas y Alquileres"
-          class="w-full md:w-auto flex justify-center items-center"
-        />
-        <div
-          id="inputs"
-          class="flex rounded-lg py-0.5 px-0.5 gap-3 flex-wrap grow lg:grow-0 w-full"
-        >
-          <AppSelect
-            class="w-full sm:w-[200px] min-w-0"
-            :options="customerOptions"
-            option-label="first_name"
-            label="Filtrar por Cliente"
-            v-model="filter.id_customer"
-            optionValue="id"
-          />
-          <AppSelect
-            class="w-full sm:w-[150px] min-w-0"
-            :options="statusOptions"
-            option-label="name"
-            label="Estado"
-            v-model="filter.status"
-            optionValue="value"
-          />
-          <AppDatePicker
-            class="w-full sm:w-[180px] min-w-0"
-            id="filter_start_date"
-            label="Fecha Inicio"
-            v-model="filter.start_date"
-          />
-          <AppDatePicker
-            class="w-full sm:w-[180px] min-w-0"
-            id="filter_end_date"
-            label="Fecha Fin"
-            v-model="filter.end_date"
-          />
-          <Button
-            class="rounded-md"
-            v-debounce:700.click="getReservations"
-            >Buscar</Button
-          >
-          <Button
-            class="rounded-md"
-            outlined
-            v-debounce:700.click="cleanSearch"
-            label="Limpiar"
-            :icon="iconFilter"
-          ></Button>
-          <Button
-            class="rounded-md ml-auto"
-            @click="navigateToCreate"
-            ><i
+        <AppTitle title="Reservas y Alquileres" class="w-full md:w-auto flex justify-center items-center" />
+        <div id="inputs" class="flex rounded-lg py-0.5 px-0.5 gap-3 flex-wrap grow lg:grow-0 w-full">
+          <AppSelect class="w-full sm:w-[200px] min-w-0" :options="customerOptions" option-label="first_name"
+            label="Filtrar por Cliente" v-model="filter.id_customer" optionValue="id" />
+          <AppSelect class="w-full sm:w-[150px] min-w-0" :options="statusOptions" option-label="name" label="Estado"
+            v-model="filter.status" optionValue="value" />
+          <AppDatePicker class="w-full sm:w-[180px] min-w-0" id="filter_start_date" label="Fecha Inicio"
+            v-model="filter.start_date" />
+          <AppDatePicker class="w-full sm:w-[180px] min-w-0" id="filter_end_date" label="Fecha Fin"
+            v-model="filter.end_date" />
+          <Button class="rounded-md" v-debounce:700.click="getReservations">Buscar</Button>
+          <Button class="rounded-md" outlined v-debounce:700.click="cleanSearch" label="Limpiar"
+            :icon="iconFilter"></Button>
+          <Button class="rounded-md ml-auto" @click="navigateToCreate"><i
               class="pi pi-plus-circle flex justify-center items-center text-center mr-1"
-              style="font-size: 1.1rem; font-weight: bold"
-            ></i
-            ><span>Crear Reserva</span></Button
-          >
+              style="font-size: 1.1rem; font-weight: bold"></i><span>Crear Reserva</span></Button>
         </div>
       </div>
 
-      <AppDataTable
-        class="w-full"
-        :headers="headers"
-        :items="reservations"
-            :paginator="true"
-            :per_page="pagination.per_page"
-            :total_items="pagination.total_items"
-            :page="pagination.page"
-            :show-per-page-options="true"
-            :per-page-options="[10, 20, 50, 100]"
-            @page-update="handlePagination"
-            @per-page-update="handlePerPagePagination"
-          >
-            <template #body-event_start="{ data }">
-              {{ FormatDate(data.event_start, 'DD/MM/YYYY hh:mm a') }}
-            </template>
-            <template #body-total_amount="{ data }">
-              ${{ Number(data.total_amount).toFixed(2) }}
-            </template>
-            <template #body-balance_due="{ data }">
-              <span :class="{'text-red-500 font-bold': Number(data.balance_due) > 0}">
-                ${{ Number(data.balance_due).toFixed(2) }}
-              </span>
-            </template>
-            <template #body-status="{ data }">
-              <AppStatusChip
-                :status="getStatusBoolean(data.status?.code)"
-                :label="data.status?.name"
-              />
-            </template>
-            <template #body-acciones="{ data }">
-              <div class="flex gap-0 justify-center flex-wrap">
-                <Button
-                  class="rounded-full"
-                  variant="text"
-                  icon="pi pi-eye"
-                  @click="navigateToView(data.id)"
-                  v-tooltip.bottom="'Ver Detalle'"
-                ></Button>
-                <Button
-                  class="rounded-full"
-                  variant="text"
-                  icon="pi pi-pencil"
-                  @click="navigateToEdit(data.id)"
-                  v-tooltip.bottom="'Editar'"
-                  :disabled="data.status?.code !== 'DRAFT' && data.status?.code !== 'CONFIRMED'"
-                ></Button>
-                <Button
-                  v-if="data.status?.code === 'DRAFT'"
-                  class="rounded-full text-green-600"
-                  variant="text"
-                  icon="pi pi-check"
-                  @click="confirmAction(data.id, 'confirm')"
-                  v-tooltip.bottom="'Confirmar Alquiler'"
-                ></Button>
-                <Button
-                  v-if="data.status?.code === 'CONFIRMED'"
-                  class="rounded-full text-blue-600"
-                  variant="text"
-                  icon="pi pi-truck"
-                  @click="confirmAction(data.id, 'transit')"
-                  v-tooltip.bottom="'En camino (Despacho)'"
-                ></Button>
-                <Button
-                  v-if="data.status?.code === 'IN_TRANSIT'"
-                  class="rounded-full text-yellow-600"
-                  variant="text"
-                  icon="pi pi-home"
-                  @click="confirmAction(data.id, 'delivered')"
-                  v-tooltip.bottom="'Entregado en sitio'"
-                ></Button>
-                <Button
-                  v-if="data.status?.code === 'DELIVERED'"
-                  class="rounded-full text-purple-600"
-                  variant="text"
-                  icon="pi pi-directions"
-                  @click="confirmAction(data.id, 'picked-up')"
-                  v-tooltip.bottom="'Recogido (post-evento)'"
-                ></Button>
-                <Button
-                  v-if="data.status?.code === 'PICKED_UP'"
-                  class="rounded-full text-teal-600"
-                  variant="text"
-                  icon="pi pi-shield"
-                  @click="openInspectionModal(data)"
-                  v-tooltip.bottom="'Registrar Inspección de Daños'"
-                ></Button>
-                <Button
-                  v-if="data.status?.code === 'DRAFT' || data.status?.code === 'CONFIRMED'"
-                  class="rounded-full text-red-600"
-                  variant="text"
-                  icon="pi pi-ban"
-                  @click="openCancelDialog(data)"
-                  v-tooltip.bottom="'Cancelar Reserva'"
-                ></Button>
-                <Button
-                  v-if="data.status?.code !== 'DRAFT' && data.status?.code !== 'CANCELLED' && Number(data.balance_due) > 0"
-                  class="rounded-full text-green-700"
-                  variant="text"
-                  icon="pi pi-dollar"
-                  @click="openPaymentModal(data)"
-                  v-tooltip.bottom="'Registrar Pago'"
-                ></Button>
-              </div>
-            </template>
+      <AppDataTable class="w-full" :headers="headers" :items="reservations" :paginator="true"
+        :per_page="pagination.per_page" :total_items="pagination.total_items" :page="pagination.page"
+        :show-per-page-options="true" :per-page-options="[10, 20, 50, 100]" @page-update="handlePagination"
+        @per-page-update="handlePerPagePagination">
+        <template #body-event_start="{ data }">
+          {{ FormatDate(data.event_start, 'DD/MM/YYYY hh:mm a') }}
+        </template>
+        <template #body-total_amount="{ data }">
+          ${{ Number(data.total_amount).toFixed(2) }}
+        </template>
+        <template #body-balance_due="{ data }">
+          <span :class="{ 'text-red-500 font-bold': Number(data.balance_due) > 0 }">
+            ${{ Number(data.balance_due).toFixed(2) }}
+          </span>
+        </template>
+        <template #body-status="{ data }">
+          <AppStatusChip :status="getStatusBoolean(data.status?.code)" :label="data.status?.name"
+            :background-color="data?.status?.state_color" :textColor="data?.status?.text_color" />
+        </template>
+        <template #body-acciones="{ data }">
+          <div class="flex gap-0 justify-start flex-wrap">
+            <Button class="rounded-full" variant="text" icon="pi pi-eye" @click="navigateToView(data.id)"
+              v-tooltip.bottom="'Ver Detalle'"></Button>
+            <Button class="rounded-full" variant="text" icon="pi pi-pencil" @click="navigateToEdit(data.id)"
+              v-tooltip.bottom="'Editar'"
+              :disabled="data.status?.code !== 'DRAFT' && data.status?.code !== 'CONFIRMED'"></Button>
+            <Button v-if="data.status?.code === 'DRAFT'" class="rounded-full text-green-600" variant="text"
+              icon="pi pi-check" @click="confirmAction(data.id, 'confirm')"
+              v-tooltip.bottom="'Confirmar Alquiler'"></Button>
+            <Button v-if="data.status?.code === 'CONFIRMED'" class="rounded-full text-blue-600" variant="text"
+              icon="pi pi-truck" @click="confirmAction(data.id, 'transit')"
+              v-tooltip.bottom="'En camino (Despacho)'"></Button>
+            <Button v-if="data.status?.code === 'IN_TRANSIT'" class="rounded-full text-yellow-600" variant="text"
+              icon="pi pi-home" @click="confirmAction(data.id, 'delivered')"
+              v-tooltip.bottom="'Entregado en sitio'"></Button>
+            <Button v-if="data.status?.code === 'DELIVERED'" class="rounded-full text-purple-600" variant="text"
+              icon="pi pi-directions" @click="confirmAction(data.id, 'picked-up')"
+              v-tooltip.bottom="'Recogido (post-evento)'"></Button>
+            <Button v-if="data.status?.code === 'PICKED_UP'" class="rounded-full text-teal-600" variant="text"
+              icon="pi pi-shield" @click="openInspectionModal(data)"
+              v-tooltip.bottom="'Registrar Inspección de Daños'"></Button>
+            <Button v-if="data.status?.code === 'DRAFT' || data.status?.code === 'CONFIRMED'"
+              class="rounded-full text-red-600" variant="text" icon="pi pi-ban" @click="openCancelDialog(data)"
+              v-tooltip.bottom="'Cancelar Reserva'"></Button>
+            <Button
+              v-if="data.status?.code !== 'DRAFT' && data.status?.code !== 'CANCELLED' && Number(data.balance_due) > 0"
+              class="rounded-full text-green-700" variant="text" icon="pi pi-dollar" @click="openPaymentModal(data)"
+              v-tooltip.bottom="'Registrar Pago'"></Button>
+          </div>
+        </template>
       </AppDataTable>
     </section>
 
@@ -186,31 +87,16 @@
     </Dialog>
 
     <!-- Modal for registering payments -->
-    <PaymentFormModal
-      :modal-state="paymentModal"
-      :reservation="selectedReservationForPayment"
-      @close-modal="closePaymentModal"
-      @payment-registered="getReservations"
-    />
+    <PaymentFormModal :modal-state="paymentModal" :reservation="selectedReservationForPayment"
+      @close-modal="closePaymentModal" @payment-registered="getReservations" />
 
     <!-- Modal for registering damage inspections -->
-    <InspectionFormModal
-      :modal-state="inspectionModal"
-      :reservation="selectedReservationForInspection"
-      @close-modal="closeInspectionModal"
-      @inspection-registered="getReservations"
-    />
+    <InspectionFormModal :modal-state="inspectionModal" :reservation="selectedReservationForInspection"
+      @close-modal="closeInspectionModal" @inspection-registered="getReservations" />
     <!-- Modal for action confirmations -->
-    <AppModal
-      :show="actionModal.show"
-      :title="actionModal.title"
-      title-btn-confirm="Confirmar"
-      title-btn-cancel="Cancelar"
-      width="30rem"
-      @close-modal="actionModal.show = false"
-      @update:show="(val) => actionModal.show = val"
-      @confirm-modal="executeAction"
-    >
+    <AppModal :show="actionModal.show" :title="actionModal.title" title-btn-confirm="Confirmar"
+      title-btn-cancel="Cancelar" width="30rem" @close-modal="actionModal.show = false"
+      @update:show="(val: boolean) => actionModal.show = val" @confirm-modal="executeAction">
       <div class="py-4 text-center text-lg">
         {{ actionModal.message }}
       </div>
@@ -278,19 +164,7 @@ const getStatusBoolean = (status: string): boolean => {
   return status !== 'CANCELLED';
 };
 
-const getStatusLabel = (status: string): string => {
-  const map: Record<string, string> = {
-    DRAFT: 'Borrador',
-    CONFIRMED: 'Confirmado',
-    IN_TRANSIT: 'En camino',
-    DELIVERED: 'Entregado',
-    PICKED_UP: 'Recogido',
-    INSPECTED: 'Inspeccionado',
-    COMPLETED: 'Completado',
-    CANCELLED: 'Cancelado',
-  };
-  return map[status] || status;
-};
+
 
 const navigateToCreate = () => {
   router.push({ name: 'reservation-detail' });

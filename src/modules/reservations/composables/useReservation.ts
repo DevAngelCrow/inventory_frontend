@@ -95,14 +95,15 @@ export function useReservation() {
       header: 'Acciones',
       sortable: false,
       alignHeaders: 'center',
-      alignItems: 'center',
+      alignItems: 'start',
+      width: 17
     },
   ]);
 
   const reservations = ref<ReservationResponse[]>([]);
   const customersList = ref<CustomerResponse[]>([]);
   const productsList = ref<ProductResponse[]>([]);
-  
+
   // Basket/Cart items for adding products to reservation
   const cartItems = ref<{
     id_product: string;
@@ -256,7 +257,7 @@ export function useReservation() {
         deposit_amount: Number(formValues.deposit_amount || 0),
         balance_due: cartBalanceDue.value,
         notes: formValues.notes,
-        ...(formValues.id ? { status: (typeof formValues.status === 'object' ? (formValues.status as any)?.code : formValues.status) || 'DRAFT' } : {}),
+        ...(formValues.id ? { status: (typeof (formValues as any).status === 'object' ? ((formValues as any).status as any)?.code : (formValues as any).status) || 'DRAFT' } : {}),
         items: cartItems.value.map((i) => ({
           id_product: i.id_product,
           quantity: i.quantity,
