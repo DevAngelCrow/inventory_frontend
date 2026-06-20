@@ -155,9 +155,13 @@
 import { Card, Button } from 'primevue';
 import { ref, onMounted } from 'vue';
 import AppTitle from '@/core/components/AppTitle.vue';
+import { reportServices, type DashboardSummaryResponse } from '@/modules/reports/services/report.services';
+import { useLoaderStore } from '@/core/store/useLoaderStore';
 
-// Mock data para el dashboard - eventualmente vendrá de report.services.ts
-const metricas = ref({
+const { startLoading, finishLoading } = useLoaderStore();
+
+// Mock data inicial, se sobreescribe con data real
+const metricas = ref<DashboardSummaryResponse>({
   reservas: { hoy: 2, semana: 15, mes: 45 },
   ingresos: { hoy: 350.00, semana: 2150.50, mes: 8400.00 },
   logistica: { en_transito: 3, entregados: 8, en_mantenimiento: 12 },
@@ -178,12 +182,12 @@ const botonera = ref([
   {
     icon: 'pi pi-calendar-plus',
     label: 'Nueva Reserva',
-    routeName: 'reservations',
+    routeName: 'reservation-detail',
   },
   {
     icon: 'pi pi-users',
     label: 'Clientes',
-    routeName: 'customers',
+    routeName: 'customers-list',
   },
   {
     icon: 'pi pi-box',
@@ -197,7 +201,17 @@ const botonera = ref([
   },
 ]);
 
-onMounted(() => {
-  // Aquí se haría el fetch al backend: const response = await reportService.getDashboardSummary()
+onMounted(async () => {
+  try {
+    startLoading();
+    const response = await reportServices.getDashboardSummary();
+    if (response && response.statusCode === 200) {
+      metricas.value = response.data;
+    }
+  } catch (error) {
+    console.error('Error fetching dashboard summary:', error);
+  } finally {
+    finishLoading();
+  }
 });
 </script>
