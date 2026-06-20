@@ -19,6 +19,7 @@
           :page="pagination.page"
           :show-per-page-options="true"
           :per-page-options="[10, 20, 50]"
+          :loading="loader.isLoading"
           @page-update="handlePagination"
           @per-page-update="handlePerPagePagination"
         >
@@ -29,7 +30,11 @@
             ${{ Number(data.amount).toFixed(2) }}
           </template>
           <template #body-status="{ data }">
-            <Tag :value="data.status?.name" :severity="getStatusSeverity(data.status?.code)" />
+            <AppChipStatus
+              :label="data?.status?.name || 'Desconocido'"
+              :backgroundColor="data?.status?.state_color || '#cccccc'"
+              :textColor="data?.status?.text_color || '#ffffff'"
+            />
           </template>
           <template #body-reservation="{ data }">
             {{ data.mnt_reservation?.reservation_number || data.id_reservation }}
@@ -49,19 +54,36 @@
         </AppDataTable>
       </template>
     </Card>
+
+    <AppModal
+      :show="actionModal.show"
+      :title="actionModal.title"
+      title-btn-confirm="Confirmar"
+      title-btn-cancel="Cancelar"
+      width="30rem"
+      @close-modal="actionModal.show = false"
+      @update:show="(val: boolean) => actionModal.show = val"
+      @confirm-modal="executeAction"
+    >
+      {{ actionModal.message }}
+    </AppModal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import { Card, Button, Tag } from 'primevue';
+import { onMounted, reactive } from 'vue';
+import { Card, Button } from 'primevue';
 import AppTitle from '@/core/components/AppTitle.vue';
 import AppDataTable from '@/core/components/AppDataTable.vue';
+import AppChipStatus from '@/core/components/AppChipStatus.vue';
+import AppModal from '@/core/components/AppModal.vue';
+import { useLoaderStore } from '@/core/store/useLoaderStore';
 import dayjs from 'dayjs';
 import { usePayment } from '../composables/usePayment';
 import type { PaymentResponse } from '../interfaces/payment.interfaces';
 import type { TableHeaders } from '@/core/interfaces/datatable.interface';
 
+const loader = useLoaderStore();
 const { paymentsList, pagination, loadAllPayments, voidExistingPayment } = usePayment();
 
 const headers: TableHeaders[] = [
@@ -73,23 +95,29 @@ const headers: TableHeaders[] = [
   { field: 'acciones', header: 'Acciones', sortable: false }
 ];
 
+const actionModal = reactive({
+  show: false,
+  title: '',
+  message: '',
+  id: '',
+});
+
 const formatDate = (dateString: string) => {
   if (!dateString) return '';
   return dayjs(dateString).format('DD/MM/YYYY hh:mm A');
 };
 
-const getStatusSeverity = (status: string | undefined) => {
-  switch (status) {
-    case 'COMPLETED': return 'success';
-    case 'VOIDED': return 'danger';
-    case 'PENDING': return 'warn';
-    default: return 'info';
-  }
+const onVoid = (payment: PaymentResponse) => {
+  actionModal.id = payment.id;
+  actionModal.title = 'Anular Pago';
+  actionModal.message = `¿Seguro que desea anular el pago por $${Number(payment.amount).toFixed(2)}?`;
+  actionModal.show = true;
 };
 
-const onVoid = async (payment: PaymentResponse) => {
-  if(confirm(`¿Seguro que desea anular el pago por $${Number(payment.amount).toFixed(2)}?`)) {
-    await voidExistingPayment(payment.id);
+const executeAction = async () => {
+  if (actionModal.id) {
+    await voidExistingPayment(actionModal.id);
+    actionModal.show = false;
   }
 };
 
