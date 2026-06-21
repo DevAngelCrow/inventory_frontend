@@ -58,7 +58,7 @@ export function useInspection() {
         inspection_date: FormatDateToISO(formValues.inspection_date, 'DD/MM/YYYY') || '',
         general_notes: formValues.general_notes,
         overall_condition: formValues.overall_condition,
-        status: formValues.status,
+        status: formValues.status || 'PENDING',
         damageItems: damageItems.value.map((item) => ({
           id_product: item.id_product,
           damage_type: item.damage_type,

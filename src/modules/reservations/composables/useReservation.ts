@@ -145,6 +145,9 @@ export function useReservation() {
   const [notes, notesAttrs] = defineField('notes');
   const [status] = defineField('status');
 
+  const delivery_datetime = ref<string | undefined>(undefined);
+  const pickup_datetime = ref<string | undefined>(undefined);
+
   const filter = reactive<filterType>({
     status: undefined,
     id_customer: undefined,
@@ -361,6 +364,9 @@ export function useReservation() {
     setFieldValue('notes', value?.notes);
     setFieldValue('status', value?.status);
 
+    delivery_datetime.value = value?.delivery_datetime;
+    pickup_datetime.value = value?.pickup_datetime;
+
     // Populate cart
     cartItems.value = (value?.items || []).map((i: any) => ({
       id_product: i.id_product,
@@ -399,6 +405,8 @@ export function useReservation() {
     deposit_amount, depositAmountAttrs,
     notes, notesAttrs,
     status,
+    delivery_datetime,
+    pickup_datetime,
     getReservations,
     loadDependencies,
     addToCart,

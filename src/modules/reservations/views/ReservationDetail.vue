@@ -21,6 +21,10 @@
                 :error-messages="errors.id_customer" v-bind="idCustomerAttrs" :options="customersList"
                 optionLabel="first_name" optionValue="id" :readonly="isReadonly" />
 
+              <div class="flex justify-end items-center" v-if="status">
+                <AppChipStatus :label="computedStatusLabel" :backgroundColor="computedStatusColor" />
+              </div>
+
               <div class="md:col-span-2 flex flex-col gap-4 mt-2 mb-2 p-4 border rounded-md bg-gray-50 dark:bg-gray-800">
                 <h4 class="font-semibold text-lg text-surface-900 dark:text-surface-0">Dirección de Entrega</h4>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -145,6 +149,7 @@ import { ProductResponse } from '../../inventory/interfaces/inventory.interfaces
 
 import AppTitle from '@/core/components/AppTitle.vue';
 import AppCard from '@/core/components/AppCard.vue';
+import AppChipStatus from '@/core/components/AppChipStatus.vue';
 import AppInputText from '@/core/components/AppInputText.vue';
 import AppInputNumber from '@/core/components/AppInputNumber.vue';
 import AppInputMoney from '@/core/components/AppInputMoney.vue';
@@ -180,6 +185,9 @@ const {
   delivery_fee, deliveryFeeAttrs,
   deposit_amount, depositAmountAttrs,
   notes, notesAttrs,
+  status,
+  delivery_datetime,
+  pickup_datetime,
   loadDependencies,
   addToCart,
   removeFromCart,
@@ -209,6 +217,26 @@ const customerAddresses = computed(() => {
   return customer?.addresses || [];
 });
 
+const computedStatusLabel = computed(() => {
+  if (!status.value) return '';
+  const baseStatus = status.value as any;
+  if (baseStatus.code === 'IN_PROGRESS') {
+    if (pickup_datetime.value) return 'Retornado al almacén';
+    if (delivery_datetime.value) return 'Entregado al cliente';
+  }
+  return baseStatus.name;
+});
+
+const computedStatusColor = computed(() => {
+  if (!status.value) return '';
+  const baseStatus = status.value as any;
+  if (baseStatus.code === 'IN_PROGRESS') {
+    if (pickup_datetime.value) return '#f59e0b'; // amber
+    if (delivery_datetime.value) return '#10b981'; // emerald
+  }
+  return baseStatus.state_color;
+});
+
 
 const onCustomerAddressChange = () => {
   if (!id_customer_address.value) return;
@@ -222,7 +250,15 @@ const onCustomerAddressChange = () => {
 };
 
 const isReadonly = computed(() => {
-  return route.query.mode === 'view';
+  const isUrlView = route.query.mode === 'view';
+  
+  let isStatusLocked = false;
+  if (status.value) {
+    const statusCode = (status.value as any).code;
+    isStatusLocked = statusCode === 'COMPLETED' || statusCode === 'CANCELLED';
+  }
+
+  return isUrlView || isStatusLocked;
 });
 
 const pageTitle = computed(() => {

@@ -8,7 +8,7 @@
         v-model="selectedDivisions[idx]"
         :readonly="readonly"
         :disabled="readonly || (idx > 0 && !selectedDivisions[idx - 1])"
-        :error-messages="idx === levels.length - 1 ? errorMessages : ''"
+        :error-messages="idx === levels.length - 1 ? (Array.isArray(errorMessages) ? errorMessages[0] : errorMessages) : ''"
         option-label="name"
         :suggestions="divisionOptions[idx] || []"
         dropdown
@@ -27,33 +27,28 @@ import catalogServices from '@/modules/catalogs/Services/catalog.services';
 import { GeographicDivisionTypeSimple } from '@/modules/catalogs/interfaces/geographic-division/geographic-division.type.interface';
 import { GeographicDivisionResponse } from '@/modules/catalogs/interfaces/geographic-division/geographic-division.response.interface';
 
-const props = defineProps({
-  modelValue: {
-    type: String,
-    default: undefined,
-  },
-  id_country: {
-    type: String,
-    default: undefined,
-  },
-  readonly: {
-    type: Boolean,
-    default: false,
-  },
-  errorMessages: {
-    type: [String, Array],
-    default: '',
-  },
-  isRequired: {
-    type: Boolean,
-    default: false,
-  },
+interface Props {
+  modelValue?: string;
+  id_country?: string;
+  readonly?: boolean;
+  errorMessages?: string | string[];
+  isRequired?: boolean;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: undefined,
+  id_country: undefined,
+  readonly: false,
+  errorMessages: '',
+  isRequired: false,
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits<{
+  (e: 'update:modelValue', value?: string): void;
+}>();
 
 const levels = ref<GeographicDivisionTypeSimple[]>([]);
-const selectedDivisions = ref<(GeographicDivisionResponse | null)[]>([]);
+const selectedDivisions = ref<(GeographicDivisionResponse | undefined)[]>([]);
 const divisionOptions = ref<GeographicDivisionResponse[][]>([]);
 
 const loadConfig = async () => {
@@ -73,7 +68,7 @@ const loadConfig = async () => {
   if (res.statusCode === 200 && res.data?.data) {
     levels.value = res.data.data.sort((a, b) => a.level - b.level);
     // Initialize arrays
-    selectedDivisions.value = new Array(levels.value.length).fill(null);
+    selectedDivisions.value = new Array(levels.value.length).fill(undefined);
     divisionOptions.value = new Array(levels.value.length).fill([]);
 
     if (props.modelValue) {
@@ -138,14 +133,14 @@ const onComplete = async (levelIndex: number, event: AutoCompleteCompleteEvent) 
   await fetchOptions(levelIndex, event.query);
 };
 
-const onDivisionSelect = (levelIndex: number, newValue: GeographicDivisionResponse | string | null) => {
+const onDivisionSelect = (levelIndex: number, newValue: GeographicDivisionResponse | string | null | undefined) => {
   // If the user clears the input, it might send a string or null
-  const selectedObj = typeof newValue === 'string' ? null : newValue;
+  const selectedObj = typeof newValue === 'string' || !newValue ? undefined : newValue;
   selectedDivisions.value[levelIndex] = selectedObj;
 
   // Clear all downstream selections
   for (let i = levelIndex + 1; i < levels.value.length; i++) {
-    selectedDivisions.value[i] = null;
+    selectedDivisions.value[i] = undefined;
     divisionOptions.value[i] = [];
   }
 
@@ -173,7 +168,9 @@ watch(
   (newVal, oldVal) => {
     if (newVal !== oldVal) {
       loadConfig();
-      emit('update:modelValue', undefined);
+      if (oldVal) {
+        emit('update:modelValue', undefined);
+      }
     }
   }
 );
@@ -182,7 +179,7 @@ watch(
   () => props.modelValue,
   async (newVal) => {
     if (!newVal) {
-      selectedDivisions.value.fill(null);
+      selectedDivisions.value.fill(undefined);
     } else {
       let deepestId: string | undefined = undefined;
       for (let i = levels.value.length - 1; i >= 0; i--) {
