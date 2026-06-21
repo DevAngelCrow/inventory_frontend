@@ -63,23 +63,16 @@ const cancelReservation = async (id: string, reason: string) => {
   return response;
 };
 
-const markInTransit = async (id: string) => {
+const markInProgress = async (id: string) => {
   const response = await httpClient.patch<ApiResponseGeneric<any>>(
-    `reservations/${id}/status`, { status: 'IN_TRANSIT' }
+    `reservations/${id}/status`, { status: 'IN_PROGRESS' }
   );
   return response;
 };
 
-const markDelivered = async (id: string) => {
+const markCompleted = async (id: string) => {
   const response = await httpClient.patch<ApiResponseGeneric<any>>(
-    `reservations/${id}/status`, { status: 'DELIVERED' }
-  );
-  return response;
-};
-
-const markPickedUp = async (id: string) => {
-  const response = await httpClient.patch<ApiResponseGeneric<any>>(
-    `reservations/${id}/status`, { status: 'PICKED_UP' }
+    `reservations/${id}/status`, { status: 'COMPLETED' }
   );
   return response;
 };
@@ -114,9 +107,8 @@ export default {
   putReservation,
   confirmReservation,
   cancelReservation,
-  markInTransit,
-  markDelivered,
-  markPickedUp,
+  markInProgress,
+  markCompleted,
   registerInspection,
   getInspection,
 };

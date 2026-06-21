@@ -37,8 +37,8 @@
           </span>
         </template>
         <template #body-status="{ data }">
-          <AppStatusChip :status="getStatusBoolean(data.status?.code)" :label="data.status?.name"
-            :background-color="data?.status?.state_color" :textColor="data?.status?.text_color" />
+          <AppChipStatus :label="data?.status?.name" :backgroundColor="data?.status?.state_color"
+            :textColor="data?.status?.text_color" />
         </template>
         <template #body-acciones="{ data }">
           <div class="flex gap-0 justify-start flex-wrap">
@@ -46,27 +46,25 @@
               v-tooltip.bottom="'Ver Detalle'"></Button>
             <Button class="rounded-full" variant="text" icon="pi pi-pencil" @click="navigateToEdit(data.id)"
               v-tooltip.bottom="'Editar'"
-              :disabled="data.status?.code !== 'DRAFT' && data.status?.code !== 'CONFIRMED'"></Button>
-            <Button v-if="data.status?.code === 'DRAFT'" class="rounded-full text-green-600" variant="text"
+              :disabled="data.status?.code !== 'PENDING' && data.status?.code !== 'CONFIRMED'"></Button>
+            <Button v-if="data.status?.code === 'PENDING'" class="rounded-full text-green-600" variant="text"
               icon="pi pi-check" @click="confirmAction(data.id, 'confirm')"
               v-tooltip.bottom="'Confirmar Alquiler'"></Button>
             <Button v-if="data.status?.code === 'CONFIRMED'" class="rounded-full text-blue-600" variant="text"
-              icon="pi pi-truck" @click="confirmAction(data.id, 'transit')"
-              v-tooltip.bottom="'En camino (Despacho)'"></Button>
-            <Button v-if="data.status?.code === 'IN_TRANSIT'" class="rounded-full text-yellow-600" variant="text"
-              icon="pi pi-home" @click="confirmAction(data.id, 'delivered')"
-              v-tooltip.bottom="'Entregado en sitio'"></Button>
-            <Button v-if="data.status?.code === 'DELIVERED'" class="rounded-full text-purple-600" variant="text"
-              icon="pi pi-directions" @click="confirmAction(data.id, 'picked-up')"
-              v-tooltip.bottom="'Recogido (post-evento)'"></Button>
-            <Button v-if="data.status?.code === 'PICKED_UP'" class="rounded-full text-teal-600" variant="text"
+              icon="pi pi-truck" @click="confirmAction(data.id, 'in-progress')"
+              v-tooltip.bottom="'Marcar En Progreso'"></Button>
+            <Button v-if="data.status?.code === 'IN_PROGRESS'" class="rounded-full text-teal-600" variant="text"
               icon="pi pi-shield" @click="openInspectionModal(data)"
               v-tooltip.bottom="'Registrar Inspección de Daños'"></Button>
-            <Button v-if="data.status?.code === 'DRAFT' || data.status?.code === 'CONFIRMED'"
+            <Button v-if="data.status?.code === 'IN_PROGRESS'" class="rounded-full text-purple-600" variant="text"
+              icon="pi pi-flag-fill" @click="confirmAction(data.id, 'complete')"
+              v-tooltip.bottom="'Completar Reserva'"></Button>
+            <Button
+              v-if="data.status?.code === 'PENDING' || data.status?.code === 'CONFIRMED' || data.status?.code === 'IN_PROGRESS'"
               class="rounded-full text-red-600" variant="text" icon="pi pi-ban" @click="openCancelDialog(data)"
               v-tooltip.bottom="'Cancelar Reserva'"></Button>
             <Button
-              v-if="data.status?.code !== 'DRAFT' && data.status?.code !== 'CANCELLED' && Number(data.balance_due) > 0"
+              v-if="data.status?.code !== 'PENDING' && data.status?.code !== 'CANCELLED' && Number(data.balance_due) > 0"
               class="rounded-full text-green-700" variant="text" icon="pi pi-dollar" @click="openPaymentModal(data)"
               v-tooltip.bottom="'Registrar Pago'"></Button>
           </div>
@@ -75,16 +73,14 @@
     </section>
 
     <!-- Dialog for cancel reason -->
-    <Dialog v-model:visible="cancelDialog.show" modal title="Cancelar Reserva" :style="{ width: '25rem' }">
+    <AppModal :show="cancelDialog.show" title="Cancelar Reserva" title-btn-confirm="Confirmar"
+      title-btn-cancel="Cancelar" width="25rem" @close-modal="cancelDialog.show = false"
+      @update:show="(val: boolean) => cancelDialog.show = val" @confirm-modal="confirmCancellation">
       <div class="flex flex-col gap-4 py-2">
         <label for="reason">Motivo de Cancelación</label>
         <InputText id="reason" v-model="cancelDialog.reason" class="w-full" placeholder="Escriba el motivo..." />
       </div>
-      <div class="flex justify-end gap-2 mt-4">
-        <Button label="Cancelar" outlined severity="secondary" @click="cancelDialog.show = false" />
-        <Button label="Confirmar" severity="danger" @click="confirmCancellation" />
-      </div>
-    </Dialog>
+    </AppModal>
 
     <!-- Modal for registering payments -->
     <PaymentFormModal :modal-state="paymentModal" :reservation="selectedReservationForPayment"
@@ -108,12 +104,12 @@ import PaymentFormModal from '../../payments/components/PaymentFormModal.vue';
 import InspectionFormModal from '../components/InspectionFormModal.vue';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { Button, Dialog, InputText } from 'primevue';
+import { Button, InputText } from 'primevue';
 
 import AppTitle from '@/core/components/AppTitle.vue';
 import AppSelect from '@/core/components/AppSelect.vue';
 import AppDataTable from '@/core/components/AppDataTable.vue';
-import AppStatusChip from '@/core/components/AppStatusChip.vue';
+import AppChipStatus from '@/core/components/AppChipStatus.vue';
 import AppDatePicker from '@/core/components/AppDatePicker.vue';
 import { FormatDate } from '@/core/utils/dates';
 
@@ -143,12 +139,9 @@ const cancelDialog = reactive({
 
 const statusOptions = ref<{ name: string; value: string | null | 'Todos' }[]>([
   { name: 'Todos', value: 'Todos' },
-  { name: 'Borrador', value: 'DRAFT' },
+  { name: 'Pendiente', value: 'PENDING' },
   { name: 'Confirmado', value: 'CONFIRMED' },
-  { name: 'En camino', value: 'IN_TRANSIT' },
-  { name: 'Entregado', value: 'DELIVERED' },
-  { name: 'Recogido', value: 'PICKED_UP' },
-  { name: 'Inspeccionado', value: 'INSPECTED' },
+  { name: 'En Progreso', value: 'IN_PROGRESS' },
   { name: 'Completado', value: 'COMPLETED' },
   { name: 'Cancelado', value: 'CANCELLED' },
 ]);
@@ -193,17 +186,16 @@ const confirmCancellation = async () => {
 const actionModal = reactive({
   show: false,
   id: '',
-  action: '' as 'confirm' | 'transit' | 'delivered' | 'picked-up',
+  action: '' as 'confirm' | 'in-progress' | 'complete',
   title: '',
   message: '',
 });
 
-const confirmAction = (id: string, action: 'confirm' | 'transit' | 'delivered' | 'picked-up') => {
+const confirmAction = (id: string, action: 'confirm' | 'in-progress' | 'complete') => {
   const map: Record<string, { header: string; message: string }> = {
     'confirm': { header: 'Confirmar Alquiler', message: '¿Estás seguro de que deseas confirmar esta reserva?' },
-    'transit': { header: 'Marcar En Camino', message: '¿Estás seguro de marcar esta reserva como "En camino"?' },
-    'delivered': { header: 'Marcar Entregado', message: '¿Estás seguro de marcar esta reserva como "Entregado"?' },
-    'picked-up': { header: 'Marcar Recogido', message: '¿Estás seguro de marcar esta reserva como "Recogido"?' },
+    'in-progress': { header: 'Marcar En Progreso', message: '¿Estás seguro de marcar esta reserva en progreso?' },
+    'complete': { header: 'Completar Reserva', message: '¿Estás seguro de marcar esta reserva como completada?' },
   };
   const config = map[action];
   actionModal.id = id;

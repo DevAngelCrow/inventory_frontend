@@ -272,7 +272,7 @@ export function useReservation() {
         deposit_amount: Number(formValues.deposit_amount || 0),
         balance_due: cartBalanceDue.value,
         notes: formValues.notes,
-        ...(formValues.id ? { status: (typeof (formValues as any).status === 'object' ? ((formValues as any).status as any)?.code : (formValues as any).status) || 'DRAFT' } : {}),
+        ...(formValues.id ? { status: (typeof (formValues as any).status === 'object' ? ((formValues as any).status as any)?.code : (formValues as any).status) || 'PENDING' } : {}),
         items: cartItems.value.map((i) => ({
           id_product: i.id_product,
           quantity: i.quantity,
@@ -304,7 +304,7 @@ export function useReservation() {
     }
   };
 
-  const changeStatus = async (id: string, action: 'confirm' | 'cancel' | 'transit' | 'delivered' | 'picked-up', reason?: string) => {
+  const changeStatus = async (id: string, action: 'confirm' | 'cancel' | 'in-progress' | 'complete', reason?: string) => {
     try {
       startLoading();
       let response;
@@ -315,14 +315,11 @@ export function useReservation() {
         case 'cancel':
           response = await reservationServices.cancelReservation(id, reason || 'Cancelación de reserva');
           break;
-        case 'transit':
-          response = await reservationServices.markInTransit(id);
+        case 'in-progress':
+          response = await reservationServices.markInProgress(id);
           break;
-        case 'delivered':
-          response = await reservationServices.markDelivered(id);
-          break;
-        case 'picked-up':
-          response = await reservationServices.markPickedUp(id);
+        case 'complete':
+          response = await reservationServices.markCompleted(id);
           break;
       }
       // Depending on httpClient return type, it usually has statusCode or status

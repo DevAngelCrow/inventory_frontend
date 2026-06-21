@@ -21,14 +21,14 @@
 
       <AppDataTable class="w-full" :headers="headers" :items="categories" :paginator="true"
         :per_page="pagination.per_page" :total_items="pagination.total_items" :page="pagination.page"
-        :show-per-page-options="true" :per-page-options="[10, 20, 50, 100]" 
-        @page-update="handlePagination"
+        :show-per-page-options="true" :per-page-options="[10, 20, 50, 100]" @page-update="handlePagination"
         @per-page-update="handlePerPagePagination">
         <template #body-icon="{ data }">
           <i :class="data.icon || 'pi pi-tag'" class="text-xl"></i>
         </template>
         <template #body-active="{ data }">
-          <AppStatusChip :status="data?.active" :label="data?.active ? 'Activo' : 'Inactivo'" />
+          <AppChipStatus :label="data?.status?.name" :backgroundColor="data?.status?.state_color"
+            :textColor="data?.status?.text_color" />
         </template>
         <template #body-acciones="{ data }">
           <div class="flex gap-0 justify-center">
@@ -55,7 +55,7 @@ import AppTitle from '@/core/components/AppTitle.vue';
 import AppInputText from '@/core/components/AppInputText.vue';
 import AppSelect from '@/core/components/AppSelect.vue';
 import AppDataTable from '@/core/components/AppDataTable.vue';
-import AppStatusChip from '@/core/components/AppStatusChip.vue';
+import AppChipStatus from '@/core/components/AppChipStatus.vue';
 
 import { useProductCategory } from '../composables/useProductCategory';
 import { ProductCategoryResponse } from '../interfaces/inventory.interfaces';
