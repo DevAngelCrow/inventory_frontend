@@ -21,8 +21,20 @@
                 :error-messages="errors.id_customer" v-bind="idCustomerAttrs" :options="customersList"
                 optionLabel="first_name" optionValue="id" :readonly="isReadonly" />
 
-              <AppInputText class="w-full" id="delivery_address" label="Dirección de Entrega" v-model="delivery_address"
-                :error-messages="errors.delivery_address" v-bind="deliveryAddressAttrs" :readonly="isReadonly" />
+              <div class="md:col-span-2 flex flex-col gap-4 mt-2 mb-2 p-4 border rounded-md bg-gray-50 dark:bg-gray-800">
+                <h4 class="font-semibold text-lg text-surface-900 dark:text-surface-0">Dirección de Entrega</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <AppSelect class="w-full md:col-span-2" id="id_customer_address" label="Rellenar con dirección guardada del cliente" v-model="id_customer_address" :error-messages="errors.id_customer_address" v-bind="idCustomerAddressAttrs" :options="customerAddresses" optionLabel="label" optionValue="id" :readonly="isReadonly" @change="onCustomerAddressChange" />
+
+                  <AppInputText class="w-full" id="delivery_address" label="Dirección Línea 1" v-model="delivery_address" :error-messages="errors.delivery_address" v-bind="deliveryAddressAttrs" :readonly="isReadonly" />
+                  <AppInputText class="w-full" id="delivery_address_line2" label="Dirección Línea 2" v-model="delivery_address_line2" :error-messages="errors.delivery_address_line2" v-bind="deliveryAddressLine2Attrs" :readonly="isReadonly" />
+                  
+                  <AppSelect class="w-full" id="id_geographic_division" label="Estado / Departamento" v-model="id_geographic_division" :error-messages="errors.id_geographic_division" v-bind="idGeographicDivisionAttrs" :options="geographicDivisions" optionLabel="name" optionValue="id" :readonly="isReadonly" />
+                  <AppInputText class="w-full" id="delivery_zip" label="Código Postal" v-model="delivery_zip" :error-messages="errors.delivery_zip" v-bind="deliveryZipAttrs" :readonly="isReadonly" />
+                  
+                  <AppInputextArea class="w-full md:col-span-2" id="delivery_notes" label="Notas de Entrega" v-model="delivery_notes" :error-messages="errors.delivery_notes" v-bind="deliveryNotesAttrs" :readonly="isReadonly" />
+                </div>
+              </div>
 
               <AppDatePicker class="w-full" id="event_start" label="Inicio del Evento*" v-model="event_start"
                 :error-messages="errors.event_start" v-bind="eventStartAttrs" showTime :readonly="isReadonly" />
@@ -126,7 +138,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, onMounted, provide, ref } from 'vue';
+import { computed, onMounted, provide, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Button, DataTable, Column } from 'primevue';
 import { ProductResponse } from '../../inventory/interfaces/inventory.interfaces';
@@ -140,6 +152,7 @@ import AppSelect from '@/core/components/AppSelect.vue';
 import AppInputextArea from '@/core/components/AppInputextArea.vue';
 import AppDatePicker from '@/core/components/AppDatePicker.vue';
 import { useLoaderStore } from '@/core/store';
+import { useGeographicDivision } from '@/modules/catalogs/composables/useGeographicDivision';
 
 import { useReservation } from '../composables/useReservation';
 import reservationServices from '../Services/reservation.services';
@@ -157,6 +170,11 @@ const {
   event_start, eventStartAttrs,
   event_end, eventEndAttrs,
   delivery_address, deliveryAddressAttrs,
+  delivery_address_line2, deliveryAddressLine2Attrs,
+  delivery_zip, deliveryZipAttrs,
+  delivery_notes, deliveryNotesAttrs,
+  id_customer_address, idCustomerAddressAttrs,
+  id_geographic_division, idGeographicDivisionAttrs,
   discount_amount, discountAmountAttrs,
   delivery_fee, deliveryFeeAttrs,
   deposit_amount, depositAmountAttrs,
@@ -178,6 +196,40 @@ const {
 
 const selectedProductToAdd = ref<ProductResponse>();
 const selectedQtyToAdd = ref<number>(1);
+
+const { getDivisions, filter: geoFilter, divisions: geographicDivisions } = useGeographicDivision();
+
+const customerAddresses = computed(() => {
+  if (!id_customer.value) return [];
+  const customer = customersList.value.find((c: any) => c.id === id_customer.value);
+  return customer?.addresses || [];
+});
+
+watch(id_customer, async (newVal) => {
+  if (newVal) {
+    const customer = customersList.value.find((c: any) => c.id === newVal);
+    if (customer && customer.id_country) {
+      geoFilter.id_country = customer.id_country;
+      geoFilter.status = true;
+      await getDivisions();
+    } else {
+      geographicDivisions.value = [];
+    }
+  } else {
+    geographicDivisions.value = [];
+  }
+});
+
+const onCustomerAddressChange = () => {
+  if (!id_customer_address.value) return;
+  const selectedAddr = customerAddresses.value.find((a: any) => a.id === id_customer_address.value);
+  if (selectedAddr) {
+    delivery_address.value = selectedAddr.address_line1;
+    delivery_address_line2.value = selectedAddr.address_line2;
+    id_geographic_division.value = selectedAddr.id_geographic_division;
+    delivery_zip.value = selectedAddr.zip_code;
+  }
+};
 
 const isReadonly = computed(() => {
   return route.query.mode === 'view';

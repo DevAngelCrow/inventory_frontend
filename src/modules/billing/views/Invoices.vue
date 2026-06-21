@@ -68,7 +68,7 @@ import { useInvoice } from '../composables/useInvoice';
 import type { Invoice } from '../interfaces/billing.interfaces';
 import type { TableHeaders } from '@/core/interfaces/datatable.interface';
 
-const { loading, invoices, fetchInvoices, issueInvoice, voidInvoice, downloadPdf } = useInvoice();
+const { invoices, fetchInvoices, issueInvoice, voidInvoice, downloadPdf } = useInvoice();
 
 const headers: TableHeaders[] = [
   { field: 'invoice_number', header: 'N° Factura', sortable: false },

@@ -1,12 +1,12 @@
-import { useForm } from 'vee-validate';
 import { nextTick, reactive, ref } from 'vue';
+import { useForm, useFieldArray } from 'vee-validate';
 import * as yup from 'yup';
 
 import { TableHeaders } from '@/core/interfaces';
 import { useAlertStore, useLoaderStore } from '@/core/store';
 import { sanitizedValueInput } from '@/core/utils/inputTextValidations';
 
-import { CustomerResponse, CustomerForm, CustomerHistoryResponse } from '../interfaces/customer.interfaces';
+import { CustomerResponse, CustomerForm, CustomerAddressForm, CustomerHistoryResponse } from '../interfaces/customer.interfaces';
 import customerServices from '../Services/customer.services';
 
 type filterType = { filter?: string; active?: boolean | 'Todos' };
@@ -28,6 +28,7 @@ export function useCustomer() {
         .string()
         .required('El nombre es requerido')
         .min(2, 'Debe tener al menos 2 caracteres'),
+      middle_name: yup.string().nullable().transform((value) => (value === '' ? null : value)),
       last_name: yup
         .string()
         .required('El apellido es requerido')
@@ -43,12 +44,19 @@ export function useCustomer() {
       phone_secondary: yup.string().nullable().transform((value) => (value === '' ? null : value)),
       company_name: yup.string().nullable().transform((value) => (value === '' ? null : value)),
       tax_id: yup.string().nullable().transform((value) => (value === '' ? null : value)),
-      address_line1: yup.string().nullable().transform((value) => (value === '' ? null : value)),
-      address_line2: yup.string().nullable().transform((value) => (value === '' ? null : value)),
-      city: yup.string().nullable().transform((value) => (value === '' ? null : value)),
-      state: yup.string().nullable().transform((value) => (value === '' ? null : value)),
-      zip_code: yup.string().nullable().transform((value) => (value === '' ? null : value)),
       notes: yup.string().nullable().transform((value) => (value === '' ? null : value)),
+      id_country: yup.string().required('El país es requerido'),
+      addresses: yup.array().of(
+        yup.object().shape({
+          id: yup.string().nullable(),
+          label: yup.string().required('La etiqueta es requerida'),
+          address_line1: yup.string().required('La dirección es requerida'),
+          address_line2: yup.string().nullable(),
+          zip_code: yup.string().nullable(),
+          is_primary: yup.boolean(),
+          id_geographic_division: yup.string().nullable(),
+        })
+      ),
       active: yup.boolean(),
     }),
   });
@@ -56,18 +64,12 @@ export function useCustomer() {
   const headers = ref<TableHeaders[]>([
     {
       field: 'first_name',
-      header: 'Nombre',
+      header: 'Nombre Completo',
       sortable: false,
       alignHeaders: 'start',
       alignItems: 'start',
     },
-    {
-      field: 'last_name',
-      header: 'Apellido',
-      sortable: false,
-      alignHeaders: 'start',
-      alignItems: 'start',
-    },
+
     {
       field: 'phone',
       header: 'Teléfono',
@@ -114,18 +116,16 @@ export function useCustomer() {
 
   const [id, idAttrs] = defineField('id');
   const [first_name, firstNameAttrs] = defineField('first_name');
+  const [middle_name, middleNameAttrs] = defineField('middle_name');
   const [last_name, lastNameAttrs] = defineField('last_name');
   const [email, emailAttrs] = defineField('email');
   const [phone, phoneAttrs] = defineField('phone');
   const [phone_secondary, phoneSecondaryAttrs] = defineField('phone_secondary');
   const [company_name, companyNameAttrs] = defineField('company_name');
   const [tax_id, taxIdAttrs] = defineField('tax_id');
-  const [address_line1, addressLine1Attrs] = defineField('address_line1');
-  const [address_line2, addressLine2Attrs] = defineField('address_line2');
-  const [city, cityAttrs] = defineField('city');
-  const [state, stateAttrs] = defineField('state');
-  const [zip_code, zipCodeAttrs] = defineField('zip_code');
   const [notes, notesAttrs] = defineField('notes');
+  const [id_country, idCountryAttrs] = defineField('id_country');
+  const { fields: addresses, push: pushAddress, remove: removeAddress } = useFieldArray<CustomerAddressForm>('addresses');
   const [active, activeAttrs] = defineField('active');
 
   const filter = reactive<filterType>({
@@ -255,19 +255,19 @@ export function useCustomer() {
   const setCustomerItem = (value: CustomerResponse) => {
     setFieldValue('id', value?.id);
     setFieldValue('first_name', value?.first_name);
+    setFieldValue('middle_name', value?.middle_name);
     setFieldValue('last_name', value?.last_name);
     setFieldValue('email', value?.email);
     setFieldValue('phone', value?.phone);
     setFieldValue('phone_secondary', value?.phone_secondary);
     setFieldValue('company_name', value?.company_name);
     setFieldValue('tax_id', value?.tax_id);
-    setFieldValue('address_line1', value?.address_line1);
-    setFieldValue('address_line2', value?.address_line2);
-    setFieldValue('city', value?.city);
-    setFieldValue('state', value?.state);
-    setFieldValue('zip_code', value?.zip_code);
     setFieldValue('notes', value?.notes);
+    setFieldValue('id_country', value?.id_country);
     setFieldValue('active', value?.active);
+    
+    // Clear and set addresses
+    setFieldValue('addresses', value?.addresses?.length ? value.addresses : []);
   };
 
   const findCustomer = () => {
@@ -297,6 +297,8 @@ export function useCustomer() {
     idAttrs,
     first_name,
     firstNameAttrs,
+    middle_name,
+    middleNameAttrs,
     last_name,
     lastNameAttrs,
     email,
@@ -309,18 +311,13 @@ export function useCustomer() {
     companyNameAttrs,
     tax_id,
     taxIdAttrs,
-    address_line1,
-    addressLine1Attrs,
-    address_line2,
-    addressLine2Attrs,
-    city,
-    cityAttrs,
-    state,
-    stateAttrs,
-    zip_code,
-    zipCodeAttrs,
     notes,
     notesAttrs,
+    id_country,
+    idCountryAttrs,
+    addresses,
+    pushAddress,
+    removeAddress,
     active,
     activeAttrs,
     alert,

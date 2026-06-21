@@ -38,6 +38,11 @@ export function useReservation() {
       event_start: yup.string().required('La fecha/hora de inicio es requerida'),
       event_end: yup.string().required('La fecha/hora de fin es requerida'),
       delivery_address: yup.string().max(500, 'Dirección muy larga').nullable(),
+      delivery_address_line2: yup.string().max(255, 'Dirección muy larga').nullable(),
+      delivery_zip: yup.string().max(20, 'Código postal muy largo').nullable(),
+      delivery_notes: yup.string().nullable(),
+      id_customer_address: yup.string().nullable(),
+      id_geographic_division: yup.string().nullable(),
       discount_amount: yup.number().typeError('Debe ser número').min(0).default(0),
       delivery_fee: yup.number().typeError('Debe ser número').min(0).default(0),
       deposit_amount: yup.number().typeError('Debe ser número').min(0).default(0),
@@ -129,6 +134,11 @@ export function useReservation() {
   const [event_start, eventStartAttrs] = defineField('event_start');
   const [event_end, eventEndAttrs] = defineField('event_end');
   const [delivery_address, deliveryAddressAttrs] = defineField('delivery_address');
+  const [delivery_address_line2, deliveryAddressLine2Attrs] = defineField('delivery_address_line2');
+  const [delivery_zip, deliveryZipAttrs] = defineField('delivery_zip');
+  const [delivery_notes, deliveryNotesAttrs] = defineField('delivery_notes');
+  const [id_customer_address, idCustomerAddressAttrs] = defineField('id_customer_address');
+  const [id_geographic_division, idGeographicDivisionAttrs] = defineField('id_geographic_division');
   const [discount_amount, discountAmountAttrs] = defineField('discount_amount');
   const [delivery_fee, deliveryFeeAttrs] = defineField('delivery_fee');
   const [deposit_amount, depositAmountAttrs] = defineField('deposit_amount');
@@ -253,6 +263,11 @@ export function useReservation() {
         event_start: startIso,
         event_end: endIso,
         delivery_address: formValues.delivery_address,
+        delivery_address_line2: formValues.delivery_address_line2,
+        delivery_zip: formValues.delivery_zip,
+        delivery_notes: formValues.delivery_notes,
+        id_customer_address: formValues.id_customer_address,
+        id_geographic_division: formValues.id_geographic_division,
         total_amount: cartTotal.value,
         deposit_amount: Number(formValues.deposit_amount || 0),
         balance_due: cartBalanceDue.value,
@@ -340,6 +355,11 @@ export function useReservation() {
     setFieldValue('event_start', FormatDate(value?.event_start, 'DD/MM/YYYY hh:mm a'));
     setFieldValue('event_end', FormatDate(value?.event_end, 'DD/MM/YYYY hh:mm a'));
     setFieldValue('delivery_address', value?.delivery_address);
+    setFieldValue('delivery_address_line2', value?.delivery_address_line2);
+    setFieldValue('delivery_zip', value?.delivery_zip);
+    setFieldValue('delivery_notes', value?.delivery_notes);
+    setFieldValue('id_customer_address', value?.id_customer_address);
+    setFieldValue('id_geographic_division', value?.id_geographic_division);
     setFieldValue('deposit_amount', Number(value?.deposit_amount));
     setFieldValue('notes', value?.notes);
     setFieldValue('status', value?.status);
@@ -372,6 +392,11 @@ export function useReservation() {
     event_start, eventStartAttrs,
     event_end, eventEndAttrs,
     delivery_address, deliveryAddressAttrs,
+    delivery_address_line2, deliveryAddressLine2Attrs,
+    delivery_zip, deliveryZipAttrs,
+    delivery_notes, deliveryNotesAttrs,
+    id_customer_address, idCustomerAddressAttrs,
+    id_geographic_division, idGeographicDivisionAttrs,
     discount_amount, discountAmountAttrs,
     delivery_fee, deliveryFeeAttrs,
     deposit_amount, depositAmountAttrs,

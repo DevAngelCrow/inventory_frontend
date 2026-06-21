@@ -72,7 +72,7 @@
 
 <script setup lang="ts">
 import { onMounted, reactive } from 'vue';
-import { Card, Button } from 'primevue';
+import { Button } from 'primevue';
 import AppTitle from '@/core/components/AppTitle.vue';
 import AppDataTable from '@/core/components/AppDataTable.vue';
 import AppChipStatus from '@/core/components/AppChipStatus.vue';

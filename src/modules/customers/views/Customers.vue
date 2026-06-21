@@ -66,6 +66,12 @@
         @page-update="handlePagination"
         @per-page-update="handlePerPagePagination"
       >
+        <template #body-first_name="{ data }">
+          <div class="flex flex-col">
+            <span class="font-medium text-gray-900">{{ data?.first_name }} {{ data?.middle_name || '' }}</span>
+            <span class="text-gray-500 text-sm">{{ data?.last_name }}</span>
+          </div>
+        </template>
         <template #body-active="{ data }">
           <AppStatusChip
             :status="data?.active"
