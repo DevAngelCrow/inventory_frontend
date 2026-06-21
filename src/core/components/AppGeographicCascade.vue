@@ -180,10 +180,20 @@ watch(
 
 watch(
   () => props.modelValue,
-  (newVal) => {
-    // If modelValue is cleared externally
+  async (newVal) => {
     if (!newVal) {
       selectedDivisions.value.fill(null);
+    } else {
+      let deepestId: string | undefined = undefined;
+      for (let i = levels.value.length - 1; i >= 0; i--) {
+        if (selectedDivisions.value[i]?.id) {
+          deepestId = selectedDivisions.value[i]?.id;
+          break;
+        }
+      }
+      if (deepestId !== newVal) {
+        await loadLineage(newVal);
+      }
     }
   }
 );
