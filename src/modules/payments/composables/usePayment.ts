@@ -35,6 +35,11 @@ export function usePayment() {
     per_page: 10,
     total_items: 0,
   });
+  const filters = reactive({
+    filter_reservation: '',
+    filter_status: '',
+  });
+
 
   const { startLoading, finishLoading } = useLoaderStore();
   const alert = useAlertStore();
@@ -81,10 +86,16 @@ export function usePayment() {
   const loadAllPayments = async () => {
     try {
       startLoading();
-      const params = {
+      const params: any = {
         page: pagination.page,
         per_page: pagination.per_page,
       };
+      if (filters.filter_reservation) {
+        params.filter_reservation = filters.filter_reservation;
+      }
+      if (filters.filter_status) {
+        params.filter_status = filters.filter_status;
+      }
       const resp = await paymentServices.getPayments(params);
       if (resp && resp.data) {
         paymentsList.value = (resp.data as any).data || resp.data;
@@ -152,6 +163,19 @@ export function usePayment() {
     }
   };
 
+  const applyFilters = () => {
+    pagination.page = 1;
+    loadAllPayments();
+  };
+
+  const clearFilters = () => {
+    filters.filter_reservation = '';
+    filters.filter_status = '';
+    pagination.page = 1;
+    loadAllPayments();
+  };
+
+
   return {
     errors,
     defineField,
@@ -177,5 +201,8 @@ export function usePayment() {
     reservationPayments,
     paymentsList,
     pagination,
+    filters,
+    applyFilters,
+    clearFilters,
   };
 }
