@@ -29,7 +29,7 @@
                   <AppInputText class="w-full" id="delivery_address" label="Dirección Línea 1" v-model="delivery_address" :error-messages="errors.delivery_address" v-bind="deliveryAddressAttrs" :readonly="isReadonly" />
                   <AppInputText class="w-full" id="delivery_address_line2" label="Dirección Línea 2" v-model="delivery_address_line2" :error-messages="errors.delivery_address_line2" v-bind="deliveryAddressLine2Attrs" :readonly="isReadonly" />
                   
-                  <AppSelect class="w-full" id="id_geographic_division" label="Estado / Departamento" v-model="id_geographic_division" :error-messages="errors.id_geographic_division" v-bind="idGeographicDivisionAttrs" :options="geographicDivisions" optionLabel="name" optionValue="id" :readonly="isReadonly" />
+                  <AppGeographicCascade class="w-full" id="id_geographic_division" v-model="id_geographic_division" :error-messages="errors.id_geographic_division" :id_country="selectedCustomerCountryId" :readonly="isReadonly" />
                   <AppInputText class="w-full" id="delivery_zip" label="Código Postal" v-model="delivery_zip" :error-messages="errors.delivery_zip" v-bind="deliveryZipAttrs" :readonly="isReadonly" />
                   
                   <AppInputextArea class="w-full md:col-span-2" id="delivery_notes" label="Notas de Entrega" v-model="delivery_notes" :error-messages="errors.delivery_notes" v-bind="deliveryNotesAttrs" :readonly="isReadonly" />
@@ -149,6 +149,7 @@ import AppInputText from '@/core/components/AppInputText.vue';
 import AppInputNumber from '@/core/components/AppInputNumber.vue';
 import AppInputMoney from '@/core/components/AppInputMoney.vue';
 import AppSelect from '@/core/components/AppSelect.vue';
+import AppGeographicCascade from '@/core/components/AppGeographicCascade.vue';
 import AppInputextArea from '@/core/components/AppInputextArea.vue';
 import AppDatePicker from '@/core/components/AppDatePicker.vue';
 import { useLoaderStore } from '@/core/store';
@@ -197,28 +198,17 @@ const {
 const selectedProductToAdd = ref<ProductResponse>();
 const selectedQtyToAdd = ref<number>(1);
 
-const { getDivisions, filter: geoFilter, divisions: geographicDivisions } = useGeographicDivision();
-
+const selectedCustomerCountryId = computed(() => {
+  if (!id_customer.value) return undefined;
+  const customer = customersList.value.find((c: any) => c.id === id_customer.value);
+  return customer?.id_country;
+});
 const customerAddresses = computed(() => {
   if (!id_customer.value) return [];
   const customer = customersList.value.find((c: any) => c.id === id_customer.value);
   return customer?.addresses || [];
 });
 
-watch(id_customer, async (newVal) => {
-  if (newVal) {
-    const customer = customersList.value.find((c: any) => c.id === newVal);
-    if (customer && customer.id_country) {
-      geoFilter.id_country = customer.id_country;
-      geoFilter.status = true;
-      await getDivisions();
-    } else {
-      geographicDivisions.value = [];
-    }
-  } else {
-    geographicDivisions.value = [];
-  }
-});
 
 const onCustomerAddressChange = () => {
   if (!id_customer_address.value) return;

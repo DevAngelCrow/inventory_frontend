@@ -60,9 +60,9 @@
           <AppInputText class="w-full min-w-0 md:col-span-2" :id="`address_line2_${idx}`" label="Dirección Línea 2" v-model="address.value.address_line2" 
             :error-messages="errors[`addresses[${idx}].address_line2`]" :readonly="props.modalState.isReadonly" />
 
-          <AppSelect class="w-full min-w-0" :id="`state_${idx}`" label="Estado / Departamento" v-model="address.value.id_geographic_division" 
-            :options="geographicDivisionOptions" optionLabel="name" optionValue="id" :error-messages="errors[`addresses[${idx}].id_geographic_division`]" 
-            :readonly="props.modalState.isReadonly || !id_country" />
+          <AppGeographicCascade class="w-full min-w-0 md:col-span-2" :id="`state_${idx}`" v-model="address.value.id_geographic_division" 
+            :id_country="id_country as string" :error-messages="errors[`addresses[${idx}].id_geographic_division`]" 
+            :readonly="props.modalState.isReadonly || !id_country" :isRequired="true" />
 
           <AppInputText class="w-full min-w-0" :id="`zip_code_${idx}`" label="Código Postal" v-model="address.value.zip_code" 
             :error-messages="errors[`addresses[${idx}].zip_code`]" :readonly="props.modalState.isReadonly" />
@@ -89,6 +89,7 @@ import AppModal from '@/core/components/AppModal.vue';
 import AppInputText from '@/core/components/AppInputText.vue';
 import AppInputextArea from '@/core/components/AppInputextArea.vue';
 import AppSelect from '@/core/components/AppSelect.vue';
+import AppGeographicCascade from '@/core/components/AppGeographicCascade.vue';
 import AppInputMask from '@/core/components/AppInputMask.vue';
 import AppCheckBox from '@/core/components/AppCheckBox.vue';
 import { useLoaderStore } from '@/core/store';
@@ -150,7 +151,6 @@ const { getCountries } = useCountries();
 const { } = useGeographicDivision();
 
 const countryOptions = ref<any[]>([]);
-const geographicDivisionOptions = ref<any[]>([]);
 
 const loadCountries = async () => {
   const result = await getCountries();
@@ -159,17 +159,6 @@ const loadCountries = async () => {
   }
 };
 
-const loadGeographicDivisions = async (countryId: string) => {
-  if (!countryId) {
-    geographicDivisionOptions.value = [];
-    return;
-  }
-  const { getDivisions, filter, divisions } = useGeographicDivision();
-  filter.id_country = countryId;
-  filter.status = true;
-  await getDivisions();
-  geographicDivisionOptions.value = divisions.value;
-};
 
 onMounted(async () => {
   await loadCountries();
@@ -182,21 +171,11 @@ watch(
       if (props.modalState.mode === 'add' && addresses.value.length === 0) {
         addNewAddress();
       }
-      if (id_country.value) {
-        await loadGeographicDivisions(id_country.value as string);
-      }
     }
   }
 );
 
-watch(
-  id_country,
-  async (newVal, oldVal) => {
-    if (newVal && newVal !== oldVal) {
-      await loadGeographicDivisions(newVal as string);
-    }
-  }
-);
+
 
 const onCountryChange = () => {
   addresses.value.forEach(addr => {

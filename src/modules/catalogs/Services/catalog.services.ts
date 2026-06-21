@@ -380,6 +380,21 @@ const patchGeographicDivision = async (id: string) => {
   return response;
 };
 
+const getGeographicDivisionLineage = async (
+  id: string,
+): Promise<{
+  data: string[];
+  statusCode: number;
+  message: string;
+}> => {
+  const response = await httpClient.get<{
+    data: string[];
+    statusCode: number;
+    message: string;
+  }>(`catalogs/geographic-divisions/${id}/lineage`);
+  return response.data;
+};
+
 export default {
   getAllCountries,
   createCountries,
@@ -421,4 +436,5 @@ export default {
   postGeographicDivision,
   putGeographicDivision,
   patchGeographicDivision,
+  getGeographicDivisionLineage,
 };
