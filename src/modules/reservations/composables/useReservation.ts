@@ -304,7 +304,7 @@ export function useReservation() {
     }
   };
 
-  const changeStatus = async (id: string, action: 'confirm' | 'cancel' | 'in-progress' | 'complete', reason?: string) => {
+  const changeStatus = async (id: string, action: 'confirm' | 'cancel' | 'in-progress' | 'complete', reasonOrDatetime?: string) => {
     try {
       startLoading();
       let response;
@@ -313,13 +313,13 @@ export function useReservation() {
           response = await reservationServices.confirmReservation(id);
           break;
         case 'cancel':
-          response = await reservationServices.cancelReservation(id, reason || 'Cancelación de reserva');
+          response = await reservationServices.cancelReservation(id, reasonOrDatetime || 'Cancelación de reserva');
           break;
         case 'in-progress':
-          response = await reservationServices.markInProgress(id);
+          response = await reservationServices.markInProgress(id, reasonOrDatetime);
           break;
         case 'complete':
-          response = await reservationServices.markCompleted(id);
+          response = await reservationServices.markCompleted(id, reasonOrDatetime);
           break;
       }
       // Depending on httpClient return type, it usually has statusCode or status

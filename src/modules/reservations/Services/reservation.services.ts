@@ -63,16 +63,16 @@ const cancelReservation = async (id: string, reason: string) => {
   return response;
 };
 
-const markInProgress = async (id: string) => {
+const markInProgress = async (id: string, deliveryDatetime?: string) => {
   const response = await httpClient.patch<ApiResponseGeneric<any>>(
-    `reservations/${id}/status`, { status: 'IN_PROGRESS' }
+    `reservations/${id}/status`, { status: 'IN_PROGRESS', ...(deliveryDatetime ? { delivery_datetime: deliveryDatetime } : {}) }
   );
   return response;
 };
 
-const markCompleted = async (id: string) => {
+const markCompleted = async (id: string, pickupDatetime?: string) => {
   const response = await httpClient.patch<ApiResponseGeneric<any>>(
-    `reservations/${id}/status`, { status: 'COMPLETED' }
+    `reservations/${id}/status`, { status: 'COMPLETED', ...(pickupDatetime ? { pickup_datetime: pickupDatetime } : {}) }
   );
   return response;
 };

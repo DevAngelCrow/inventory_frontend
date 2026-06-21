@@ -11,7 +11,18 @@
           </template>
           <template #content>
             <div class="flex flex-col gap-4">
-              <DatePicker v-model="selectedDate" inline class="w-full" />
+              <DatePicker v-model="selectedDate" inline class="w-full">
+                <template #date="slotProps">
+                  <div class="flex flex-col items-center justify-center w-full h-full pb-1">
+                    <span>{{ slotProps.date.day }}</span>
+                    <div class="flex gap-0.5 mt-0.5 h-1">
+                      <span v-if="getIndicatorsForDate(slotProps.date)?.delivery" class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                      <span v-if="getIndicatorsForDate(slotProps.date)?.event" class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                      <span v-if="getIndicatorsForDate(slotProps.date)?.pickup" class="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                    </div>
+                  </div>
+                </template>
+              </DatePicker>
               <div class="mt-4 flex flex-col gap-2">
                 <span class="text-sm font-semibold">Indicadores:</span>
                 <div class="flex items-center gap-2 text-xs">
@@ -135,6 +146,42 @@ const selectToday = () => {
 
 const viewReservation = (id: string) => {
   router.push({ name: 'reservation-detail', params: { id }, query: { mode: 'view' } });
+};
+
+// Map to hold indicators for each date in the current month
+const calendarIndicators = computed(() => {
+  const indicators: Record<string, { delivery: boolean; event: boolean; pickup: boolean }> = {};
+  
+  reservationsList.value.forEach((res) => {
+    // Deliveries
+    if (res.delivery_datetime) {
+      const dateStr = dayjs(res.delivery_datetime).format('YYYY-MM-DD');
+      if (!indicators[dateStr]) indicators[dateStr] = { delivery: false, event: false, pickup: false };
+      indicators[dateStr].delivery = true;
+    }
+    
+    // Events
+    if (res.event_start) {
+      const eventStartDateStr = dayjs(res.event_start).format('YYYY-MM-DD');
+      if (!indicators[eventStartDateStr]) indicators[eventStartDateStr] = { delivery: false, event: false, pickup: false };
+      indicators[eventStartDateStr].event = true;
+    }
+    
+    // Pickups
+    if (res.pickup_datetime) {
+      const pickDateStr = dayjs(res.pickup_datetime).format('YYYY-MM-DD');
+      if (!indicators[pickDateStr]) indicators[pickDateStr] = { delivery: false, event: false, pickup: false };
+      indicators[pickDateStr].pickup = true;
+    }
+  });
+  
+  return indicators;
+});
+
+const getIndicatorsForDate = (date: { year: number; month: number; day: number }) => {
+  // PrimeVue date slotProps.date month is 0-indexed
+  const dStr = dayjs(new Date(date.year, date.month, date.day)).format('YYYY-MM-DD');
+  return calendarIndicators.value[dStr] || null;
 };
 
 // Compute deliveries, events, and pickups on the selected date

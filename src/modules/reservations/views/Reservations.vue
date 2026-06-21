@@ -93,8 +93,14 @@
     <AppModal :show="actionModal.show" :title="actionModal.title" title-btn-confirm="Confirmar"
       title-btn-cancel="Cancelar" width="30rem" @close-modal="actionModal.show = false"
       @update:show="(val: boolean) => actionModal.show = val" @confirm-modal="executeAction">
-      <div class="py-4 text-center text-lg">
-        {{ actionModal.message }}
+      <div class="flex flex-col gap-4 py-4">
+        <div class="text-center text-lg">
+          {{ actionModal.message }}
+        </div>
+        <div v-if="actionModal.action === 'in-progress' || actionModal.action === 'complete'" class="flex flex-col gap-2 mt-4 text-left">
+          <label for="action_datetime">{{ actionModal.action === 'in-progress' ? 'Fecha y Hora de Entrega' : 'Fecha y Hora de Recolección' }}</label>
+          <AppDatePicker id="action_datetime" v-model="actionModal.datetime" :showTime="true" />
+        </div>
       </div>
     </AppModal>
   </div>
@@ -111,7 +117,7 @@ import AppSelect from '@/core/components/AppSelect.vue';
 import AppDataTable from '@/core/components/AppDataTable.vue';
 import AppChipStatus from '@/core/components/AppChipStatus.vue';
 import AppDatePicker from '@/core/components/AppDatePicker.vue';
-import { FormatDate } from '@/core/utils/dates';
+import { FormatDate, CreateDateFromFormat, getToday } from '@/core/utils/dates';
 
 import { useReservation } from '../composables/useReservation';
 import { ReservationResponse } from '../interfaces/reservation.interfaces';
@@ -189,6 +195,7 @@ const actionModal = reactive({
   action: '' as 'confirm' | 'in-progress' | 'complete',
   title: '',
   message: '',
+  datetime: '',
 });
 
 const confirmAction = (id: string, action: 'confirm' | 'in-progress' | 'complete') => {
@@ -202,11 +209,19 @@ const confirmAction = (id: string, action: 'confirm' | 'in-progress' | 'complete
   actionModal.action = action;
   actionModal.title = config.header;
   actionModal.message = config.message;
+  actionModal.datetime = getToday('DD/MM/YYYY hh:mm a');
   actionModal.show = true;
 };
 
 const executeAction = async () => {
-  await changeStatus(actionModal.id, actionModal.action);
+  let datetimeParam = undefined;
+  if ((actionModal.action === 'in-progress' || actionModal.action === 'complete') && actionModal.datetime) {
+    const dateObj = CreateDateFromFormat(actionModal.datetime, 'DD/MM/YYYY hh:mm a');
+    if (dateObj) {
+      datetimeParam = dateObj.toISOString();
+    }
+  }
+  await changeStatus(actionModal.id, actionModal.action, datetimeParam);
   actionModal.show = false;
 };
 
