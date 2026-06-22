@@ -5,6 +5,7 @@ import * as yup from 'yup';
 import { useAlertStore, useLoaderStore } from '@/core/store';
 import { PaymentMethodResponse, PaymentResponse, PaymentForm } from '../interfaces/payment.interfaces';
 import paymentServices from '../Services/payment.services';
+import catalogServices from '@/modules/catalogs/Services/catalog.services';
 
 export function usePayment() {
   const {
@@ -37,8 +38,22 @@ export function usePayment() {
   });
   const filters = reactive({
     filter_reservation: '',
-    filter_status: '',
+    filter_status: 'Todos',
   });
+
+  const paymentStatuses = ref<{name: string, id: string | 'Todos'}[]>([{name: 'Todos', id: 'Todos'}]);
+
+  const fetchPaymentStatuses = async () => {
+    try {
+      const response = await catalogServices.getGlobalStatus({ code_category: 'PAY', per_page: 100 } as any);
+      if (response && response.data && response.data.data) {
+         const statuses = response.data.data.map((s: any) => ({ name: s.name, id: s.code }));
+         paymentStatuses.value = [{ name: 'Todos', id: 'Todos' }, ...statuses];
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
 
   const { startLoading, finishLoading } = useLoaderStore();
@@ -93,7 +108,7 @@ export function usePayment() {
       if (filters.filter_reservation) {
         params.filter_reservation = filters.filter_reservation;
       }
-      if (filters.filter_status) {
+      if (filters.filter_status && filters.filter_status !== 'Todos') {
         params.filter_status = filters.filter_status;
       }
       const resp = await paymentServices.getPayments(params);
@@ -170,7 +185,7 @@ export function usePayment() {
 
   const clearFilters = () => {
     filters.filter_reservation = '';
-    filters.filter_status = '';
+    filters.filter_status = 'Todos';
     pagination.page = 1;
     loadAllPayments();
   };
@@ -202,6 +217,8 @@ export function usePayment() {
     paymentsList,
     pagination,
     filters,
+    paymentStatuses,
+    fetchPaymentStatuses,
     applyFilters,
     clearFilters,
   };

@@ -1,50 +1,20 @@
 <template>
   <div class="py-5 px-5 h-full max-h-full flex items-start justify-center">
-    <section id="payments_content" class="w-full xl:w-[95%] flex flex-col flex-wrap gap-5">
-      <div class="w-full flex flex-row gap-3 flex-wrap items-center">
-        <AppTitle title="Pagos" class="w-full md:w-auto flex justify-center items-center" />
-        <div id="inputs" class="flex rounded-lg py-0.5 px-0.5 gap-3 flex-wrap grow lg:grow-0 w-full md:w-auto items-center">
-          <AppInputText
-            v-model="filters.filter_reservation"
-            label="ID Reserva"
-            class="w-full md:w-48"
-            @keyup.enter="applyFilters"
-          />
-          <AppInputText
-            v-model="filters.filter_status"
-            label="Estado (Código)"
-            class="w-full md:w-48"
-            @keyup.enter="applyFilters"
-          />
-          <Button
-            label="Buscar"
-            icon="pi pi-search"
-            class="p-button-primary"
-            @click="applyFilters"
-          />
-          <Button
-            label="Limpiar"
-            icon="pi pi-filter-slash"
-            class="p-button-secondary p-button-outlined"
-            @click="clearFilters"
-          />
-        </div>
+    <section id="payments_content" class="w-full xl:w-[80%] flex flex-row flex-wrap gap-5">
+      <AppTitle title="Pagos" class="w-full md:w-auto flex justify-center items-center" />
+      <div id="inputs" class="flex rounded-lg py-0.5 px-0.5 gap-3 flex-wrap grow lg:grow-0 w-full">
+        <AppInputText v-model="filters.filter_reservation" label="ID Reserva" class="w-full md:w-48"
+          @keyup.enter="applyFilters" />
+        <AppSelect v-model="filters.filter_status" label="Estado" :options="paymentStatuses" optionLabel="name"
+          optionValue="id" class="w-full md:w-48" @change="applyFilters" />
+        <Button label="Buscar" icon="pi pi-search" class="p-button-primary" @click="applyFilters" />
+        <Button label="Limpiar" icon="pi pi-filter-slash" class="rounded-md" @click="clearFilters" outlined />
       </div>
 
-      <AppDataTable
-        class="w-full"
-        :headers="headers"
-        :items="paymentsList"
-        :paginator="true"
-        :per_page="pagination.per_page"
-        :total_items="pagination.total_items"
-        :page="pagination.page"
-        :show-per-page-options="true"
-        :per-page-options="[10, 20, 50]"
-        :loading="loader.isLoading"
-        @page-update="handlePagination"
-        @per-page-update="handlePerPagePagination"
-      >
+      <AppDataTable class="w-full" :headers="headers" :items="paymentsList" :paginator="true"
+        :per_page="pagination.per_page" :total_items="pagination.total_items" :page="pagination.page"
+        :show-per-page-options="true" :per-page-options="[10, 20, 50]" :loading="loader.isLoading"
+        @page-update="handlePagination" @per-page-update="handlePerPagePagination">
         <template #body-payment_date="{ data }">
           {{ formatDate(data.payment_date) }}
         </template>
@@ -52,40 +22,26 @@
           ${{ Number(data.amount).toFixed(2) }}
         </template>
         <template #body-status="{ data }">
-          <AppChipStatus
-            :label="data?.status?.name || 'Desconocido'"
+          <AppChipStatus :label="data?.status?.name || 'Desconocido'"
             :backgroundColor="data?.status?.state_color || '#cccccc'"
-            :textColor="data?.status?.text_color || '#ffffff'"
-          />
+            :textColor="data?.status?.text_color || '#ffffff'" />
         </template>
         <template #body-reservation="{ data }">
           {{ data.mnt_reservation?.reservation_number || data.id_reservation }}
         </template>
-        
+
         <template #body-acciones="{ data }">
           <div class="flex gap-2">
-            <Button
-              v-if="data.status?.code !== 'VOIDED'"
-              icon="pi pi-ban"
-              class="p-button-danger p-button-sm p-button-text"
-              v-tooltip.top="'Anular Pago'"
-              @click="onVoid(data)"
-            />
+            <Button v-if="data.status?.code !== 'VOIDED'" icon="pi pi-ban"
+              class="p-button-danger p-button-sm p-button-text" v-tooltip.top="'Anular Pago'" @click="onVoid(data)" />
           </div>
         </template>
       </AppDataTable>
     </section>
 
-    <AppModal
-      :show="actionModal.show"
-      :title="actionModal.title"
-      title-btn-confirm="Confirmar"
-      title-btn-cancel="Cancelar"
-      width="30rem"
-      @close-modal="actionModal.show = false"
-      @update:show="(val: boolean) => actionModal.show = val"
-      @confirm-modal="executeAction"
-    >
+    <AppModal :show="actionModal.show" :title="actionModal.title" title-btn-confirm="Confirmar"
+      title-btn-cancel="Cancelar" width="30rem" @close-modal="actionModal.show = false"
+      @update:show="(val: boolean) => actionModal.show = val" @confirm-modal="executeAction">
       <div class="py-4 text-center text-lg">
         {{ actionModal.message }}
       </div>
@@ -101,6 +57,7 @@ import AppDataTable from '@/core/components/AppDataTable.vue';
 import AppChipStatus from '@/core/components/AppChipStatus.vue';
 import AppModal from '@/core/components/AppModal.vue';
 import AppInputText from '@/core/components/AppInputText.vue';
+import AppSelect from '@/core/components/AppSelect.vue';
 import { useLoaderStore } from '@/core/store/useLoaderStore';
 import dayjs from 'dayjs';
 import { usePayment } from '../composables/usePayment';
@@ -108,7 +65,7 @@ import type { PaymentResponse } from '../interfaces/payment.interfaces';
 import type { TableHeaders } from '@/core/interfaces/datatable.interface';
 
 const loader = useLoaderStore();
-const { paymentsList, pagination, filters, applyFilters, clearFilters, loadAllPayments, voidExistingPayment } = usePayment();
+const { paymentsList, pagination, filters, paymentStatuses, fetchPaymentStatuses, applyFilters, clearFilters, loadAllPayments, voidExistingPayment } = usePayment();
 
 const headers: TableHeaders[] = [
   { field: 'payment_number', header: 'N° Pago', sortable: false },
@@ -159,9 +116,9 @@ const handlePerPagePagination = async (perPage: number) => {
 };
 
 onMounted(() => {
+  fetchPaymentStatuses();
   loadAllPayments();
 });
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

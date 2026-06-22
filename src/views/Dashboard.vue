@@ -69,13 +69,13 @@
           <template #content>
             <div class="flex justify-between flex-row mt-2">
               <div class="flex justify-start flex-col gap-2 text-surface-500 font-medium">
-                <span>En Tránsito</span>
-                <span>Entregados</span>
+                <span>En Progreso</span>
+                <span>Finalizadas / Devueltas</span>
                 <span>En Mantenimiento</span>
               </div>
               <div class="flex justify-end flex-col gap-2 font-semibold">
-                <span>{{ metricas?.logistica.en_transito || 0 }}</span>
-                <span>{{ metricas?.logistica.entregados || 0 }}</span>
+                <span>{{ metricas?.logistica.en_progreso || 0 }}</span>
+                <span>{{ metricas?.logistica.finalizadas || 0 }}</span>
                 <span>{{ metricas?.logistica.en_mantenimiento || 0 }}</span>
               </div>
             </div>
@@ -164,7 +164,7 @@ const { startLoading, finishLoading } = useLoaderStore();
 const metricas = ref<DashboardSummaryResponse>({
   reservas: { hoy: 2, semana: 15, mes: 45 },
   ingresos: { hoy: 350.00, semana: 2150.50, mes: 8400.00 },
-  logistica: { en_transito: 3, entregados: 8, en_mantenimiento: 12 },
+  logistica: { en_progreso: 3, finalizadas: 8, en_mantenimiento: 12 },
   cuentas_por_cobrar: { balance_pendiente: 1250.00, facturas_draft: 5 },
   top_productos: [
     { nombre: 'Silla Plegable Blanca', cantidad: 450 },
