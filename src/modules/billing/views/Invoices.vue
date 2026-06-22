@@ -4,11 +4,23 @@
       <div class="w-full flex flex-row gap-3 flex-wrap items-center">
         <AppTitle title="Facturación" class="w-full md:w-auto flex justify-center items-center" />
         <div id="inputs" class="flex rounded-lg py-0.5 px-0.5 gap-3 flex-wrap grow lg:grow-0 w-full">
-          <!-- Add future filters here -->
+          <AppInputText label="ID Reserva" class="min-w-auto w-full sm:w-[200px]" v-model="filter.filter_reservation"
+            v-debounce:700.keydown.enter="findInvoice" />
+          <AppAutocomplete class="min-w-auto w-full sm:w-[250px]" label="Cliente" v-model="selectedCustomer"
+            :suggestions="customerSuggestions" optionLabel="fullName" @complete="onCustomerComplete"
+            @update:modelValue="onCustomerSelect" dropdown />
+          <AppSelect class="w-[200px]" label="Estado" v-model="filter.filter_status" :options="invoiceStatuses"
+            optionLabel="name" optionValue="id" @change="findInvoice" />
+          <Button class="rounded-md" v-debounce:700.click="findInvoice">Buscar</Button>
+          <Button class="rounded-md" outlined v-debounce:700.click="cleanSearch" label="Limpiar"
+            :icon="iconFilter"></Button>
         </div>
       </div>
 
-      <AppDataTable class="w-full" :headers="headers" :items="invoices">
+      <AppDataTable class="w-full" :headers="headers" :items="invoices" :paginator="true"
+        :per_page="pagination.per_page" :total_items="pagination.total_items" :page="pagination.page"
+        :show-per-page-options="true" :per-page-options="[10, 20, 50, 100]" @page-update="handlePagination"
+        @per-page-update="handlePerPagePagination">
         <template #body-status="{ data }">
           <AppChipStatus :label="data?.status?.name || 'Desconocido'"
             :backgroundColor="data?.status?.state_color || '#cccccc'"
@@ -39,16 +51,9 @@
       </AppDataTable>
     </section>
 
-    <AppModal
-      :show="actionModal.show"
-      :title="actionModal.title"
-      title-btn-confirm="Confirmar"
-      title-btn-cancel="Cancelar"
-      width="30rem"
-      @close-modal="actionModal.show = false"
-      @update:show="(val: boolean) => actionModal.show = val"
-      @confirm-modal="executeAction"
-    >
+    <AppModal :show="actionModal.show" :title="actionModal.title" title-btn-confirm="Confirmar"
+      title-btn-cancel="Cancelar" width="30rem" @close-modal="actionModal.show = false"
+      @update:show="(val: boolean) => actionModal.show = val" @confirm-modal="executeAction">
       <div class="py-4 text-center text-lg">
         {{ actionModal.message }}
       </div>
@@ -57,9 +62,12 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive } from 'vue';
+import { computed, onMounted, reactive } from 'vue';
 import { Button } from 'primevue';
 import AppTitle from '@/core/components/AppTitle.vue';
+import AppInputText from '@/core/components/AppInputText.vue';
+import AppAutocomplete from '@/core/components/AppAutocomplete.vue';
+import AppSelect from '@/core/components/AppSelect.vue';
 import AppDataTable from '@/core/components/AppDataTable.vue';
 import AppChipStatus from '@/core/components/AppChipStatus.vue';
 import AppModal from '@/core/components/AppModal.vue';
@@ -68,7 +76,7 @@ import { useInvoice } from '../composables/useInvoice';
 import type { Invoice } from '../interfaces/billing.interfaces';
 import type { TableHeaders } from '@/core/interfaces/datatable.interface';
 
-const { invoices, fetchInvoices, issueInvoice, voidInvoice, downloadPdf } = useInvoice();
+const { invoices, fetchInvoices, fetchInvoiceStatuses, invoiceStatuses, customerSuggestions, selectedCustomer, onCustomerComplete, onCustomerSelect, issueInvoice, voidInvoice, downloadPdf, filter, pagination, cleanSearch, findInvoice } = useInvoice();
 
 const headers: TableHeaders[] = [
   { field: 'invoice_number', header: 'N° Factura', sortable: false },
@@ -83,6 +91,27 @@ const formatDate = (dateString: string) => {
   if (!dateString) return '';
   return dayjs(dateString).format('DD/MM/YYYY');
 };
+
+const handlePagination = async (page: number) => {
+  if (page + 1 === pagination.page) return;
+  pagination.page = page + 1;
+  fetchInvoices();
+};
+
+const handlePerPagePagination = async (perPage: number) => {
+  if (perPage === pagination.per_page) return;
+  pagination.per_page = perPage;
+  pagination.page = 1;
+  fetchInvoices();
+};
+
+const iconFilter = computed(() => {
+  const filterValues = Object.values(filter).some(v => v !== undefined);
+  if (!filterValues) {
+    return 'pi pi-filter';
+  }
+  return 'pi pi-filter-slash';
+});
 
 const actionModal = reactive({
   show: false,
@@ -125,5 +154,6 @@ const onDownload = async (invoice: Invoice) => {
 
 onMounted(() => {
   fetchInvoices();
+  fetchInvoiceStatuses();
 });
 </script>
