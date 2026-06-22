@@ -11,7 +11,7 @@ import inventoryServices from '../Services/inventory.services';
 
 type filterType = {
   filter_name?: string;
-  active?: boolean | 'Todos';
+  active?: boolean | 'Todos' | '';
 };
 
 export function useProductCategory() {
@@ -113,7 +113,7 @@ export function useProductCategory() {
         page: pagination.page,
         per_page: pagination.per_page,
         filter_name: filter.filter_name,
-        active: ((filter.active as any) === 'Todos' || (filter.active as any) === '' ? undefined : (filter.active ?? undefined)) as boolean | undefined,
+        active: (filter.active === 'Todos' || filter.active === '' ? undefined : filter.active) as boolean | undefined,
       };
       const response = await inventoryServices.getCategories(params);
 

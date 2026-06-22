@@ -6,6 +6,7 @@ export interface ReservationItem {
   quantity: number;
   unit_price: number;
   total_price: number;
+  notes?: string;
   mnt_product?: {
     name: string;
     sku: string;
@@ -55,6 +56,8 @@ export interface ReservationForm {
   id_customer: string;
   event_start: string;
   event_end: string;
+  total_amount?: number;
+  balance_due?: number;
   delivery_address?: string;
   delivery_address_line2?: string;
   delivery_zip?: string;
@@ -72,6 +75,7 @@ export interface ReservationForm {
   deposit_amount?: number;
   notes?: string;
   internal_notes?: string;
+  status?: string;
   items: {
     id_product: string;
     quantity: number;
@@ -89,9 +93,18 @@ export interface DamageItem {
   charge_amount: number;
 }
 
-export interface InspectionForm {
+export interface InspectionPayload {
   inspection_date: string;
   general_notes?: string;
   overall_condition: string;
+  status?: string;
   damageItems: DamageItem[];
+}
+
+export interface InspectionForm {
+  id_reservation: string;
+  inspection_date: string;
+  general_notes?: string;
+  overall_condition: string;
+  status?: string;
 }

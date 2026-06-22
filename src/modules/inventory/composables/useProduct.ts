@@ -189,7 +189,7 @@ export function useProduct() {
 
   const loadCategories = async () => {
     try {
-      const response = await inventoryServices.getCategories({ active: true, per_page: 100 } as any);
+      const response = await inventoryServices.getCategories({ active: true, per_page: 100 });
       if (response.statusCode === 200) {
         categoriesList.value = response.data.data;
       }

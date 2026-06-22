@@ -35,7 +35,7 @@ export function useInvoice() {
 
   const fetchInvoiceStatuses = async () => {
     try {
-      const response = await catalogServices.getGlobalStatus({ code_category: 'INV', per_page: 100 } as any);
+      const response = await catalogServices.getGlobalStatus({ code_category: 'INV', per_page: 100 } as unknown as Parameters<typeof catalogServices.getGlobalStatus>[0]);
       if (response && response.data && response.data.data) {
          const statuses = response.data.data.map(s => ({ name: s.name, id: s.id }));
          invoiceStatuses.value = [{ name: 'Todos', id: 'Todos' }, ...statuses];
@@ -49,7 +49,7 @@ export function useInvoice() {
     try {
       const response = await customerServices.getCustomers({ filter_name: event.query, per_page: 50, status: true });
       if (response && response.data && response.data.data) {
-        customerSuggestions.value = response.data.data.map((c: any) => ({
+        customerSuggestions.value = response.data.data.map((c: CustomerResponse) => ({
           ...c,
           fullName: `${c.first_name} ${c.last_name}`.trim(),
         }));
@@ -59,7 +59,7 @@ export function useInvoice() {
     }
   };
 
-  const onCustomerSelect = (newValue: any) => {
+  const onCustomerSelect = (newValue: string | (CustomerResponse & { fullName: string }) | undefined | null) => {
     const selectedObj = typeof newValue === 'string' || !newValue ? undefined : newValue;
     selectedCustomer.value = selectedObj;
     filter.filter_customer = selectedObj ? selectedObj.id : undefined;
@@ -78,12 +78,14 @@ export function useInvoice() {
         filter_status: filter.filter_status === 'Todos' ? undefined : filter.filter_status,
       };
       const response = await billingService.getInvoices(params);
-      const responseData = (response as any).data || response;
-      invoices.value = responseData.data || responseData; 
-      if (responseData.current_page) pagination.page = responseData.current_page;
-      if (responseData.per_page) pagination.per_page = responseData.per_page;
-      if (responseData.total_items !== undefined) pagination.total_items = responseData.total_items;
-    } catch (error: any) {
+      
+      if (response && response.data) {
+        invoices.value = response.data.data; 
+        pagination.page = response.data.current_page;
+        pagination.per_page = response.data.per_page;
+        pagination.total_items = response.data.total_items;
+      }
+    } catch (error) {
       toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudieron cargar las facturas', life: 3000 });
     } finally {
       loading.value = false;
@@ -110,9 +112,9 @@ export function useInvoice() {
       loading.value = true;
       startLoading();
       const response = await billingService.getInvoiceById(id);
-      currentInvoice.value = response.data as any;
+      currentInvoice.value = response.data as unknown as Invoice;
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
       toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar la factura', life: 3000 });
     } finally {
       loading.value = false;
@@ -128,7 +130,7 @@ export function useInvoice() {
       toast.add({ severity: 'success', summary: 'Éxito', detail: 'Factura generada', life: 3000 });
       await fetchInvoices();
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
       toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo generar la factura', life: 3000 });
     } finally {
       loading.value = false;
@@ -143,7 +145,7 @@ export function useInvoice() {
       await billingService.issueInvoice(id);
       toast.add({ severity: 'success', summary: 'Éxito', detail: 'Factura emitida', life: 3000 });
       await fetchInvoices();
-    } catch (error: any) {
+    } catch (error) {
       toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo emitir la factura', life: 3000 });
     } finally {
       loading.value = false;
@@ -158,7 +160,7 @@ export function useInvoice() {
       await billingService.voidInvoice(id);
       toast.add({ severity: 'success', summary: 'Éxito', detail: 'Factura anulada', life: 3000 });
       await fetchInvoices();
-    } catch (error: any) {
+    } catch (error) {
       toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo anular la factura', life: 3000 });
     } finally {
       loading.value = false;
@@ -171,7 +173,7 @@ export function useInvoice() {
       loading.value = true;
       startLoading();
       const blob = await billingService.downloadPdf(id);
-      const url = window.URL.createObjectURL(new Blob([blob as any], { type: 'application/pdf' }));
+      const url = window.URL.createObjectURL(new Blob([blob as BlobPart], { type: 'application/pdf' }));
       
       const link = document.createElement('a');
       link.href = url;
@@ -182,7 +184,7 @@ export function useInvoice() {
       link.click();
       
       toast.add({ severity: 'success', summary: 'Éxito', detail: 'Descargando factura', life: 3000 });
-    } catch (error: any) {
+    } catch (error) {
       console.error("PDF Download Error:", error);
       toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo descargar el PDF', life: 3000 });
     } finally {

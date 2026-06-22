@@ -3,8 +3,8 @@ import type { ApiResponseGeneric } from '@/core/services/interfaces/apiResponseG
 import type { Invoice, GenerateInvoicePayload } from '../interfaces/billing.interfaces';
 
 export const billingService = {
-  getInvoices: async (params?: any): Promise<ApiResponseGeneric<Invoice[]>> => {
-    const response = await httpClient.get<ApiResponseGeneric<Invoice[]>>('billing/invoices', params);
+  getInvoices: async (params?: any): Promise<ApiResponseGeneric<Invoice>> => {
+    const response = await httpClient.get<ApiResponseGeneric<Invoice>>('billing/invoices', params);
     return response.data;
   },
 

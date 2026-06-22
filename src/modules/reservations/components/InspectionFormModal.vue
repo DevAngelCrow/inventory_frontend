@@ -104,7 +104,7 @@ import { useLoaderStore } from '@/core/store';
 import { FormatDate } from '@/core/utils/dates';
 
 import { useInspection } from '../composables/useInspection';
-import { ReservationResponse } from '../interfaces/reservation.interfaces';
+import { ReservationResponse, ReservationItem } from '../interfaces/reservation.interfaces';
 
 const props = defineProps<{
   modalState: {
@@ -169,13 +169,13 @@ watch(() => props.modalState.show, (newVal) => {
     resetForm();
     clearDamageItems();
     setFieldValue('id_reservation', props.reservation.id);
-    setFieldValue('inspection_date', FormatDate(new Date().toISOString(), 'DD/MM/YYYY'));
+    setFieldValue('inspection_date', FormatDate(new Date().toISOString(), 'DD/MM/YYYY') || '');
     setFieldValue('overall_condition', 'OK');
   }
 });
 
 const getProductName = (id_product: string) => {
-  const item = reservationProducts.value.find((p: any) => p.id_product === id_product);
+  const item = reservationProducts.value.find((p: ReservationItem) => p.id_product === id_product);
   return item?.mnt_product?.name || 'Mobiliario';
 };
 

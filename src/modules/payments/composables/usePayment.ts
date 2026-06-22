@@ -45,9 +45,9 @@ export function usePayment() {
 
   const fetchPaymentStatuses = async () => {
     try {
-      const response = await catalogServices.getGlobalStatus({ code_category: 'PAY', per_page: 100 } as any);
+      const response = await catalogServices.getGlobalStatus({ code_category: 'PAY', per_page: 100 } as unknown as Parameters<typeof catalogServices.getGlobalStatus>[0]);
       if (response && response.data && response.data.data) {
-         const statuses = response.data.data.map((s: any) => ({ name: s.name, id: s.code }));
+         const statuses = response.data.data.map((s: { name: string; code: string; }) => ({ name: s.name, id: s.code }));
          paymentStatuses.value = [{ name: 'Todos', id: 'Todos' }, ...statuses];
       }
     } catch (error) {
@@ -69,7 +69,7 @@ export function usePayment() {
     try {
       const resp = await paymentServices.getPaymentMethods();
       if (resp && resp.data) {
-        paymentMethodsList.value = resp.data.filter((m: any) => m.active);
+        paymentMethodsList.value = resp.data.filter((m: PaymentMethodResponse) => m.active);
       }
     } catch (error) {
       console.error(error);
@@ -81,11 +81,11 @@ export function usePayment() {
       startLoading();
       const resp = await paymentServices.getPaymentsByReservation(reservationId);
       if (resp && resp.data && resp.data.data) {
-        reservationPayments.value = resp.data.data.map((p: any) => {
-          const method = paymentMethodsList.value.find((m: any) => m.id === p.id_payment_method);
+        reservationPayments.value = resp.data.data.map((p: PaymentResponse) => {
+          const method = paymentMethodsList.value.find((m: PaymentMethodResponse) => m.id === p.id_payment_method);
           return {
             ...p,
-            ctl_payment_method: method ? { name: method.name } : { name: 'N/A' }
+            ctl_payment_method: method ? method : ({ name: 'N/A' } as PaymentMethodResponse)
           };
         });
       } else {
@@ -101,7 +101,7 @@ export function usePayment() {
   const loadAllPayments = async () => {
     try {
       startLoading();
-      const params: any = {
+      const params: Record<string, unknown> = {
         page: pagination.page,
         per_page: pagination.per_page,
       };
@@ -113,10 +113,10 @@ export function usePayment() {
       }
       const resp = await paymentServices.getPayments(params);
       if (resp && resp.data) {
-        paymentsList.value = (resp.data as any).data || resp.data;
-        if ((resp.data as any).total_items) {
-          pagination.total_items = (resp.data as any).total_items;
-          pagination.page = (resp.data as any).current_page;
+        paymentsList.value = resp.data.data;
+        if (resp.data.total_items !== undefined) {
+          pagination.total_items = resp.data.total_items;
+          pagination.page = resp.data.current_page;
         }
       }
     } catch (error) {
@@ -131,7 +131,7 @@ export function usePayment() {
       startLoading();
       
       const method = paymentMethodsList.value.find(m => m.id === form.id_payment_method);
-      const payload: any = {
+      const payload: PaymentForm & { payment_method_code: string; id_currency: string; payment_date: string } = {
         ...form,
         payment_method_code: method ? method.code : 'CASH',
         id_currency: '00000000-0000-0000-0000-000000000000', // Default currency UUID

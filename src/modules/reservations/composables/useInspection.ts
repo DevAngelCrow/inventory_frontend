@@ -4,10 +4,18 @@ import * as yup from 'yup';
 
 import { useAlertStore, useLoaderStore } from '@/core/store';
 import { FormatDateToISO } from '@/core/utils/dates';
-import { DamageItem } from '../interfaces/reservation.interfaces';
+import { DamageItem, InspectionForm, InspectionPayload } from '../interfaces/reservation.interfaces';
 import reservationServices from '../Services/reservation.services';
 
 export function useInspection() {
+  const validationSchema = yup.object({
+    id_reservation: yup.string().required(),
+    inspection_date: yup.string().required('La fecha de inspección es requerida'),
+    general_notes: yup.string().nullable(),
+    overall_condition: yup.string().required('La condición general es requerida'),
+    status: yup.string().default('PENDING'),
+  });
+
   const {
     errors,
     defineField,
@@ -15,14 +23,8 @@ export function useInspection() {
     resetForm,
     setFieldValue,
     values,
-  } = useForm({
-    validationSchema: yup.object({
-      id_reservation: yup.string().required(),
-      inspection_date: yup.string().required('La fecha de inspección es requerida'),
-      general_notes: yup.string().nullable(),
-      overall_condition: yup.string().required('La condición general es requerida'),
-      status: yup.string().default('PENDING'),
-    }),
+  } = useForm<InspectionForm>({
+    validationSchema,
   });
 
   const damageItems = ref<DamageItem[]>([]);
@@ -51,10 +53,10 @@ export function useInspection() {
     return damageItems.value.reduce((sum, item) => sum + Number(item.charge_amount), 0);
   });
 
-  const submitInspection = async (formValues: any) => {
+  const submitInspection = async (formValues: InspectionForm) => {
     try {
       startLoading();
-      const payload = {
+      const payload: InspectionPayload = {
         inspection_date: FormatDateToISO(formValues.inspection_date, 'DD/MM/YYYY') || '',
         general_notes: formValues.general_notes,
         overall_condition: formValues.overall_condition,

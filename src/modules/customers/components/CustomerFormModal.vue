@@ -98,6 +98,7 @@ import { useCustomer } from '../composables/useCustomer';
 import { CustomerForm, CustomerAddressForm } from '../interfaces/customer.interfaces';
 import { useCountries } from '@/modules/catalogs/composables/useCountries';
 import { useGeographicDivision } from '@/modules/catalogs/composables/useGeographicDivision';
+import { CountryResponse } from '@/modules/catalogs/interfaces/country.response.interface';
 
 type CustomerType = ReturnType<typeof useCustomer>;
 
@@ -149,8 +150,7 @@ const {
 
 const { getCountries } = useCountries();
 const { } = useGeographicDivision();
-
-const countryOptions = ref<any[]>([]);
+const countryOptions = ref<CountryResponse[]>([]);
 
 const loadCountries = async () => {
   const result = await getCountries();

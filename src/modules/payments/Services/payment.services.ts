@@ -1,7 +1,7 @@
 import { httpClient } from '@/core/utils/httpClient';
 import { ApiResponseGeneric } from '@/core/services/interfaces/apiResponseGeneric.interface';
 import { ApiPostResponse } from '@/core/services/apiPostResponse.interface';
-import { PaymentResponse, PaymentForm } from '../interfaces/payment.interfaces';
+import { PaymentResponse, PaymentForm, PaymentMethodResponse } from '../interfaces/payment.interfaces';
 
 const registerPayment = async (data: PaymentForm) => {
   const response = await httpClient.post<ApiPostResponse>(
@@ -11,7 +11,7 @@ const registerPayment = async (data: PaymentForm) => {
   return response;
 };
 
-const getPayments = async (params?: any) => {
+const getPayments = async (params?: Record<string, unknown>) => {
   const response = await httpClient.get<ApiResponseGeneric<PaymentResponse>>(
     'payments',
     params
@@ -20,7 +20,7 @@ const getPayments = async (params?: any) => {
 };
 
 const getPaymentsByReservation = async (reservationId: string) => {
-  const response = await httpClient.get<any>(
+  const response = await httpClient.get<ApiResponseGeneric<PaymentResponse>>(
     'payments',
     { filter_reservation: reservationId }
   );
@@ -28,7 +28,7 @@ const getPaymentsByReservation = async (reservationId: string) => {
 };
 
 const getPaymentMethods = async () => {
-  const response = await httpClient.get<any>(
+  const response = await httpClient.get<{ data: PaymentMethodResponse[] }>(
     'payments/methods'
   );
   return response.data;

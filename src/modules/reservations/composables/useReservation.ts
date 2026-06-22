@@ -245,7 +245,7 @@ export function useReservation() {
     cartItems.value = [];
   };
 
-  const saveReservation = async (formValues: ReservationForm) => {
+  const saveReservation = async (formValues: ReservationForm & { status?: any }) => {
     try {
       startLoading();
       if (!cartItems.value.length) {
@@ -261,7 +261,7 @@ export function useReservation() {
       const startIso = FormatDateToISO(formValues.event_start, 'DD/MM/YYYY hh:mm a', true) || '';
       const endIso = FormatDateToISO(formValues.event_end, 'DD/MM/YYYY hh:mm a', true) || '';
 
-      const payload: any = {
+      const payload: ReservationForm = {
         id_customer: formValues.id_customer,
         event_start: startIso,
         event_end: endIso,
@@ -275,7 +275,7 @@ export function useReservation() {
         deposit_amount: Number(formValues.deposit_amount || 0),
         balance_due: cartBalanceDue.value,
         notes: formValues.notes,
-        ...(formValues.id ? { status: (typeof (formValues as any).status === 'object' ? ((formValues as any).status as any)?.code : (formValues as any).status) || 'PENDING' } : {}),
+        ...(formValues.id ? { status: (typeof formValues.status === 'object' && formValues.status !== null ? (formValues.status as { code: string }).code : formValues.status as string) || 'PENDING' } : {}),
         items: cartItems.value.map((i) => ({
           id_product: i.id_product,
           quantity: i.quantity,
@@ -326,7 +326,8 @@ export function useReservation() {
           break;
       }
       // Depending on httpClient return type, it usually has statusCode or status
-      if (response && ((response as any).statusCode === 200 || (response as any).statusCode === 201 || (response as any).status === 200 || (response as any).status === 201)) {
+      const res = response as { statusCode?: number; status?: number };
+      if (res && (res.statusCode === 200 || res.statusCode === 201 || res.status === 200 || res.status === 201)) {
         getReservations();
         alert.showAlert({
           type: 'success',
@@ -368,7 +369,7 @@ export function useReservation() {
     pickup_datetime.value = value?.pickup_datetime;
 
     // Populate cart
-    cartItems.value = (value?.items || []).map((i: any) => ({
+    cartItems.value = (value?.items || []).map((i) => ({
       id_product: i.id_product,
       product_name: i.mnt_product?.name || 'Producto',
       sku: i.mnt_product?.sku || '',

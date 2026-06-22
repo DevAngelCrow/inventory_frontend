@@ -1,7 +1,7 @@
 import { httpClient } from '@/core/utils/httpClient';
 import { ApiResponseGeneric } from '@/core/services/interfaces/apiResponseGeneric.interface';
 import { ApiPostResponse } from '@/core/services/apiPostResponse.interface';
-import { ReservationResponse, ReservationForm } from '../interfaces/reservation.interfaces';
+import { ReservationResponse, ReservationForm, InspectionPayload } from '../interfaces/reservation.interfaces';
 
 const getReservations = async (params?: {
   page?: number;
@@ -11,7 +11,7 @@ const getReservations = async (params?: {
   start_date?: string | null;
   end_date?: string | null;
 }): Promise<ApiResponseGeneric<ReservationResponse>> => {
-  const queryParams: any = {
+  const queryParams: Record<string, unknown> = {
     page: params?.page,
     per_page: params?.per_page,
     filter_status: params?.status,
@@ -50,41 +50,40 @@ const putReservation = async (id: string, data: ReservationForm) => {
 };
 
 const confirmReservation = async (id: string) => {
-  const response = await httpClient.patch<ApiResponseGeneric<any>>(
+  const response = await httpClient.patch<ApiResponseGeneric<ReservationResponse>>(
     `reservations/${id}/status`, { status: 'CONFIRMED' }
   );
   return response;
 };
 
 const cancelReservation = async (id: string, reason: string) => {
-  const response = await httpClient.patch<ApiResponseGeneric<any>>(
+  const response = await httpClient.patch<ApiResponseGeneric<ReservationResponse>>(
     `reservations/${id}/status`, { status: 'CANCELLED', reason }
   );
   return response;
 };
 
 const markInProgress = async (id: string, deliveryDatetime?: string) => {
-  const response = await httpClient.patch<ApiResponseGeneric<any>>(
+  const response = await httpClient.patch<ApiResponseGeneric<ReservationResponse>>(
     `reservations/${id}/status`, { status: 'IN_PROGRESS', ...(deliveryDatetime ? { delivery_datetime: deliveryDatetime } : {}) }
   );
   return response;
 };
 
 const markCompleted = async (id: string, pickupDatetime?: string) => {
-  const response = await httpClient.patch<ApiResponseGeneric<any>>(
+  const response = await httpClient.patch<ApiResponseGeneric<ReservationResponse>>(
     `reservations/${id}/status`, { status: 'COMPLETED', ...(pickupDatetime ? { pickup_datetime: pickupDatetime } : {}) }
   );
   return response;
 };
 
-const registerInspection = async (id: string, data: any) => {
-  // Map payload to backend DTO expectations
+const registerInspection = async (id: string, data: InspectionPayload) => {
+  const { damageItems, ...rest } = data;
   const backendData = {
-    ...data,
+    ...rest,
     id_reservation: id,
-    damage_items: data.damageItems,
+    damage_items: damageItems,
   };
-  delete backendData.damageItems;
 
   const response = await httpClient.post<ApiPostResponse>(
     `inspections`,
@@ -94,7 +93,7 @@ const registerInspection = async (id: string, data: any) => {
 };
 
 const getInspection = async (id: string) => {
-  const response = await httpClient.get<ApiResponseGeneric<any>>(
+  const response = await httpClient.get<ApiResponseGeneric<unknown>>(
     `inspections?filter_reservation=${id}`
   );
   return response.data;

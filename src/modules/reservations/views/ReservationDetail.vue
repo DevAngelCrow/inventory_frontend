@@ -162,6 +162,7 @@ import { useGeographicDivision } from '@/modules/catalogs/composables/useGeograp
 
 import { useReservation } from '../composables/useReservation';
 import reservationServices from '../Services/reservation.services';
+import { ReservationForm } from '../interfaces/reservation.interfaces';
 
 const route = useRoute();
 const router = useRouter();
@@ -208,39 +209,39 @@ const selectedQtyToAdd = ref<number>(1);
 
 const selectedCustomerCountryId = computed(() => {
   if (!id_customer.value) return undefined;
-  const customer = customersList.value.find((c: any) => c.id === id_customer.value);
+  const customer = customersList.value.find((c) => c.id === id_customer.value);
   return customer?.id_country;
 });
 const customerAddresses = computed(() => {
   if (!id_customer.value) return [];
-  const customer = customersList.value.find((c: any) => c.id === id_customer.value);
+  const customer = customersList.value.find((c) => c.id === id_customer.value);
   return customer?.addresses || [];
 });
 
 const computedStatusLabel = computed(() => {
   if (!status.value) return '';
-  const baseStatus = status.value as any;
-  if (baseStatus.code === 'IN_PROGRESS') {
+  const baseStatus = status.value as { code: string; name: string; state_color: string } | undefined;
+  if (baseStatus?.code === 'IN_PROGRESS') {
     if (pickup_datetime.value) return 'Retornado al almacén';
     if (delivery_datetime.value) return 'Entregado al cliente';
   }
-  return baseStatus.name;
+  return baseStatus?.name || '';
 });
 
 const computedStatusColor = computed(() => {
   if (!status.value) return '';
-  const baseStatus = status.value as any;
-  if (baseStatus.code === 'IN_PROGRESS') {
+  const baseStatus = status.value as { code: string; name: string; state_color: string } | undefined;
+  if (baseStatus?.code === 'IN_PROGRESS') {
     if (pickup_datetime.value) return '#f59e0b'; // amber
     if (delivery_datetime.value) return '#10b981'; // emerald
   }
-  return baseStatus.state_color;
+  return baseStatus?.state_color || '';
 });
 
 
 const onCustomerAddressChange = () => {
   if (!id_customer_address.value) return;
-  const selectedAddr = customerAddresses.value.find((a: any) => a.id === id_customer_address.value);
+  const selectedAddr = customerAddresses.value.find((a) => a.id === id_customer_address.value);
   if (selectedAddr) {
     delivery_address.value = selectedAddr.address_line1;
     delivery_address_line2.value = selectedAddr.address_line2;
@@ -276,7 +277,7 @@ const addItemToCart = () => {
 };
 
 const onSubMit = handleSubmit(async (values) => {
-  const result = await saveReservation(values as any);
+  const result = await saveReservation(values as unknown as ReservationForm);
   if (result) {
     router.push({ name: 'reservations-list' });
   }
