@@ -5,6 +5,7 @@ import * as yup from 'yup';
 import { TableHeaders } from '@/core/interfaces';
 import { useAlertStore, useLoaderStore } from '@/core/store';
 import { FormatDateToISO, FormatDate } from '@/core/utils/dates';
+import { debounce } from '@/core/utils/debounceFunction';
 
 import { ReservationResponse, ReservationForm } from '../interfaces/reservation.interfaces';
 import reservationServices from '../Services/reservation.services';
@@ -350,6 +351,9 @@ export function useReservation() {
     getReservations();
   };
 
+  const debouncedGetReservations = debounce(getReservations, 700);
+  const debouncedCleanSearch = debounce(cleanSearch, 700);
+
   const setReservationItem = (value: ReservationResponse) => {
     setFieldValue('id', value?.id);
     setFieldValue('id_customer', value?.id_customer);
@@ -416,7 +420,9 @@ export function useReservation() {
     saveReservation,
     changeStatus,
     cleanSearch,
+    debouncedCleanSearch,
     setReservationItem,
+    debouncedGetReservations,
     cartItems,
     cartSubtotal,
     cartTaxAmount,

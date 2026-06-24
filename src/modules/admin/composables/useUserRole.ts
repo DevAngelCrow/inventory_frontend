@@ -9,6 +9,7 @@ import { UserRoleByIdRoleItem } from '../interfaces/user-role/user-role-by-id.re
 import { UserRoleUpdateForm } from '../interfaces/user-role/user-role-update.form.interface';
 import { RoleResponse } from '../interfaces/role/role.response.interface';
 import adminServices from '../services/admin.services';
+import { debounce } from '@/core/utils/debounceFunction';
 type filterType = { filter_name?: string; id_status?: string };
 export function useUserRole() {
   const { startLoading, finishLoading } = useLoaderStore();
@@ -121,7 +122,7 @@ export function useUserRole() {
       } = {
         page: pagination.page,
         per_page: pagination.per_page,
-        filter_name: filter.filter_name,
+        filter_name: filter_name.value,
         id_status: filter.id_status,
       };
       const response = await adminServices.getUsers(params);
@@ -210,6 +211,17 @@ export function useUserRole() {
     });
   };
 
+  const debouncedFindUser = debounce(() => {
+    pagination.page = 1;
+    getUsers();
+  }, 700);
+
+  const debouncedCleanSearch = debounce(() => {
+    filter_name.value = null;
+    pagination.page = 1;
+    getUsers();
+  }, 700);
+
   return {
     headers,
     headersRole,
@@ -226,5 +238,7 @@ export function useUserRole() {
     getRoles,
     updateUserRole,
     validateAlphaInput,
+    debouncedFindUser,
+    debouncedCleanSearch,
   };
 }

@@ -6,15 +6,15 @@
         <div id="inputs" class="flex rounded-lg py-0.5 px-0.5 gap-3 flex-wrap grow lg:grow-0 w-full">
           <AppInputText label="Nombre..." class="min-w-auto w-full sm:w-[200px]" v-model="filter.filter_name"
             append-icon="pi pi-search" @update:modelValue="validateAlphaInput(filter.filter_name, 'filter_name')"
-            v-debounce:700.keydown.enter="findProduct" />
+            @keydown.enter="debouncedFindProduct" />
           <AppInputText label="SKU..." class="min-w-auto w-full sm:w-[150px]" v-model="filter.sku"
-            @update:modelValue="validateAlphaInput(filter.sku, 'sku')" v-debounce:700.keydown.enter="findProduct" />
+            @update:modelValue="validateAlphaInput(filter.sku, 'sku')" @keydown.enter="debouncedFindProduct" />
           <AppSelect class="w-full sm:w-[180px] min-w-0" :options="categoriesOptions" option-label="name"
             label="Categoría" v-model="filter.category_id" optionValue="id" />
           <AppSelect class="w-full sm:w-[140px] min-w-0" :options="statusOptions" option-label="name" label="Estado"
             v-model="filter.active" optionValue="value" />
-          <Button class="rounded-md" v-debounce:700.click="findProduct">Buscar</Button>
-          <Button class="rounded-md" outlined v-debounce:700.click="cleanSearch" label="Limpiar"
+          <Button class="rounded-md" @click="debouncedFindProduct">Buscar</Button>
+          <Button class="rounded-md" outlined @click="debouncedCleanSearch" label="Limpiar"
             :icon="iconFilter"></Button>
           <Button class="rounded-md ml-auto" @click="openModal('add')"><i
               class="pi pi-plus-circle flex justify-center items-center text-center mr-1"
@@ -76,7 +76,9 @@ const {
   filter,
   resetForm,
   cleanSearch,
+  debouncedCleanSearch,
   findProduct,
+  debouncedFindProduct,
   validateAlphaInput,
   setProductItem,
   getProducts,

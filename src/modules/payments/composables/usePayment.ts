@@ -3,6 +3,7 @@ import { ref, reactive } from 'vue';
 import * as yup from 'yup';
 
 import { useAlertStore, useLoaderStore } from '@/core/store';
+import { debounce } from '@/core/utils/debounceFunction';
 import { PaymentMethodResponse, PaymentResponse, PaymentForm } from '../interfaces/payment.interfaces';
 import paymentServices from '../Services/payment.services';
 import catalogServices from '@/modules/catalogs/Services/catalog.services';
@@ -190,6 +191,9 @@ export function usePayment() {
     loadAllPayments();
   };
 
+  const debouncedApplyFilters = debounce(applyFilters, 700);
+  const debouncedClearFilters = debounce(clearFilters, 700);
+
 
   return {
     errors,
@@ -220,6 +224,8 @@ export function usePayment() {
     paymentStatuses,
     fetchPaymentStatuses,
     applyFilters,
+    debouncedApplyFilters,
     clearFilters,
+    debouncedClearFilters,
   };
 }

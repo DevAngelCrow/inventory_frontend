@@ -1,5 +1,6 @@
 import { useForm } from 'vee-validate';
 import { nextTick, reactive, ref } from 'vue';
+import { debounce } from '@/core/utils/debounceFunction';
 import * as yup from 'yup';
 
 import { TableHeaders } from '@/core/interfaces';
@@ -289,12 +290,18 @@ export function useGlobalStatus() {
     setFieldValue('category_status', value?.category_status);
   };
 
-  const findGlobalStatus = (value: filterType) => {
-    if (value) {
+  const findGlobalStatus = () => {
+    if (filter.filter_name || filter.status !== undefined) {
       getGlobalStatus();
     }
   };
+  
+  const debouncedFindGlobalStatus = debounce(findGlobalStatus, 700);
+  const debouncedCleanSearch = debounce(cleanSearch, 700);
+
   return {
+    debouncedFindGlobalStatus,
+    debouncedCleanSearch,
     headers,
     errors,
     defineField,

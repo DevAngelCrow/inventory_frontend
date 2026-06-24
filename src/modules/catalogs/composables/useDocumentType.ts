@@ -1,5 +1,6 @@
 import { useForm } from 'vee-validate';
 import { nextTick, reactive, ref } from 'vue';
+import { debounce } from '@/core/utils/debounceFunction';
 import * as yup from 'yup';
 
 import { TableHeaders } from '@/core/interfaces';
@@ -221,13 +222,19 @@ export function useDocumentType() {
     setFieldValue('active', value?.active);
   };
 
-  const findDocumentType = (value: filterType) => {
-    if (value) {
+  const findDocumentType = () => {
+    if (filter.filter_name || filter.status !== undefined) {
       getDocumentTypes();
     }
   };
 
+  
+  const debouncedFindDocumentType = debounce(findDocumentType, 700);
+  const debouncedCleanSearch = debounce(cleanSearch, 700);
+
   return {
+    debouncedFindDocumentType,
+    debouncedCleanSearch,
     headers,
     errors,
     defineField,

@@ -1,5 +1,6 @@
 import { useForm } from 'vee-validate';
 import { nextTick, reactive, ref } from 'vue';
+import { debounce } from '@/core/utils/debounceFunction';
 import * as yup from 'yup';
 
 import { TableHeaders } from '@/core/interfaces';
@@ -260,7 +261,13 @@ export function useGeographicDivisionType() {
     }
   };
 
+  
+  const debouncedFindDivisionType = debounce(findDivisionType, 700);
+  const debouncedCleanSearch = debounce(cleanSearch, 700);
+
   return {
+    debouncedFindDivisionType,
+    debouncedCleanSearch,
     headers,
     errors,
     defineField,

@@ -7,6 +7,7 @@ import { useAlertStore, useLoaderStore } from '@/core/store';
 import { sanitizedValueInput } from '@/core/utils/inputTextValidations';
 
 import adminServices from '../services/admin.services';
+import { debounce } from '@/core/utils/debounceFunction';
 import { PermissionsResponse } from '../interfaces/permissions/permissions.response.interface';
 import { PermissionsCategory } from '../interfaces/permissions/permission.category.interface';
 import { PermissionsCategoryResponse } from '../interfaces/permissions/permission.category.response.interface';
@@ -255,6 +256,16 @@ export function usePermission() {
       getPermissions();
     }
   };
+
+  const debouncedFindPermission = debounce(() => {
+    pagination.page = 1;
+    getPermissions();
+  }, 700);
+
+  const debouncedCleanSearch = debounce(() => {
+    cleanSearch();
+  }, 700);
+
   return {
     headers,
     errors,
@@ -289,5 +300,7 @@ export function usePermission() {
     addPermission,
     editPermission,
     togglePermission,
+    debouncedFindPermission,
+    debouncedCleanSearch,
   };
 }

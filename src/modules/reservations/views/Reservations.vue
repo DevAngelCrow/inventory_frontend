@@ -12,8 +12,8 @@
             v-model="filter.start_date" />
           <AppDatePicker class="w-full sm:w-[180px] min-w-0" id="filter_end_date" label="Fecha Fin"
             v-model="filter.end_date" />
-          <Button class="rounded-md" v-debounce:700.click="getReservations">Buscar</Button>
-          <Button class="rounded-md" outlined v-debounce:700.click="cleanSearch" label="Limpiar"
+          <Button class="rounded-md" @click="debouncedGetReservations">Buscar</Button>
+          <Button class="rounded-md" outlined @click="debouncedCleanSearch" label="Limpiar"
             :icon="iconFilter"></Button>
           <Button class="rounded-md ml-auto" @click="navigateToCreate"><i
               class="pi pi-plus-circle flex justify-center items-center text-center mr-1"
@@ -128,7 +128,9 @@ const reservationInstance = useReservation();
 const {
   filter,
   cleanSearch,
+  debouncedCleanSearch,
   getReservations,
+  debouncedGetReservations,
   loadDependencies,
   changeStatus,
   headers,

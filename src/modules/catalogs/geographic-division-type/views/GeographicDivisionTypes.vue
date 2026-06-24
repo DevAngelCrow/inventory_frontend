@@ -18,7 +18,7 @@
           v-model="filter.filter"
           append-icon="pi pi-search"
           @update:modelValue="validateAlphaInput(filter.filter)"
-          v-debounce:700.keydown.enter="() => findDivisionType(filter)"
+          @keydown.enter="debouncedFindDivisionType"
         />
         <AppSelect
           class="w-full sm:w-[20%] lg:w-auto min-w-0 grow lg:grow-0 shrink-0"
@@ -38,13 +38,13 @@
         />
         <Button
           class="shrink-0 grow rounded-md md:grow-0"
-          v-debounce:700.click="() => findDivisionType(filter)"
+          @click="debouncedFindDivisionType"
           >Buscar</Button
         >
         <Button
           class="shrink-0 grow md:grow-0 rounded-md"
           outlined
-          v-debounce:700.click="cleanSearch"
+          @click="debouncedCleanSearch"
           label="Limpiar"
           :icon="iconFilter"
         ></Button>
@@ -126,6 +126,8 @@ const divisionTypeInstance = useGeographicDivisionType();
 provide('useGeographicDivisionType', divisionTypeInstance);
 
 const {
+  debouncedCleanSearch,
+  debouncedFindDivisionType,
   filter,
   resetForm,
   cleanSearch,

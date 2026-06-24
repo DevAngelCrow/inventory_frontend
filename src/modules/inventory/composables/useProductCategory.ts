@@ -5,6 +5,7 @@ import * as yup from 'yup';
 import { TableHeaders } from '@/core/interfaces';
 import { useAlertStore, useLoaderStore } from '@/core/store';
 import { sanitizedValueInput } from '@/core/utils/inputTextValidations';
+import { debounce } from '@/core/utils/debounceFunction';
 
 import { ProductCategoryResponse, ProductCategoryForm, CreateCategoryPayload, UpdateCategoryPayload } from '../interfaces/inventory.interfaces';
 import inventoryServices from '../Services/inventory.services';
@@ -234,13 +235,16 @@ export function useProductCategory() {
     setFieldValue('active', value?.active);
   };
 
-  const findCategory = async (value: filterType) => {
-    if (value.filter_name || value.active !== undefined) {
+  const findCategory = async () => {
+    if (filter.filter_name || filter.active !== undefined) {
       startLoading();
       await getCategories();
       finishLoading();
     }
   };
+
+  const debouncedFindCategory = debounce(findCategory, 700);
+  const debouncedCleanSearch = debounce(cleanSearch, 700);
 
   return {
     headers,
@@ -255,8 +259,10 @@ export function useProductCategory() {
     getCategories,
     validateAlphaInput,
     cleanSearch,
+    debouncedCleanSearch,
     setCategoryItem,
     findCategory,
+    debouncedFindCategory,
     id,
     idAttrs,
     name,

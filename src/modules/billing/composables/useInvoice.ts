@@ -1,6 +1,8 @@
-import { ref, reactive } from 'vue';
+import { ref, reactive, nextTick } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useLoaderStore } from '@/core/store';
+import { sanitizedValueInput } from '@/core/utils/inputTextValidations';
+import { debounce } from '@/core/utils/debounceFunction';
 import { billingService } from '../Services/billing.services';
 import type { Invoice, GenerateInvoicePayload } from '../interfaces/billing.interfaces';
 import catalogServices from '@/modules/catalogs/Services/catalog.services';
@@ -28,6 +30,21 @@ export function useInvoice() {
     filter_customer: undefined,
     filter_status: 'Todos',
   });
+
+  const findRegex = /[^a-zA-ZáÁéÉíÍóÓúÚñÑ.0-9 ]/g;
+
+  const validateAlphaInput = (
+    value: string | undefined,
+    regex: RegExp = findRegex,
+  ) => {
+    if (!value) {
+      value = '';
+    }
+    const sanitizedValue = sanitizedValueInput(value, regex);
+    nextTick(() => {
+      filter.filter_reservation = sanitizedValue;
+    });
+  };
 
   const invoiceStatuses = ref<{name: string, id: string | 'Todos'}[]>([{name: 'Todos', id: 'Todos'}]);
   const customerSuggestions = ref<(CustomerResponse & { fullName: string })[]>([]);
@@ -106,6 +123,9 @@ export function useInvoice() {
     pagination.page = 1;
     fetchInvoices();
   };
+
+  const debouncedFindInvoice = debounce(findInvoice, 700);
+  const debouncedCleanSearch = debounce(cleanSearch, 700);
 
   const getInvoice = async (id: string) => {
     try {
@@ -200,7 +220,9 @@ export function useInvoice() {
     pagination,
     filter,
     findInvoice,
+    debouncedFindInvoice,
     cleanSearch,
+    debouncedCleanSearch,
     fetchInvoices,
     fetchInvoiceStatuses,
     invoiceStatuses,
@@ -212,6 +234,7 @@ export function useInvoice() {
     generateInvoice,
     issueInvoice,
     voidInvoice,
-    downloadPdf
+    downloadPdf,
+    validateAlphaInput
   };
 }

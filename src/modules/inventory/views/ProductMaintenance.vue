@@ -8,8 +8,8 @@
             label="Filtrar por Producto" v-model="filter.id_product" optionValue="id" />
           <AppSelect class="w-full sm:w-[150px] min-w-0" :options="resolvedOptions" option-label="name" label="Estado"
             v-model="filter.resolved" optionValue="value" />
-          <Button class="rounded-md" v-debounce:700.click="findMaintenance">Buscar</Button>
-          <Button class="rounded-md" outlined v-debounce:700.click="cleanSearch" label="Limpiar"
+          <Button class="rounded-md" @click="debouncedFindMaintenance">Buscar</Button>
+          <Button class="rounded-md" outlined @click="debouncedCleanSearch" label="Limpiar"
             :icon="iconFilter"></Button>
           <Button class="rounded-md ml-auto" @click="openModal('add')"><i
               class="pi pi-plus-circle flex justify-center items-center text-center mr-1"
@@ -68,7 +68,9 @@ const {
   filter,
   resetForm,
   cleanSearch,
+  debouncedCleanSearch,
   findMaintenance,
+  debouncedFindMaintenance,
   setMaintenanceItem,
   getMaintenances,
   loadProducts,

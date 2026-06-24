@@ -4,11 +4,11 @@
       <AppTitle title="Pagos" class="w-full md:w-auto flex justify-center items-center" />
       <div id="inputs" class="flex rounded-lg py-0.5 px-0.5 gap-3 flex-wrap grow lg:grow-0 w-full">
         <AppInputText v-model="filters.filter_reservation" label="ID Reserva" class="w-full md:w-48"
-          @keyup.enter="applyFilters" />
+          @keyup.enter="debouncedApplyFilters" />
         <AppSelect v-model="filters.filter_status" label="Estado" :options="paymentStatuses" optionLabel="name"
           optionValue="id" class="w-full md:w-48" @change="applyFilters" />
-        <Button label="Buscar" icon="pi pi-search" class="p-button-primary" @click="applyFilters" />
-        <Button label="Limpiar" icon="pi pi-filter-slash" class="rounded-md" @click="clearFilters" outlined />
+        <Button label="Buscar" icon="pi pi-search" class="p-button-primary" @click="debouncedApplyFilters" />
+        <Button label="Limpiar" icon="pi pi-filter-slash" class="rounded-md" @click="debouncedClearFilters" outlined />
       </div>
 
       <AppDataTable class="w-full" :headers="headers" :items="paymentsList" :paginator="true"
@@ -65,7 +65,7 @@ import type { PaymentResponse } from '../interfaces/payment.interfaces';
 import type { TableHeaders } from '@/core/interfaces/datatable.interface';
 
 const loader = useLoaderStore();
-const { paymentsList, pagination, filters, paymentStatuses, fetchPaymentStatuses, applyFilters, clearFilters, loadAllPayments, voidExistingPayment } = usePayment();
+const { paymentsList, pagination, filters, paymentStatuses, fetchPaymentStatuses, applyFilters, debouncedApplyFilters, clearFilters, debouncedClearFilters, loadAllPayments, voidExistingPayment } = usePayment();
 
 const headers: TableHeaders[] = [
   { field: 'payment_number', header: 'N° Pago', sortable: false },

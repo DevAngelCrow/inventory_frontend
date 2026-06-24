@@ -18,7 +18,7 @@
           v-model="filter.filter_name"
           append-icon="pi pi-search"
           @update:modelValue="validateAlphaInput(filter.filter_name)"
-          v-debounce:700.keydown.enter="() => findDocumentType(filter)"
+          @keydown.enter="debouncedFindDocumentType"
         />
         <AppSelect
           class="min-w-0 grow lg:grow-0 shrink-0 w-full sm:w-[40%] md:w-auto"
@@ -30,13 +30,13 @@
         />
         <Button
           class="shrink-0 grow md:grow-0 rounded-md"
-          v-debounce:700.click="() => findDocumentType(filter)"
+          @click="debouncedFindDocumentType"
           >Buscar</Button
         >
         <Button
           class="shrink-0 grow md:grow-0 rounded-md"
           outlined
-          v-debounce:700.click="cleanSearch"
+          @click="debouncedCleanSearch"
           label="Limpiar"
           :icon="iconFilter"
         ></Button>
@@ -117,6 +117,8 @@ const documentTypeInstance = useDocumentType();
 provide('useDocumentType', documentTypeInstance);
 
 const {
+  debouncedCleanSearch,
+  debouncedFindDocumentType,
   filter,
   resetForm,
   cleanSearch,

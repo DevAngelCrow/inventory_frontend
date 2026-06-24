@@ -9,6 +9,7 @@ import catalogServices from '@/modules/catalogs/Services/catalog.services';
 import { CategoryStatus } from '@/types/global-status.type';
 
 import adminServices from '../services/admin.services';
+import { debounce } from '@/core/utils/debounceFunction';
 import { RoleStatus } from '../interfaces/role/role.status.response.interface';
 import { RoleResponse } from '../interfaces/role/role.response.interface';
 import { RoleForm } from '../interfaces/role/role.form.interface';
@@ -379,6 +380,21 @@ export function useRole() {
       getPermissions();
     }
   };
+
+  const debouncedFindRole = debounce(() => {
+    pagination.page = 1;
+    getRole();
+  }, 700);
+
+  const debouncedCleanSearch = debounce(() => {
+    cleanSearch();
+  }, 700);
+
+  const debouncedFindPermission = debounce(() => {
+    permissionsPagination.page = 1;
+    getPermissions();
+  }, 700);
+
   return {
     headers,
     errors,
@@ -426,5 +442,8 @@ export function useRole() {
     getRolById,
     getCategoryPermissions,
     categories,
+    debouncedFindRole,
+    debouncedCleanSearch,
+    debouncedFindPermission,
   };
 }

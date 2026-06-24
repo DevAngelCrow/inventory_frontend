@@ -1,5 +1,6 @@
 import { useForm } from 'vee-validate';
 import { nextTick, reactive, ref } from 'vue';
+import { debounce } from '@/core/utils/debounceFunction';
 import * as yup from 'yup';
 
 import { TableHeaders } from '@/core/interfaces';
@@ -262,7 +263,13 @@ export function useDepartment() {
       getDepartments();
     }
   };
+  
+  const debouncedFindDepartment = debounce(findDepartment, 700);
+  const debouncedCleanSearch = debounce(cleanSearch, 700);
+
   return {
+    debouncedFindDepartment,
+    debouncedCleanSearch,
     headers,
     errors,
     defineField,

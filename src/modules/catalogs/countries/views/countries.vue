@@ -17,7 +17,8 @@
           class="min-w-auto w-full sm:w-[50%] grow lg:grow-0 shrink-0 md:w-45 lg:w-83.75"
           v-model="filter.filter_name"
           append-icon="pi pi-search"
-          @input="validateAlphaInput(filter.filter_name)"
+          @update:modelValue="validateAlphaInput(filter.filter_name)"
+          @keydown.enter="debouncedFindCountries"
         />
         <AppSelect
           class="min-w-0 grow lg:grow-0 shrink-0 w-full sm:w-[40%] md:w-auto"
@@ -29,13 +30,13 @@
         />
         <Button
           class="shrink-0 grow md:grow-0 rounded-md"
-          v-debounce:700.click="() => wrapperFindCountries(filter)"
+          @click="debouncedFindCountries"
           >Buscar</Button
         >
         <Button
           class="shrink-0 grow md:grow-0 rounded-md"
           outlined
-          v-debounce:700.click="() => wrapperCleanSearch()"
+          @click="debouncedCleanSearch"
           :icon="iconFilter"
           label="Limpiar"
         ></Button>
@@ -198,6 +199,7 @@ import { TableHeaders } from '@/core/interfaces';
 import AppTitle from '@/core/components/AppTitle.vue';
 import AppModal from '@/core/components/AppModal.vue';
 import { useLoaderStore } from '@/core/store';
+import { debounce } from '@/core/utils/debounceFunction';
 
 import { useCountries } from '../../composables/useCountries';
 import { CountryResponse } from '../../interfaces/country.response.interface';
@@ -282,15 +284,15 @@ const statusOptions = ref<{ name: string; value: boolean | null | 'Todos' }[]>([
   { name: 'Activo', value: true },
   { name: 'Inactivo', value: false },
 ]);
-const wrapperFindCountries = async (value: {
-  filter_name?: string;
-  status?: boolean | 'Todos';
-}) => {
-  items.value = await findCountries(value);
+const wrapperFindCountries = async () => {
+  items.value = await findCountries(filter);
 };
 const wrapperCleanSearch = async () => {
   items.value = await cleanSearch();
 };
+
+const debouncedFindCountries = debounce(wrapperFindCountries, 700);
+const debouncedCleanSearch = debounce(wrapperCleanSearch, 700);
 const closeModalCreate = (value: boolean) => {
   showModal.value = value;
   if (!value) {

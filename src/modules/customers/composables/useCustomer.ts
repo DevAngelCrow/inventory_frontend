@@ -5,6 +5,7 @@ import * as yup from 'yup';
 import { TableHeaders } from '@/core/interfaces';
 import { useAlertStore, useLoaderStore } from '@/core/store';
 import { sanitizedValueInput } from '@/core/utils/inputTextValidations';
+import { debounce } from '@/core/utils/debounceFunction';
 
 import { CustomerResponse, CustomerForm, CustomerAddressForm, CustomerHistoryResponse } from '../interfaces/customer.interfaces';
 import customerServices from '../Services/customer.services';
@@ -274,6 +275,9 @@ export function useCustomer() {
     getCustomers();
   };
 
+  const debouncedFindCustomer = debounce(findCustomer, 700);
+  const debouncedCleanSearch = debounce(cleanSearch, 700);
+
   return {
     headers,
     errors,
@@ -293,6 +297,8 @@ export function useCustomer() {
     cleanSearch,
     setCustomerItem,
     findCustomer,
+    debouncedFindCustomer,
+    debouncedCleanSearch,
     id,
     idAttrs,
     first_name,

@@ -6,11 +6,11 @@
       <div id="inputs" class="flex rounded-lg py-0.5 px-0.5 gap-3 flex-wrap grow lg:grow-0 w-full">
         <AppInputText label="Buscar..." class="min-w-auto w-full sm:w-[250px] shrink-0" v-model="filter.filter_name"
           append-icon="pi pi-search" @update:modelValue="validateAlphaInput(filter.filter_name)"
-          v-debounce:700.keydown.enter="() => findCategory(filter)" />
+          @keydown.enter="debouncedFindCategory" />
         <AppSelect class="w-full sm:w-[150px] min-w-0 shrink-0" :options="statusOptions" option-label="name"
           label="Estado" v-model="filter.active" optionValue="value" />
-        <Button class="shrink-0 rounded-md" v-debounce:700.click="() => findCategory(filter)">Buscar</Button>
-        <Button class="shrink-0 rounded-md" outlined v-debounce:700.click="cleanSearch" label="Limpiar"
+        <Button class="shrink-0 rounded-md" @click="debouncedFindCategory">Buscar</Button>
+        <Button class="shrink-0 rounded-md" outlined @click="debouncedCleanSearch" label="Limpiar"
           :icon="iconFilter"></Button>
         <Button class="shrink-0 rounded-md ml-auto" @click="openModal('add')"><i
             class="pi pi-plus-circle flex justify-center items-center text-center mr-1"
@@ -68,7 +68,9 @@ const {
   filter,
   resetForm,
   cleanSearch,
+  debouncedCleanSearch,
   findCategory,
+  debouncedFindCategory,
   validateAlphaInput,
   setCategoryItem,
   getCategories,

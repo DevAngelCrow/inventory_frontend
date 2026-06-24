@@ -6,11 +6,11 @@
         <div id="inputs" class="flex rounded-lg py-0.5 px-0.5 gap-3 flex-wrap grow lg:grow-0 w-full">
           <AppInputText label="Buscar por nombre, teléfono, email..." class="min-w-auto w-full sm:w-[300px]"
             v-model="filter.filter" append-icon="pi pi-search" @update:modelValue="validateAlphaInput(filter.filter)"
-            v-debounce:700.keydown.enter="findCustomer" />
+            @keydown.enter="debouncedFindCustomer" />
           <AppSelect class="w-full sm:w-[150px] min-w-0" :options="statusOptions" option-label="name" label="Estado"
             v-model="filter.active" optionValue="value" />
-          <Button class="rounded-md" v-debounce:700.click="findCustomer">Buscar</Button>
-          <Button class="rounded-md" outlined v-debounce:700.click="cleanSearch" label="Limpiar"
+          <Button class="rounded-md" @click="debouncedFindCustomer">Buscar</Button>
+          <Button class="rounded-md" outlined @click="debouncedCleanSearch" label="Limpiar"
             :icon="iconFilter"></Button>
           <Button class="rounded-md ml-auto" @click="openModal('add')"><i
               class="pi pi-plus-circle flex justify-center items-center text-center mr-1"
@@ -70,7 +70,9 @@ const {
   filter,
   resetForm,
   cleanSearch,
+  debouncedCleanSearch,
   findCustomer,
+  debouncedFindCustomer,
   validateAlphaInput,
   setCustomerItem,
   getCustomers,

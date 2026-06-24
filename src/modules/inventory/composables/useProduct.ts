@@ -5,6 +5,7 @@ import * as yup from 'yup';
 import { TableHeaders } from '@/core/interfaces';
 import { useAlertStore, useLoaderStore } from '@/core/store';
 import { sanitizedValueInput } from '@/core/utils/inputTextValidations';
+import { debounce } from '@/core/utils/debounceFunction';
 
 import { ProductResponse, ProductForm, ProductCategoryResponse, CreateProductPayload, UpdateProductPayload } from '../interfaces/inventory.interfaces';
 import inventoryServices from '../Services/inventory.services';
@@ -336,6 +337,9 @@ export function useProduct() {
     finishLoading();
   };
 
+  const debouncedFindProduct = debounce(findProduct, 700);
+  const debouncedCleanSearch = debounce(cleanSearch, 700);
+
   return {
     headers,
     errors,
@@ -350,8 +354,10 @@ export function useProduct() {
     loadCategories,
     validateAlphaInput,
     cleanSearch,
+    debouncedCleanSearch,
     setProductItem,
     findProduct,
+    debouncedFindProduct,
     id,
     idAttrs,
     name,

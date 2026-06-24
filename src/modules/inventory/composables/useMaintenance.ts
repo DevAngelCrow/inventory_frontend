@@ -4,6 +4,7 @@ import * as yup from 'yup';
 
 import { TableHeaders } from '@/core/interfaces';
 import { useAlertStore, useLoaderStore } from '@/core/store';
+import { debounce } from '@/core/utils/debounceFunction';
 
 import { ProductMaintenanceResponse, ProductMaintenanceForm, ProductResponse, CreateMaintenancePayload, ResolveMaintenancePayload, UpdateMaintenancePayload } from '../interfaces/inventory.interfaces';
 import inventoryServices from '../Services/inventory.services';
@@ -254,6 +255,9 @@ export function useMaintenance() {
     finishLoading();
   };
 
+  const debouncedFindMaintenance = debounce(findMaintenance, 700);
+  const debouncedCleanSearch = debounce(cleanSearch, 700);
+
   return {
     headers,
     errors,
@@ -267,8 +271,10 @@ export function useMaintenance() {
     getMaintenances,
     loadProducts,
     cleanSearch,
+    debouncedCleanSearch,
     setMaintenanceItem,
     findMaintenance,
+    debouncedFindMaintenance,
     id,
     idAttrs,
     description,
