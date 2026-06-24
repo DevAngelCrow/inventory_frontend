@@ -285,7 +285,7 @@ const statusOptions = ref<{ name: string; value: boolean | null | 'Todos' }[]>([
   { name: 'Inactivo', value: false },
 ]);
 const wrapperFindCountries = async () => {
-  items.value = await findCountries(filter);
+  items.value = await findCountries();
 };
 const wrapperCleanSearch = async () => {
   items.value = await cleanSearch();

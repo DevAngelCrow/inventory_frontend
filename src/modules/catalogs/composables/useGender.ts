@@ -81,8 +81,8 @@ export function useGender() {
     getGenders();
   };
 
-  const findGender = (value: string | null) => {
-    if (value) {
+  const findGender = () => {
+    if (filter_name.value) {
       getGenders();
     }
   };

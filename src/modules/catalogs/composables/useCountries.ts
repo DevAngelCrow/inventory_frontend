@@ -88,8 +88,8 @@ export function useCountries() {
       });
     }
   };
-  const findCountries = async (value: filterType) => {
-    if (value.filter_name || value.status !== null) {
+  const findCountries = async () => {
+    if (filter.filter_name || filter.status !== null) {
       startLoading();
       const items = await getCountries();
       finishLoading();

@@ -312,13 +312,13 @@ export function useGeographicDivision() {
     setFieldValue('parent', value?.parent ?? null);
   };
 
-  const findDivision = (value: filterType) => {
+  const findDivision = () => {
     if (
-      value.filter ||
-      value.status !== undefined ||
-      value.id_country !== undefined ||
-      value.id_type !== undefined ||
-      value.id_parent !== undefined
+      filter.filter ||
+      filter.status !== undefined ||
+      filter.id_country !== undefined ||
+      filter.id_type !== undefined ||
+      filter.id_parent !== undefined
     ) {
       getDivisions();
     }

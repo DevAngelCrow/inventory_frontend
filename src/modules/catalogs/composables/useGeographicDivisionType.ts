@@ -251,11 +251,11 @@ export function useGeographicDivisionType() {
     setFieldValue('country', value?.country);
   };
 
-  const findDivisionType = (value: filterType) => {
+  const findDivisionType = () => {
     if (
-      value.filter ||
-      value.status !== undefined ||
-      value.id_country !== undefined
+      filter.filter ||
+      filter.status !== undefined ||
+      filter.id_country !== undefined
     ) {
       getDivisionTypes();
     }

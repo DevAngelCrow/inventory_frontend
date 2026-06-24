@@ -254,11 +254,11 @@ export function useDepartment() {
     setFieldValue('country', value?.country);
   };
 
-  const findDepartment = (value: filterType) => {
+  const findDepartment = () => {
     if (
-      value.filter_name ||
-      value.status !== undefined ||
-      value.id_country !== undefined
+      filter.filter_name ||
+      filter.status !== undefined ||
+      filter.id_country !== undefined
     ) {
       getDepartments();
     }
