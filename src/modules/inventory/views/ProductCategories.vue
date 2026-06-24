@@ -4,15 +4,15 @@
 
       <AppTitle title="Categorías de Inventario" class="w-full md:w-auto flex justify-center items-center" />
       <div id="inputs" class="flex rounded-lg py-0.5 px-0.5 gap-3 flex-wrap grow lg:grow-0 w-full">
-        <AppInputText label="Buscar..." class="min-w-auto w-full sm:w-[250px] shrink-0" v-model="filter.filter_name"
+        <AppInputText label="Buscar..." class="min-w-auto w-full sm:w-[50%] grow lg:grow-0 shrink-0 md:w-45 lg:w-83.75" v-model="filter.filter_name"
           append-icon="pi pi-search" @update:modelValue="validateAlphaInput(filter.filter_name)"
           @keydown.enter="debouncedFindCategory" />
-        <AppSelect class="w-full sm:w-[150px] min-w-0 shrink-0" :options="statusOptions" option-label="name"
+        <AppSelect class="w-full sm:w-[40%] min-w-0 grow lg:grow-0 shrink-0 md:w-auto" :options="statusOptions" option-label="name"
           label="Estado" v-model="filter.active" optionValue="value" />
-        <Button class="shrink-0 rounded-md" @click="debouncedFindCategory">Buscar</Button>
-        <Button class="shrink-0 rounded-md" outlined @click="debouncedCleanSearch" label="Limpiar"
+        <Button class="shrink-0 grow md:grow-0 rounded-md" @click="debouncedFindCategory">Buscar</Button>
+        <Button class="shrink-0 grow md:grow-0 rounded-md" outlined @click="debouncedCleanSearch" label="Limpiar"
           :icon="iconFilter"></Button>
-        <Button class="shrink-0 rounded-md ml-auto" @click="openModal('add')"><i
+        <Button class="shrink-0 grow md:grow-0 rounded-md ml-auto" @click="openModal('add')"><i
             class="pi pi-plus-circle flex justify-center items-center text-center mr-1"
             style="font-size: 1.1rem; font-weight: bold"></i><span>Agregar</span></Button>
       </div>

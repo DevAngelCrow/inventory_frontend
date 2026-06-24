@@ -3,12 +3,12 @@
     <section id="payments_content" class="w-full xl:w-[80%] flex flex-row flex-wrap gap-5">
       <AppTitle title="Pagos" class="w-full md:w-auto flex justify-center items-center" />
       <div id="inputs" class="flex rounded-lg py-0.5 px-0.5 gap-3 flex-wrap grow lg:grow-0 w-full">
-        <AppInputText v-model="filters.filter_reservation" label="ID Reserva" class="w-full md:w-48"
+        <AppInputText v-model="filters.filter_reservation" label="ID Reserva" class="min-w-auto w-full sm:w-[50%] grow lg:grow-0 shrink-0 md:w-45 lg:w-83.75"
           @keyup.enter="debouncedApplyFilters" />
         <AppSelect v-model="filters.filter_status" label="Estado" :options="paymentStatuses" optionLabel="name"
-          optionValue="id" class="w-full md:w-48" @change="applyFilters" />
-        <Button label="Buscar" icon="pi pi-search" class="p-button-primary" @click="debouncedApplyFilters" />
-        <Button label="Limpiar" icon="pi pi-filter-slash" class="rounded-md" @click="debouncedClearFilters" outlined />
+          optionValue="id" class="w-full sm:w-[40%] min-w-0 grow lg:grow-0 shrink-0 md:w-auto" @change="applyFilters" />
+        <Button label="Buscar" icon="pi pi-search" class="shrink-0 grow md:grow-0 rounded-md" @click="debouncedApplyFilters" />
+        <Button label="Limpiar" icon="pi pi-filter-slash" class="shrink-0 grow md:grow-0 rounded-md" @click="debouncedClearFilters" outlined />
       </div>
 
       <AppDataTable class="w-full" :headers="headers" :items="paymentsList" :paginator="true"
