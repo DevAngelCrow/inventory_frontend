@@ -35,6 +35,8 @@ export interface ReservationResponse {
   geographic_division_name?: string;
   deposit_amount?: number;
   balance_due?: number;
+  delivery_fee?: number;
+  discount_amount?: number;
   notes?: string;
   items: ReservationItem[];
   created_at?: string;

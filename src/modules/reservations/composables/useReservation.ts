@@ -275,6 +275,8 @@ export function useReservation() {
         total_amount: cartTotal.value,
         deposit_amount: Number(formValues.deposit_amount || 0),
         balance_due: cartBalanceDue.value,
+        delivery_fee: Number(formValues.delivery_fee || 0),
+        discount_amount: Number(formValues.discount_amount || 0),
         notes: formValues.notes,
         ...(formValues.id ? { status: (typeof formValues.status === 'object' && formValues.status !== null ? (formValues.status as { code: string }).code : formValues.status as string) || 'PENDING' } : {}),
         items: cartItems.value.map((i) => ({
@@ -366,6 +368,8 @@ export function useReservation() {
     setFieldValue('id_customer_address', value?.id_customer_address);
     setFieldValue('id_geographic_division', value?.id_geographic_division);
     setFieldValue('deposit_amount', Number(value?.deposit_amount));
+    setFieldValue('delivery_fee', Number(value?.delivery_fee || 0));
+    setFieldValue('discount_amount', Number(value?.discount_amount || 0));
     setFieldValue('notes', value?.notes);
     setFieldValue('status', value?.status);
 

@@ -22,7 +22,7 @@ const getPayments = async (params?: Record<string, unknown>) => {
 const getPaymentsByReservation = async (reservationId: string) => {
   const response = await httpClient.get<ApiResponseGeneric<PaymentResponse>>(
     'payments',
-    { filter_reservation: reservationId }
+    { id_reservation: reservationId }
   );
   return response.data;
 };
