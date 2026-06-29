@@ -4,7 +4,6 @@ import { ApiPostResponse } from '@/core/services/apiPostResponse.interface';
 import { paginateParams } from '@/core/services/interfaces/params.paginate.interface';
 
 import { RoutesResponse } from '../interfaces/routes/routes.response.interface';
-import { RouteParentAutocomplete } from '../interfaces/routes/route-parent-autocomplete-obj.interface';
 import { RouteForm } from '../interfaces/routes/route-form.interface';
 import { PermissionsResponse } from '../interfaces/permissions/permissions.response.interface';
 import { PermissionForm } from '../interfaces/permissions/permission.form.interface';
