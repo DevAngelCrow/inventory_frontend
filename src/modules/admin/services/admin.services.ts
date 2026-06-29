@@ -13,7 +13,6 @@ import { CategoryPermissionForm } from '../interfaces/category-permissions/categ
 import { RoleResponse } from '../interfaces/role/role.response.interface';
 import { RoleForm } from '../interfaces/role/role.form.interface';
 import { RouteResponseById } from '../interfaces/routes/route-by-id.response.interface';
-//import { RolByIdResponse } from '../interfaces/role/rol-by-id.response.interface';
 import { UsersResponse } from '../interfaces/user-role/users.response.interface';
 import { UserRoleByIdResponse } from '../interfaces/user-role/user-role-by-id.response.interface';
 import { UserRoleUpdateForm } from '../interfaces/user-role/user-role-update.form.interface';
@@ -32,9 +31,9 @@ const getAllRoutes = async (
   return response.data;
 };
 
-const getAllRoutesWithOutPaginate = async () => {
+const getAllRoutesWithOutPaginate = async (params: paginateParams & ParamsFilter,) => {
   const response =
-    await httpClient.get<RouteParentAutocomplete>('security/routes/');
+    await httpClient.get<ApiResponseGeneric<RoutesResponse>>('security/routes/', params);
 
   return response.data;
 };

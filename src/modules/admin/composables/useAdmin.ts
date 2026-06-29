@@ -267,9 +267,22 @@ export function useAdmin() {
   const loadParentRoutes = async () => {
     try {
       startLoading();
-      const response = await adminServices.getAllRoutesWithOutPaginate();
+      const params: {
+        page?: number;
+        per_page?: number;
+        name?: string;
+        active?: boolean;
+        show?: boolean;
+        id_parent?: string;
+        required_auth?: boolean;
+      } = {
+        page: 1,
+        per_page: 100,
+        ...filter,
+      };
+      const response = await adminServices.getAllRoutesWithOutPaginate(params);
       if (response.statusCode === 200) {
-        parentRoutes.value = response.data
+        parentRoutes.value = response.data.data
           .filter(item => item.parent === null || item.parent === undefined)
           .map(item => ({
             title: item.title,
