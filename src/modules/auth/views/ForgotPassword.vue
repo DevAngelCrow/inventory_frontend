@@ -29,7 +29,7 @@
 
         <!-- Content -->
         <template #content>
-          <form class="flex flex-col gap-5 px-8 pb-8 pt-4" @submit.prevent="onSubmit">
+          <form class="flex flex-col gap-5 px-8 pb-8 pt-4" @submit.prevent="debouncedSubmit">
             <!-- Error alert -->
             <Transition name="fade">
               <div v-if="authError"
@@ -90,6 +90,7 @@ import AppInputText from '@/core/components/AppInputText.vue';
 import { emailFormat } from '@/core/utils/validationRules';
 import { useAuth } from '../composables/useAuth';
 import authServices from '@/core/services/auth.services';
+import { debounce } from '@/core/utils/debounceFunction';
 
 const { validationInputEmail } = useAuth();
 
@@ -106,26 +107,29 @@ const isSuccess = ref(false);
 const authError = ref('');
 const successMessage = ref('');
 
-const onSubmit = handleSubmit(async values => {
-  isLoading.value = true;
-  authError.value = '';
-  successMessage.value = '';
+const debouncedSubmit = debounce(
+  handleSubmit(async values => {
+    isLoading.value = true;
+    authError.value = '';
+    successMessage.value = '';
 
-  try {
-    // Aquí se conectaría la llamada real a la API para enviar el enlace de recuperación
-    // await authServices.forgotPassword({ email: values.email });
-    await authServices.generateLinkResetPassword(values.email);
-    // Simulación de carga
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    try {
+      // Aquí se conectaría la llamada real a la API para enviar el enlace de recuperación
+      // await authServices.forgotPassword({ email: values.email });
+      await authServices.generateLinkResetPassword(values.email);
+      // Simulación de carga
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
-    successMessage.value = 'Se ha enviado un enlace de recuperación a tu correo electrónico.';
-    isSuccess.value = true;
-  } catch (error: any) {
-    authError.value = error.message || 'Ocurrió un error al enviar el correo. Por favor, inténtalo de nuevo.';
-  } finally {
-    isLoading.value = false;
-  }
-});
+      successMessage.value = 'Se ha enviado un enlace de recuperación a tu correo electrónico.';
+      isSuccess.value = true;
+    } catch (error: any) {
+      authError.value = error.message || 'Ocurrió un error al enviar el correo. Por favor, inténtalo de nuevo.';
+    } finally {
+      isLoading.value = false;
+    }
+  }),
+  700,
+);
 </script>
 
 <style scoped>

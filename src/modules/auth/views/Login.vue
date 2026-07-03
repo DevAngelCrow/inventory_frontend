@@ -31,7 +31,7 @@
         <template #content>
           <form
             class="flex flex-col gap-5 px-8 pb-8 pt-4"
-            @submit.prevent="onSubMit"
+            @submit.prevent="debouncedSubmit"
           >
             <!-- Error alert -->
             <Transition name="fade">
@@ -118,6 +118,7 @@ import * as yup from 'yup';
 
 import AppInputText from '@/core/components/AppInputText.vue';
 import { useAuth } from '../composables/useAuth';
+import { debounce } from '@/core/utils/debounceFunction';
 
 const { errors, defineField, handleSubmit } = useForm({
   validationSchema: yup.object({
@@ -138,9 +139,12 @@ const rememberDevice = ref(false);
 
 const { login, isLoading, error: authError } = useAuth();
 
-const onSubMit = handleSubmit(async values => {
-  await login(values.user, values.password);
-});
+const debouncedSubmit = debounce(
+  handleSubmit(async values => {
+    await login(values.user, values.password);
+  }),
+  700,
+);
 </script>
 
 <style scoped>

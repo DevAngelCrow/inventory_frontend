@@ -43,7 +43,7 @@
         <template #content>
           <form
             class="flex flex-col gap-5 px-8 pb-8 pt-4"
-            @submit.prevent="onSubmit"
+            @submit.prevent="debouncedSubmit"
           >
             <!-- Error alert -->
             <Transition name="fade">
@@ -127,6 +127,7 @@ import { Card, Button } from 'primevue';
 import AppInputText from '@/core/components/AppInputText.vue';
 
 import { useAuth } from '../composables/useAuth';
+import { debounce } from '@/core/utils/debounceFunction';
 
 const {
   errors,
@@ -142,9 +143,12 @@ const {
   validationInputPassword,
 } = useAuth();
 
-const onSubmit = handleSubmit(async values => {
-  await registerUser({ email: values.email, password: values.password });
-});
+const debouncedSubmit = debounce(
+  handleSubmit(async values => {
+    await registerUser({ email: values.email, password: values.password });
+  }),
+  700,
+);
 </script>
 
 <style scoped>

@@ -18,17 +18,17 @@
             class="min-w-auto w-auto grow lg:grow-0 flex-shrink-0 md:w-[335px]"
             v-model="filter_name"
             @update:modelValue="validateAlphaInput(filter_name)"
-            v-debounce:700.keydown.enter="() => findGender(filter_name)"
+            @keydown.enter="debouncedFindGender"
           />
           <Button
             class="flex-shrink-0 grow md:grow-0 rounded-md"
-            v-debounce:700.click="() => findGender(filter_name)"
+            @click="debouncedFindGender"
             >Buscar</Button
           >
           <Button
             class="flex-shrink-0 grow md:grow-0 rounded-md"
             outlined
-            v-debounce:700.click="cleanSearch"
+            @click="debouncedCleanSearch"
             >Limpiar</Button
           >
         </div>
@@ -68,6 +68,8 @@ import GenderFormModal from '../components/GenderFormModal.vue';
 import { GenderResponse } from '../../interfaces/gender/gender.response.interface';
 
 const {
+  debouncedCleanSearch,
+  debouncedFindGender,
   filter_name,
   cleanSearch,
   findGender,

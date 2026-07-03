@@ -5,7 +5,7 @@
         class="order-1 md:flex-1 grow"
         label="Buscar permiso..."
         v-model="filter_permission.name"
-        v-debounce:700.keydown.enter="() => searchPermission(filter_permission)"
+        @keydown.enter="debouncedSearchPermission"
       />
       <AppAutocomplete
         class="order-2 md:flex-1 grow"
@@ -21,7 +21,7 @@
         <Button
           class="rounded_btn_search"
           icon="pi pi-search"
-          v-debounce:700.click="() => searchPermission(filter_permission)"
+          @click="debouncedSearchPermission"
         />
         <Button
           class="rounded_btn_clean"
@@ -31,7 +31,7 @@
               : 'pi pi-filter'
           "
           variant="outlined"
-          v-debounce:700.click="cleanSearch"
+          @click="debouncedCleanSearch"
           v-tooltip.bottom="
             filter_permission.name.length || filter_permission.category
               ? 'Quitar filtro'
@@ -105,6 +105,7 @@ import { AutoCompleteCompleteEvent, Button } from 'primevue';
 
 import { useRole } from '../../composables/useRole';
 import { CategoryPermissionsResponse } from '../../interfaces/role/role.category-permisions.response.interface';
+import { debounce } from '@/core/utils/debounceFunction';
 
 type RoleType = ReturnType<typeof useRole>;
 
@@ -186,6 +187,8 @@ const searchPermission = async (value: {
   await findPermission(value);
   setPermissionsIds(permissionsList.value);
 };
+
+const debouncedSearchPermission = debounce(() => searchPermission(filter_permission.value), 700);
 
 const handlePagination = async (page: number) => {
   if (modalState.value === 'view') {
@@ -301,6 +304,8 @@ const cleanSearch = () => {
   getPermissions();
   totalPermissions.value = permissionsPagination.total_items;
 };
+
+const debouncedCleanSearch = debounce(cleanSearch, 700);
 const localPaginationViewMode = (page: number, find?: boolean) => {
   let permissionsTemporalItems = [...permissionsItemsLocal.value];
   if (find) {

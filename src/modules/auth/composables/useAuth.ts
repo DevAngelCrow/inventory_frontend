@@ -115,12 +115,6 @@ export function useAuth() {
         })
         .optional()
         .nullable(),
-      geographic_divisions_type: yup
-        .object({
-          id: yup.string().optional().nullable(),
-        })
-        .optional()
-        .nullable(),
     }),
   });
 
@@ -151,17 +145,12 @@ export function useAuth() {
     form.defineField('documentNumber');
   const [userName, userNameAttrs] = form.defineField('userName');
   const [country, countryAttrs] = form.defineField('country');
-  const [geographic_divisions_type, geographicDivisionTypesAttrs] =
-    form.defineField('geographic_divisions_type');
   const nationalitiesOptions = ref<NationalitiesArray[]>([]);
   const documentTypesOptions = ref<DocumentType[]>([]);
   const gendersOptions = ref<Gender[]>([]);
   const maritalStatusesOptions = ref<MaritalStatus[]>([]);
   const countriesOptions = ref<Country[]>([]);
   const geographicDivisionsOptions = ref<GeographicDivisionResponse[]>([]);
-  const geographicDivisionsTypesOptions = ref<GeographicDivisionTypeResponse[]>(
-    [],
-  );
   const documentTypeId = ref<string>('');
   const editMode = ref<boolean>(false);
   const idPeople = ref<string>('');
@@ -229,18 +218,7 @@ export function useAuth() {
       console.error('Error al obtener las divisiones geográficas:', error);
     }
   };
-  const getGeographicalDivisionsTypes = async (params: string) => {
-    try {
-      const response = await authServices.getGeographicalDivisionsTypes({
-        id_country: params,
-      });
-      if (response.statusCode === 200) {
-        geographicDivisionsTypesOptions.value = response.data.data;
-      }
-    } catch (error) {
-      console.error('Error al obtener las divisiones geográficas:', error);
-    }
-  };
+
   const getDetailsProfile = async () => {
     try {
       if (userInfo && typeof userInfo === 'object' && 'id' in userInfo) {
@@ -265,8 +243,6 @@ export function useAuth() {
           documentTypeId.value = response.data.document_type?.id;
           documentNumber.value = response.data.document?.document_number;
           country.value = response.data.country || null; // Direct assignment
-          geographic_divisions_type.value =
-            response.data.geographic_division_type || null; // Direct assignment
           geographic_divisions.value =
             response.data.geographic_division || null; // Direct assignment
           street.value = response.data.street;
@@ -576,7 +552,6 @@ export function useAuth() {
     getGenders,
     getMaritalStatuses,
     getGeographicalDivisions,
-    getGeographicalDivisionsTypes,
     startLoading,
     finishLoading,
     getDetailsProfile,
@@ -628,8 +603,6 @@ export function useAuth() {
     userNameAttrs,
     country,
     countryAttrs,
-    geographic_divisions_type,
-    geographicDivisionTypesAttrs,
     documentTypeId,
     nationalitiesOptions,
     documentTypesOptions,
@@ -637,7 +610,6 @@ export function useAuth() {
     maritalStatusesOptions,
     countriesOptions,
     geographicDivisionsOptions,
-    geographicDivisionsTypesOptions,
     form,
     editMode,
     updateProfile,

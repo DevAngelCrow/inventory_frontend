@@ -1,5 +1,6 @@
 import { useForm } from 'vee-validate';
 import { nextTick, reactive, ref } from 'vue';
+import { debounce } from '@/core/utils/debounceFunction';
 import * as yup from 'yup';
 
 import { TableHeaders } from '@/core/interfaces';
@@ -232,13 +233,19 @@ export function useCategoryStatus() {
     setFieldValue('active', value?.active);
   };
 
-  const findCategoryStatus = (value: filterType) => {
-    if (value.filter_name || value.status !== undefined) {
+  const findCategoryStatus = () => {
+    if (filter.filter_name || filter.status !== undefined) {
       getCategoryStatuses();
     }
   };
 
+  
+  const debouncedFindCategoryStatus = debounce(findCategoryStatus, 700);
+  const debouncedCleanSearch = debounce(cleanSearch, 700);
+
   return {
+    debouncedFindCategoryStatus,
+    debouncedCleanSearch,
     headers,
     errors,
     defineField,

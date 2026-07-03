@@ -20,36 +20,14 @@
           @change="wrappedGetGeographicalDivisionsTypesByCountry"
           :readonly="!editMode"
         />
-        <AppAutocomplete
-          v-model="geographic_divisions_type"
-          class="flex-1"
-          label="Tipo de división*"
-          id="geographic_divisions_type"
-          v-bind="geographicDivisionTypesAttrs"
-          :error-messages="errors.geographic_division_types"
-          option-label="name"
-          :suggestions="geographicDivisionsTypesFiltered"
-          :options="geographicDivisionsTypesOptions"
-          dropdown
-          @complete="findAutocompleteDivisionTypes"
-          @change="wrappedGetGeographicalDivisions"
-          :disabled="disableGeographicDivisionTypes"
+        <AppGeographicCascade
+          class="col-span-1 sm:col-span-2 xl:col-span-3"
+          :id_country="country?.id"
+          :modelValue="geographic_divisions?.id || geographic_divisions"
+          @update:modelValue="val => geographic_divisions = { id: val }"
           :readonly="!editMode"
-        />
-        <AppAutocomplete
-          v-model="geographic_divisions"
-          class="flex-1"
-          label="División Geográfica*"
-          id="geographic_divisions"
-          v-bind="geographicDivisionsAttrs"
           :error-messages="errors.geographic_divisions"
-          option-label="name"
-          :suggestions="geographicDivisionsFiltered"
-          :options="geographicDivisionsOptions"
-          dropdown
-          @complete="findAutocomplete"
-          :disabled="disableGeographicDivisions"
-          :readonly="!editMode"
+          :isRequired="true"
         />
         <AppInputText
           v-model="street"
@@ -148,6 +126,7 @@ import {
   AutoCompleteCompleteEvent,
   Checkbox,
 } from 'primevue';
+import AppGeographicCascade from '@/core/components/AppGeographicCascade.vue';
 
 import { Country } from '@/core/services/interfaces/auth/country.interface';
 import { GeographicDivisionResponse } from '@/modules/catalogs/interfaces/geographic-division/geographic-division.response.interface';
@@ -175,24 +154,17 @@ const {
   currentAttrs,
   country,
   countryAttrs,
-  geographic_divisions_type,
-  geographicDivisionTypesAttrs,
   errors,
   geographicDivisionsOptions,
   countriesOptions,
-  geographicDivisionsTypesOptions,
   validationInputAlphanumeric,
   getGeographicalDivisions,
-  getGeographicalDivisionsTypes,
   form,
   editMode,
 } = useAuthInstance;
 
 const geographicDivisionsFiltered = ref<GeographicDivisionResponse[]>([]);
 const countriesFiltered = ref<Country[]>([]);
-const geographicDivisionsTypesFiltered = ref<GeographicDivisionTypeResponse[]>(
-  [],
-);
 
 const findAutocomplete = (event: AutoCompleteCompleteEvent) => {
   const query = event?.query;
@@ -205,19 +177,7 @@ const findAutocomplete = (event: AutoCompleteCompleteEvent) => {
   geographicDivisionsFiltered.value = filtered;
 };
 
-const findAutocompleteDivisionTypes = (event: AutoCompleteCompleteEvent) => {
-  let query = event?.query;
-  let _filteredItems = [];
 
-  for (let i = 0; i < geographicDivisionsTypesOptions.value.length; i++) {
-    let item = geographicDivisionsTypesOptions.value[i];
-
-    if (item?.name?.toLowerCase().indexOf(query.toLowerCase()) === 0) {
-      _filteredItems.push(item);
-    }
-  }
-  geographicDivisionsTypesFiltered.value = _filteredItems;
-};
 const findAutocompleteCountries = (event: AutoCompleteCompleteEvent) => {
   let query = event?.query;
   let _filteredItems = [];
@@ -242,42 +202,19 @@ const wrappedGetGeographicalDivisionsTypesByCountry = async (
   event: AutoCompleteChangeEvent,
 ) => {
   try {
-    form.resetField('geographic_divisions_type');
     form.resetField('geographic_divisions');
     geographicDivisionsOptions.value = [];
-    geographicDivisionsTypesOptions.value = [];
     const params = event.value.id as string;
-    await getGeographicalDivisionsTypes(params);
+    // getGeographicalDivisionsTypes ya no es necesario
   } catch (error) {
-    console.error(
-      'Error al obtener los tipos de divisiones geográficas:',
-      error,
-    );
+    console.error(error);
   }
 };
 
-const disableGeographicDivisionTypes = computed(() => {
-  if (!country.value || !country.value.id) {
-    return true;
-  }
-  return false;
-});
 
-const disableGeographicDivisions = computed(() => {
-  if (
-    !geographic_divisions_type.value ||
-    !geographic_divisions_type.value.id ||
-    !country.value ||
-    !country.value.id
-  ) {
-    return true;
-  }
-  return false;
-});
 watch(editMode, async newValue => {
   if (newValue) {
-    await getGeographicalDivisionsTypes(country.value?.id);
-    await getGeographicalDivisions(geographic_divisions_type.value?.id);
+    // Si queremos cargar algo extra
   }
 });
 </script>

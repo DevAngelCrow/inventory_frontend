@@ -1,5 +1,6 @@
 import { useForm } from 'vee-validate';
 import { nextTick, reactive, ref } from 'vue';
+import { debounce } from '@/core/utils/debounceFunction';
 import * as yup from 'yup';
 
 import { TableHeaders } from '@/core/interfaces';
@@ -253,16 +254,22 @@ export function useDepartment() {
     setFieldValue('country', value?.country);
   };
 
-  const findDepartment = (value: filterType) => {
+  const findDepartment = () => {
     if (
-      value.filter_name ||
-      value.status !== undefined ||
-      value.id_country !== undefined
+      filter.filter_name ||
+      filter.status !== undefined ||
+      filter.id_country !== undefined
     ) {
       getDepartments();
     }
   };
+  
+  const debouncedFindDepartment = debounce(findDepartment, 700);
+  const debouncedCleanSearch = debounce(cleanSearch, 700);
+
   return {
+    debouncedFindDepartment,
+    debouncedCleanSearch,
     headers,
     errors,
     defineField,

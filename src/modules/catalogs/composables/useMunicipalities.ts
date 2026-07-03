@@ -1,5 +1,6 @@
 import { useForm } from 'vee-validate';
 import { nextTick, reactive, ref } from 'vue';
+import { debounce } from '@/core/utils/debounceFunction';
 import * as yup from 'yup';
 
 import { TableHeaders } from '@/core/interfaces';
@@ -249,12 +250,18 @@ export function useMunicipality() {
     setFieldValue('department', value?.department);
   };
 
-  const findMunicipality = (value: filterType) => {
-    if (value) {
+  const findMunicipality = () => {
+    if (filter.filter_name || filter.status !== undefined) {
       getMunicipalities();
     }
   };
+  
+  const debouncedFindMunicipality = debounce(findMunicipality, 700);
+  const debouncedCleanSearch = debounce(cleanSearch, 700);
+
   return {
+    debouncedFindMunicipality,
+    debouncedCleanSearch,
     headers,
     errors,
     defineField,

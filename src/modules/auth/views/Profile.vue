@@ -23,7 +23,7 @@
               :class="['mx-1 my-1']"
               icon="pi pi-check"
               rounded
-              @click="updateProfile()"
+              @click="debouncedUpdateProfile()"
             />
             <Button
               label="Cancelar"
@@ -72,6 +72,7 @@ import AccountInformation from '../components/AccountInformation.vue';
 import PersonalInformation from '../components/PersonalInformation.vue';
 import DocumentInformation from '../components/DocumentInformation.vue';
 import AddressInformation from '../components/AddressInformation.vue';
+import { debounce } from '@/core/utils/debounceFunction';
 
 const useAuthInstance = useAuth();
 provide('useAuthInstance', useAuthInstance);
@@ -109,4 +110,6 @@ const classActions = computed(() => {
     ? 'flex justify-end items-center gap-1 transition-opacity duration-500 ease-in-out opacity-100'
     : 'opacity-0 pointer-events-none absolute';
 });
+
+const debouncedUpdateProfile = debounce(updateProfile, 700);
 </script>

@@ -1,5 +1,6 @@
 import { useForm } from 'vee-validate';
 import { nextTick, reactive, ref } from 'vue';
+import { debounce } from '@/core/utils/debounceFunction';
 import * as yup from 'yup';
 
 import { TableHeaders } from '@/core/interfaces';
@@ -248,12 +249,18 @@ export function useDistrict() {
     setFieldValue('municipality', value?.municipality);
   };
 
-  const findDistrict = (value: filterType) => {
-    if (value) {
+  const findDistrict = () => {
+    if (filter.filter_name || filter.status !== undefined) {
       getDistricts();
     }
   };
+  
+  const debouncedFindDistrict = debounce(findDistrict, 700);
+  const debouncedCleanSearch = debounce(cleanSearch, 700);
+
   return {
+    debouncedFindDistrict,
+    debouncedCleanSearch,
     headers,
     errors,
     defineField,

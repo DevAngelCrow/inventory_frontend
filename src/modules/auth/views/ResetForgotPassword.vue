@@ -29,7 +29,7 @@
 
                 <!-- Content -->
                 <template #content>
-                    <form class="flex flex-col gap-5 px-8 pb-8 pt-4" @submit.prevent="onSubmit">
+                    <form class="flex flex-col gap-5 px-8 pb-8 pt-4" @submit.prevent="debouncedSubmit">
                         <!-- Error alert -->
                         <Transition name="fade">
                             <div v-if="authError"
@@ -62,7 +62,7 @@
 
                         <!-- Submit -->
                         <Button type="submit" :loading="isLoading" :disabled="isLoading || isSuccess"
-                            class="w-full mt-1" size="large" @click="onSubmit">
+                            class="w-full mt-1" size="large" @click="debouncedSubmit">
                             <template #default>
                                 <span class="flex items-center justify-center gap-2">
                                     <i v-if="!isLoading" class="pi pi-save" />
@@ -94,6 +94,7 @@ import { useRoute, useRouter } from 'vue-router';
 
 import AppInputText from '@/core/components/AppInputText.vue';
 import authServices from '@/core/services/auth.services';
+import { debounce } from '@/core/utils/debounceFunction';
 
 const route = useRoute();
 const router = useRouter();
@@ -119,39 +120,42 @@ const isSuccess = ref(false);
 const authError = ref('');
 const successMessage = ref('');
 
-const onSubmit = handleSubmit(async values => {
-    isLoading.value = true;
-    authError.value = '';
-    successMessage.value = '';
+const debouncedSubmit = debounce(
+    handleSubmit(async values => {
+        isLoading.value = true;
+        authError.value = '';
+        successMessage.value = '';
 
-    try {
-        // Aquí se conectaría la llamada real a la API para restablecer la contraseña
-        await authServices.resetPassword(
-            {
-                password: values.password,
-            },
-            {
-                id: route.query.id as string,
-                token: route.query.token as string,
-            }
-        );
+        try {
+            // Aquí se conectaría la llamada real a la API para restablecer la contraseña
+            await authServices.resetPassword(
+                {
+                    password: values.password,
+                },
+                {
+                    id: route.query.id as string,
+                    token: route.query.token as string,
+                }
+            );
 
-        // Simulación de carga
-        await new Promise(resolve => setTimeout(resolve, 1500));
+            // Simulación de carga
+            await new Promise(resolve => setTimeout(resolve, 1500));
 
-        successMessage.value = 'Tu contraseña ha sido restablecida correctamente.';
-        isSuccess.value = true;
+            successMessage.value = 'Tu contraseña ha sido restablecida correctamente.';
+            isSuccess.value = true;
 
-        // Redirigir al login después de unos segundos
-        setTimeout(() => {
-            router.push('/login');
-        }, 2000);
-    } catch (error: any) {
-        authError.value = error.message || 'Ocurrió un error al restablecer la contraseña. Por favor, inténtalo de nuevo.';
-    } finally {
-        isLoading.value = false;
-    }
-});
+            // Redirigir al login después de unos segundos
+            setTimeout(() => {
+                router.push('/login');
+            }, 2000);
+        } catch (error: any) {
+            authError.value = error.message || 'Ocurrió un error al restablecer la contraseña. Por favor, inténtalo de nuevo.';
+        } finally {
+            isLoading.value = false;
+        }
+    }),
+    700,
+);
 
 onMounted(() => {
     console.log('route.query', route);

@@ -5,6 +5,7 @@
       :model-value="modelValue"
       @update:model-value="onUpdate"
       :input-id="id"
+      :binary="true"
     />
     <label :for="id">{{ label }}</label>
   </div>

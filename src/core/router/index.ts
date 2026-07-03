@@ -2,6 +2,10 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 import { routesCatalogs } from '@/modules/catalogs/routes';
 import { routesAdmin } from '@/modules/admin/routes';
+import { routesInventory } from '@/modules/inventory/routes';
+import { routesCustomers } from '@/modules/customers/routes';
+import { routesReservations } from '@/modules/reservations/routes';
+import { routesBilling } from '@/modules/billing/routes';
 
 import { useAuthStore } from '../store/useAuthStore';
 
@@ -38,6 +42,10 @@ const routes = [
     children: [
       ...routesCatalogs,
       ...routesAdmin,
+      ...routesInventory,
+      ...routesCustomers,
+      ...routesReservations,
+      ...routesBilling,
       {
         path: '/test-view',
         name: 'test-view',

@@ -7,6 +7,7 @@ import { useAlertStore, useLoaderStore } from '@/core/store';
 import { sanitizedValueInput } from '@/core/utils/inputTextValidations';
 
 import adminServices from '../services/admin.services';
+import { debounce } from '@/core/utils/debounceFunction';
 import { CategoryPermissionsResponse } from '../interfaces/category-permissions/category-permissions-response.interface';
 import { CategoryPermissionForm } from '../interfaces/category-permissions/category-permission-form.interface';
 type filterType = { filter_name?: string; status?: boolean | 'Todos' };
@@ -217,6 +218,16 @@ export function useCategoryPermission() {
       getCategoryPermissions();
     }
   };
+
+  const debouncedFindCategoryPermission = debounce(() => {
+    pagination.page = 1;
+    getCategoryPermissions();
+  }, 700);
+
+  const debouncedCleanSearch = debounce(() => {
+    cleanSearch();
+  }, 700);
+
   return {
     headers,
     errors,
@@ -247,5 +258,7 @@ export function useCategoryPermission() {
     editCategoryPermission,
     toggleCategoryPermission,
     categories,
+    debouncedFindCategoryPermission,
+    debouncedCleanSearch,
   };
 }

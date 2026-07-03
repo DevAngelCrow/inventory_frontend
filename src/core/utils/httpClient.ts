@@ -12,6 +12,7 @@ import type {
   SuccessResponse,
 } from '../interfaces/httpClient.interface';
 import { useAlertStore } from '../store';
+import router from '../router';
 import { useAuthStore } from '../store/useAuthStore';
 
 // Función para configurar los interceptores y envolver la instancia de Axios
@@ -52,8 +53,9 @@ const setupHttpClient = (api: AxiosInstance) => {
         console.error('Error de respuesta:', errorData);
 
         if (error.response.status === 401) {
-          localStorage.removeItem('token');
-          // Aquí se utilizará el router push
+          const auth = useAuthStore();
+          auth.closeSession();
+          router.push({ name: 'login' });
         }
 
         alert.showAlert({

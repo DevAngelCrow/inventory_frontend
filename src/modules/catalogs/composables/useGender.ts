@@ -1,4 +1,5 @@
 import { ref, reactive, nextTick } from 'vue';
+import { debounce } from '@/core/utils/debounceFunction';
 
 import { TableHeaders } from '@/core/interfaces';
 import { useLoaderStore } from '@/core/store';
@@ -80,13 +81,19 @@ export function useGender() {
     getGenders();
   };
 
-  const findGender = (value: string | null) => {
-    if (value) {
+  const findGender = () => {
+    if (filter_name.value) {
       getGenders();
     }
   };
 
+  
+  const debouncedFindGender = debounce(findGender, 700);
+  const debouncedCleanSearch = debounce(cleanSearch, 700);
+
   return {
+    debouncedFindGender,
+    debouncedCleanSearch,
     headers,
     genders,
     pagination,

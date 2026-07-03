@@ -1,5 +1,6 @@
 import { useForm } from 'vee-validate';
 import { nextTick, reactive, ref } from 'vue';
+import { debounce } from '@/core/utils/debounceFunction';
 import * as yup from 'yup';
 
 import { TableHeaders } from '@/core/interfaces';
@@ -250,17 +251,23 @@ export function useGeographicDivisionType() {
     setFieldValue('country', value?.country);
   };
 
-  const findDivisionType = (value: filterType) => {
+  const findDivisionType = () => {
     if (
-      value.filter ||
-      value.status !== undefined ||
-      value.id_country !== undefined
+      filter.filter ||
+      filter.status !== undefined ||
+      filter.id_country !== undefined
     ) {
       getDivisionTypes();
     }
   };
 
+  
+  const debouncedFindDivisionType = debounce(findDivisionType, 700);
+  const debouncedCleanSearch = debounce(cleanSearch, 700);
+
   return {
+    debouncedFindDivisionType,
+    debouncedCleanSearch,
     headers,
     errors,
     defineField,

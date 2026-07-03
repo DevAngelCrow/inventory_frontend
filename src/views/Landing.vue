@@ -1,5 +1,6 @@
 <template>
-  <div class="flex flex-col align-top h-screen">
+  <div class="flex flex-col align-top min-h-screen bg-surface-50">
+    <HeaderSection />
     <HeroSection />
     <FeaturesBenefitsSection />
     <HowItWorksSection />
@@ -13,6 +14,7 @@
 <script setup lang="ts">
 import { defineComponent } from 'vue';
 
+import HeaderSection from './components/landing/HeaderSection.vue';
 import HeroSection from './components/landing/HeroSection.vue';
 import FeaturesBenefitsSection from './components/landing/FeaturesBenefitsSection.vue';
 import HowItWorksSection from './components/landing/HowItWorksSection.vue';

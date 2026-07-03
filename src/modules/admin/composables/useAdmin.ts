@@ -3,6 +3,7 @@ import * as yup from 'yup';
 import { nextTick, reactive, ref } from 'vue';
 
 import adminServices from '@/core/services/index.services';
+import { debounce } from '@/core/utils/debounceFunction';
 import { useAlertStore, useLoaderStore } from '@/core/store';
 import { sanitizedValueInput } from '@/core/utils/inputTextValidations';
 import { TableHeaders } from '@/core/interfaces';
@@ -266,9 +267,22 @@ export function useAdmin() {
   const loadParentRoutes = async () => {
     try {
       startLoading();
-      const response = await adminServices.getAllRoutesWithOutPaginate();
+      const params: {
+        page?: number;
+        per_page?: number;
+        name?: string;
+        active?: boolean;
+        show?: boolean;
+        id_parent?: string;
+        required_auth?: boolean;
+      } = {
+        page: 1,
+        per_page: 100,
+        ...filter,
+      };
+      const response = await adminServices.getAllRoutesWithOutPaginate(params);
       if (response.statusCode === 200) {
-        parentRoutes.value = response.data
+        parentRoutes.value = response.data.data
           .filter(item => item.parent === null || item.parent === undefined)
           .map(item => ({
             title: item.title,
@@ -492,6 +506,16 @@ export function useAdmin() {
       getRoutes();
     }
   };
+
+  const debouncedFindRoute = debounce(() => {
+    pagination.page = 1;
+    getRoutes();
+  }, 700);
+
+  const debouncedCleanSearch = debounce(() => {
+    cleanSearch();
+  }, 700);
+
   return {
     getRoutes,
     loadParentRoutes,
@@ -549,5 +573,7 @@ export function useAdmin() {
     filter_permission,
     getCategoryPermissions,
     categories,
+    debouncedFindRoute,
+    debouncedCleanSearch,
   };
 }

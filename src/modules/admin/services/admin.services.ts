@@ -4,7 +4,6 @@ import { ApiPostResponse } from '@/core/services/apiPostResponse.interface';
 import { paginateParams } from '@/core/services/interfaces/params.paginate.interface';
 
 import { RoutesResponse } from '../interfaces/routes/routes.response.interface';
-import { RouteParentAutocomplete } from '../interfaces/routes/route-parent-autocomplete-obj.interface';
 import { RouteForm } from '../interfaces/routes/route-form.interface';
 import { PermissionsResponse } from '../interfaces/permissions/permissions.response.interface';
 import { PermissionForm } from '../interfaces/permissions/permission.form.interface';
@@ -13,7 +12,6 @@ import { CategoryPermissionForm } from '../interfaces/category-permissions/categ
 import { RoleResponse } from '../interfaces/role/role.response.interface';
 import { RoleForm } from '../interfaces/role/role.form.interface';
 import { RouteResponseById } from '../interfaces/routes/route-by-id.response.interface';
-//import { RolByIdResponse } from '../interfaces/role/rol-by-id.response.interface';
 import { UsersResponse } from '../interfaces/user-role/users.response.interface';
 import { UserRoleByIdResponse } from '../interfaces/user-role/user-role-by-id.response.interface';
 import { UserRoleUpdateForm } from '../interfaces/user-role/user-role-update.form.interface';
@@ -32,9 +30,9 @@ const getAllRoutes = async (
   return response.data;
 };
 
-const getAllRoutesWithOutPaginate = async () => {
+const getAllRoutesWithOutPaginate = async (params: paginateParams & ParamsFilter,) => {
   const response =
-    await httpClient.get<RouteParentAutocomplete>('security/routes/');
+    await httpClient.get<ApiResponseGeneric<RoutesResponse>>('security/routes/', params);
 
   return response.data;
 };
