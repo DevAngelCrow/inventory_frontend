@@ -4,11 +4,12 @@
       <div class="w-full flex flex-row gap-3 flex-wrap items-center">
         <AppTitle title="Directorio de Clientes" class="w-full md:w-auto flex justify-center items-center" />
         <div id="inputs" class="flex rounded-lg py-0.5 px-0.5 gap-3 flex-wrap grow lg:grow-0 w-full">
-          <AppInputText label="Buscar por nombre, teléfono, email..." class="min-w-auto w-full sm:w-[50%] grow lg:grow-0 shrink-0 md:w-45 lg:w-83.75"
-            v-model="filter.filter" append-icon="pi pi-search" @update:modelValue="validateAlphaInput(filter.filter)"
+          <AppInputText label="Buscar por nombre, teléfono, email..."
+            class="min-w-auto w-full sm:w-[50%] grow lg:grow-0 shrink-0 md:w-45 lg:w-83.75" v-model="filter.filter"
+            append-icon="pi pi-search" @update:modelValue="validateAlphaInput(filter.filter)"
             @keydown.enter="debouncedFindCustomer" />
-          <AppSelect class="w-full sm:w-[40%] min-w-0 grow lg:grow-0 shrink-0 md:w-auto" :options="statusOptions" option-label="name" label="Estado"
-            v-model="filter.active" optionValue="value" />
+          <AppSelect class="w-full sm:w-[40%] min-w-0 grow lg:grow-0 shrink-0 md:w-auto" :options="statusOptions"
+            option-label="name" label="Estado" v-model="filter.active" optionValue="value" />
           <Button class="shrink-0 grow md:grow-0 rounded-md" @click="debouncedFindCustomer">Buscar</Button>
           <Button class="shrink-0 grow md:grow-0 rounded-md" outlined @click="debouncedCleanSearch" label="Limpiar"
             :icon="iconFilter"></Button>
@@ -69,9 +70,7 @@ provide('useCustomer', customerInstance);
 const {
   filter,
   resetForm,
-  cleanSearch,
   debouncedCleanSearch,
-  findCustomer,
   debouncedFindCustomer,
   validateAlphaInput,
   setCustomerItem,
