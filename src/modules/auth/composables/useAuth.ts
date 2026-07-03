@@ -15,7 +15,7 @@ import { DocumentType } from '@/core/services/interfaces/auth/documentType.inter
 import { Gender } from '@/core/services/interfaces/auth/gender.interface';
 import { MaritalStatus } from '@/core/services/interfaces/auth/maritalStatus.interface';
 import { Country } from '@/core/services/interfaces/auth/country.interface';
-import { GeographicDivisionTypeResponse } from '@/modules/catalogs/interfaces/geographic-division-type/geographic-division-type.response.interface';
+//import { GeographicDivisionTypeResponse } from '@/modules/catalogs/interfaces/geographic-division-type/geographic-division-type.response.interface';
 import { GeographicDivisionResponse } from '@/modules/catalogs/interfaces/geographic-division/geographic-division.response.interface';
 
 import { DocumentTypeObject } from '../interfaces/documentType.interface';
@@ -292,7 +292,7 @@ export function useAuth() {
 
         throw new Error(
           errorData.message ||
-            `Error ${response.status}: ${response.statusText}`,
+          `Error ${response.status}: ${response.statusText}`,
         );
       }
 

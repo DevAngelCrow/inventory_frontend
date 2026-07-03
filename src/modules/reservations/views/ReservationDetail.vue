@@ -1,9 +1,6 @@
 <template>
   <div class="py-5 px-5 h-full max-h-full flex items-start justify-center">
-    <section
-      id="reservation_detail_content"
-      class="w-full xl:w-[95%] flex flex-col gap-6"
-    >
+    <section id="reservation_detail_content" class="w-full xl:w-[95%] flex flex-col gap-6">
       <div class="flex items-center gap-3">
         <Button icon="pi pi-arrow-left" severity="secondary" outlined @click="goBack" />
         <AppTitle :title="pageTitle" />
@@ -25,18 +22,32 @@
                 <AppChipStatus :label="computedStatusLabel" :backgroundColor="computedStatusColor" />
               </div>
 
-              <div class="md:col-span-2 flex flex-col gap-4 mt-2 mb-2 p-4 border rounded-md bg-gray-50 dark:bg-gray-800">
+              <div
+                class="md:col-span-2 flex flex-col gap-4 mt-2 mb-2 p-4 border rounded-md bg-gray-50 dark:bg-gray-800">
                 <h4 class="font-semibold text-lg text-surface-900 dark:text-surface-0">Dirección de Entrega</h4>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <AppSelect class="w-full md:col-span-2" id="id_customer_address" label="Rellenar con dirección guardada del cliente" v-model="id_customer_address" :error-messages="errors.id_customer_address" v-bind="idCustomerAddressAttrs" :options="customerAddresses" optionLabel="label" optionValue="id" :readonly="isReadonly" @change="onCustomerAddressChange" />
+                  <AppSelect class="w-full md:col-span-2" id="id_customer_address"
+                    label="Rellenar con dirección guardada del cliente" v-model="id_customer_address"
+                    :error-messages="errors.id_customer_address" v-bind="idCustomerAddressAttrs"
+                    :options="customerAddresses" optionLabel="label" optionValue="id" :readonly="isReadonly"
+                    @change="onCustomerAddressChange" />
 
-                  <AppInputText class="w-full" id="delivery_address" label="Dirección Línea 1" v-model="delivery_address" :error-messages="errors.delivery_address" v-bind="deliveryAddressAttrs" :readonly="isReadonly" />
-                  <AppInputText class="w-full" id="delivery_address_line2" label="Dirección Línea 2" v-model="delivery_address_line2" :error-messages="errors.delivery_address_line2" v-bind="deliveryAddressLine2Attrs" :readonly="isReadonly" />
-                  
-                  <AppGeographicCascade class="w-full" id="id_geographic_division" v-model="id_geographic_division" :error-messages="errors.id_geographic_division" :id_country="selectedCustomerCountryId" :readonly="isReadonly" />
-                  <AppInputText class="w-full" id="delivery_zip" label="Código Postal" v-model="delivery_zip" :error-messages="errors.delivery_zip" v-bind="deliveryZipAttrs" :readonly="isReadonly" />
-                  
-                  <AppInputextArea class="w-full md:col-span-2" id="delivery_notes" label="Notas de Entrega" v-model="delivery_notes" :error-messages="errors.delivery_notes" v-bind="deliveryNotesAttrs" :readonly="isReadonly" />
+                  <AppInputText class="w-full" id="delivery_address" label="Dirección Línea 1"
+                    v-model="delivery_address" :error-messages="errors.delivery_address" v-bind="deliveryAddressAttrs"
+                    :readonly="isReadonly" />
+                  <AppInputText class="w-full" id="delivery_address_line2" label="Dirección Línea 2"
+                    v-model="delivery_address_line2" :error-messages="errors.delivery_address_line2"
+                    v-bind="deliveryAddressLine2Attrs" :readonly="isReadonly" />
+
+                  <AppGeographicCascade class="w-full" id="id_geographic_division" v-model="id_geographic_division"
+                    :error-messages="errors.id_geographic_division" :id_country="selectedCustomerCountryId"
+                    :readonly="isReadonly" />
+                  <AppInputText class="w-full" id="delivery_zip" label="Código Postal" v-model="delivery_zip"
+                    :error-messages="errors.delivery_zip" v-bind="deliveryZipAttrs" :readonly="isReadonly" />
+
+                  <AppInputextArea class="w-full md:col-span-2" id="delivery_notes" label="Notas de Entrega"
+                    v-model="delivery_notes" :error-messages="errors.delivery_notes" v-bind="deliveryNotesAttrs"
+                    :readonly="isReadonly" />
                 </div>
               </div>
 
@@ -77,8 +88,9 @@
                   <span class="text-primary">${{ cartTotal.toFixed(2) }}</span>
                 </div>
 
-                <AppInputMoney class="w-full" id="deposit_amount" label="Anticipo / Depósito Pagado" v-model="deposit_amount"
-                  :error-messages="errors.deposit_amount" v-bind="depositAmountAttrs" :readonly="isReadonly" />
+                <AppInputMoney class="w-full" id="deposit_amount" label="Anticipo / Depósito Pagado"
+                  v-model="deposit_amount" :error-messages="errors.deposit_amount" v-bind="depositAmountAttrs"
+                  :readonly="isReadonly" />
 
                 <div class="flex justify-between text-lg font-bold text-red-600">
                   <span>Saldo Pendiente:</span>
@@ -104,8 +116,8 @@
               <h3>Artículos Seleccionados para Alquiler</h3>
               <!-- Add Item Form (Inline) -->
               <div class="flex gap-3 items-center flex-wrap" v-if="!isReadonly">
-                <AppSelect class="w-[250px]" id="add_product" label="Seleccionar Producto" v-model="selectedProductToAdd"
-                  :options="productsList" optionLabel="name" />
+                <AppSelect class="w-[250px]" id="add_product" label="Seleccionar Producto"
+                  v-model="selectedProductToAdd" :options="productsList" optionLabel="name" />
                 <AppInputNumber class="w-[100px]" id="add_qty" label="Cant." v-model="selectedQtyToAdd" />
                 <Button label="Agregar" icon="pi pi-plus" size="small" @click="addItemToCart" />
               </div>
@@ -115,20 +127,25 @@
             <DataTable :value="cartItems" class="p-datatable-sm">
               <Column field="product_name" header="Producto"></Column>
               <Column field="sku" header="SKU" headerStyle="width: 15%"></Column>
-              <Column field="quantity" header="Cantidad" headerStyle="width: 15%; text-align: center" bodyStyle="text-align: center"></Column>
-              <Column field="unit_price" header="Precio Unit." headerStyle="width: 15%; text-align: right" bodyStyle="text-align: right">
+              <Column field="quantity" header="Cantidad" headerStyle="width: 15%; text-align: center"
+                bodyStyle="text-align: center"></Column>
+              <Column field="unit_price" header="Precio Unit." headerStyle="width: 15%; text-align: right"
+                bodyStyle="text-align: right">
                 <template #body="{ data }">
                   ${{ Number(data.unit_price).toFixed(2) }}
                 </template>
               </Column>
-              <Column field="subtotal" header="Subtotal" headerStyle="width: 15%; text-align: right" bodyStyle="text-align: right">
+              <Column field="subtotal" header="Subtotal" headerStyle="width: 15%; text-align: right"
+                bodyStyle="text-align: right">
                 <template #body="{ data }">
                   ${{ Number(data.subtotal).toFixed(2) }}
                 </template>
               </Column>
-              <Column header="Acción" headerStyle="width: 10%; text-align: center" bodyStyle="text-align: center" v-if="!isReadonly">
+              <Column header="Acción" headerStyle="width: 10%; text-align: center" bodyStyle="text-align: center"
+                v-if="!isReadonly">
                 <template #body="{ data }">
-                  <Button icon="pi pi-trash" severity="danger" variant="text" rounded @click="removeFromCart(data.id_product)" />
+                  <Button icon="pi pi-trash" severity="danger" variant="text" rounded
+                    @click="removeFromCart(data.id_product)" />
                 </template>
               </Column>
             </DataTable>
@@ -142,7 +159,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, onMounted, provide, ref, watch } from 'vue';
+import { computed, onMounted, provide, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Button, DataTable, Column } from 'primevue';
 import { ProductResponse } from '../../inventory/interfaces/inventory.interfaces';
@@ -158,7 +175,6 @@ import AppGeographicCascade from '@/core/components/AppGeographicCascade.vue';
 import AppInputextArea from '@/core/components/AppInputextArea.vue';
 import AppDatePicker from '@/core/components/AppDatePicker.vue';
 import { useLoaderStore } from '@/core/store';
-import { useGeographicDivision } from '@/modules/catalogs/composables/useGeographicDivision';
 
 import { useReservation } from '../composables/useReservation';
 import reservationServices from '../Services/reservation.services';
@@ -181,7 +197,7 @@ const {
   delivery_zip, deliveryZipAttrs,
   delivery_notes, deliveryNotesAttrs,
   id_customer_address, idCustomerAddressAttrs,
-  id_geographic_division, idGeographicDivisionAttrs,
+  id_geographic_division,
   discount_amount, discountAmountAttrs,
   delivery_fee, deliveryFeeAttrs,
   deposit_amount, depositAmountAttrs,
@@ -252,7 +268,7 @@ const onCustomerAddressChange = () => {
 
 const isReadonly = computed(() => {
   const isUrlView = route.query.mode === 'view';
-  
+
   let isStatusLocked = false;
   if (status.value) {
     const statusCode = (status.value as any).code;

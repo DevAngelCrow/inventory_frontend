@@ -1,26 +1,18 @@
 <template>
   <div class="w-full flex flex-col gap-4">
     <div v-for="(type, idx) in levels" :key="type.id" class="w-full">
-      <AppAutocomplete
-        class="w-full min-w-0"
-        :id="`geo_cascade_${type.id}`"
-        :label="type.name + (isRequired ? '*' : '')"
-        v-model="selectedDivisions[idx]"
-        :readonly="readonly"
+      <AppAutocomplete class="w-full min-w-0" :id="`geo_cascade_${type.id}`"
+        :label="type.name + (isRequired ? '*' : '')" v-model="selectedDivisions[idx]" :readonly="readonly"
         :disabled="readonly || (idx > 0 && !selectedDivisions[idx - 1])"
         :error-messages="idx === levels.length - 1 ? (Array.isArray(errorMessages) ? errorMessages[0] : errorMessages) : ''"
-        option-label="name"
-        :suggestions="divisionOptions[idx] || []"
-        dropdown
-        @complete="onComplete(idx, $event)"
-        @update:modelValue="onDivisionSelect(idx, $event)"
-      />
+        option-label="name" :suggestions="divisionOptions[idx] || []" dropdown @complete="onComplete(idx, $event)"
+        @update:modelValue="onDivisionSelect(idx, $event)" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, nextTick } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import type { AutoCompleteCompleteEvent } from 'primevue';
 import AppAutocomplete from '@/core/components/AppAutocomplete.vue';
 import catalogServices from '@/modules/catalogs/Services/catalog.services';

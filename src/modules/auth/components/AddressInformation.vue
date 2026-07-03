@@ -5,114 +5,43 @@
     </section>
     <section name="content" class="w-full gap-3 flex flex-col flex-wrap">
       <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <AppAutocomplete
-          v-model="country"
-          class="flex-1"
-          label="País*"
-          id="countries"
-          v-bind="countryAttrs"
-          :error-messages="errors.country"
-          option-label="name"
-          :suggestions="countriesFiltered"
-          :options="countriesOptions"
-          dropdown
-          @complete="findAutocompleteCountries"
-          @change="wrappedGetGeographicalDivisionsTypesByCountry"
-          :readonly="!editMode"
-        />
-        <AppGeographicCascade
-          class="col-span-1 sm:col-span-2 xl:col-span-3"
-          :id_country="country?.id"
+        <AppAutocomplete v-model="country" class="flex-1" label="País*" id="countries" v-bind="countryAttrs"
+          :error-messages="errors.country" option-label="name" :suggestions="countriesFiltered"
+          :options="countriesOptions" dropdown @complete="findAutocompleteCountries"
+          @change="wrappedGetGeographicalDivisionsTypesByCountry" :readonly="!editMode" />
+        <AppGeographicCascade class="col-span-1 sm:col-span-2 xl:col-span-3" :id_country="country?.id"
           :modelValue="geographic_divisions?.id || geographic_divisions"
-          @update:modelValue="val => geographic_divisions = { id: val }"
-          :readonly="!editMode"
-          :error-messages="errors.geographic_divisions"
-          :isRequired="true"
-        />
-        <AppInputText
-          v-model="street"
-          class="flex-1"
-          label="Calle*"
-          id="street"
-          v-bind="streetAttrs"
-          :error-messages="errors.street"
-          @update:modelValue="validationInputAlphanumeric(street, 'street')"
-          :readonly="!editMode"
-        />
+          @update:modelValue="val => geographic_divisions = { id: val }" :readonly="!editMode"
+          :error-messages="errors.geographic_divisions" :isRequired="true" />
+        <AppInputText v-model="street" class="flex-1" label="Calle*" id="street" v-bind="streetAttrs"
+          :error-messages="errors.street" @update:modelValue="validationInputAlphanumeric(street, 'street')"
+          :readonly="!editMode" />
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <AppInputText
-          v-model="streetNumber"
-          class="flex-1"
-          label="No. de calle*"
-          id="street_number"
-          v-bind="streetNumberAttrs"
-          :error-messages="errors.streetNumber"
-          @update:modelValue="
+        <AppInputText v-model="streetNumber" class="flex-1" label="No. de calle*" id="street_number"
+          v-bind="streetNumberAttrs" :error-messages="errors.streetNumber" @update:modelValue="
             validationInputAlphanumeric(streetNumber, 'streetNumber')
-          "
-          :readonly="!editMode"
-        />
-        <AppInputText
-          v-model="houseNumber"
-          class="flex-1"
-          label="No. de casa*"
-          id="house_number"
-          v-bind="houseNumberAttrs"
-          :error-messages="errors.houseNumber"
-          @update:modelValue="
+            " :readonly="!editMode" />
+        <AppInputText v-model="houseNumber" class="flex-1" label="No. de casa*" id="house_number"
+          v-bind="houseNumberAttrs" :error-messages="errors.houseNumber" @update:modelValue="
             validationInputAlphanumeric(houseNumber, 'houseNumber')
-          "
-          :readonly="!editMode"
-        />
-        <AppInputText
-          v-model="neighborhood"
-          class="flex-1"
-          label="Colonia/Reparto*"
-          id="neighborhood"
-          v-bind="neighborhoodAttrs"
-          :error-messages="errors.neighborhood"
-          @update:modelValue="
+            " :readonly="!editMode" />
+        <AppInputText v-model="neighborhood" class="flex-1" label="Colonia/Reparto*" id="neighborhood"
+          v-bind="neighborhoodAttrs" :error-messages="errors.neighborhood" @update:modelValue="
             validationInputAlphanumeric(neighborhood, 'neighborhood')
-          "
-          :readonly="!editMode"
-        />
-        <AppInputText
-          v-model="block"
-          class="flex-1"
-          label="Block*"
-          id="block"
-          v-bind="blockAttrs"
-          :error-messages="errors.block"
-          @update:modelValue="
+            " :readonly="!editMode" />
+        <AppInputText v-model="block" class="flex-1" label="Block*" id="block" v-bind="blockAttrs"
+          :error-messages="errors.block" @update:modelValue="
             validationInputAlphanumeric(streetNumber, 'streetNumber')
-          "
-          :readonly="!editMode"
-        />
+            " :readonly="!editMode" />
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <AppInputText
-          v-model="pathway"
-          class="flex-1"
-          label="Pasaje"
-          id="pathway"
-          v-bind="pathwayAttrs"
-          :error-messages="errors.pathway"
-          @update:modelValue="validationInputAlphanumeric(pathway, 'pathway')"
-          :readonly="!editMode"
-        />
+        <AppInputText v-model="pathway" class="flex-1" label="Pasaje" id="pathway" v-bind="pathwayAttrs"
+          :error-messages="errors.pathway" @update:modelValue="validationInputAlphanumeric(pathway, 'pathway')"
+          :readonly="!editMode" />
         <div class="flex items-center gap-2 flex-1">
-          <Checkbox
-            v-model="current"
-            id="current"
-            binary
-            name="Actual"
-            value="Actual"
-            input-id="actual"
-            v-bind="currentAttrs"
-            :error-messages="errors.current"
-            :readonly="!editMode"
-          />
+          <Checkbox v-model="current" id="current" binary name="Actual" value="Actual" input-id="actual"
+            v-bind="currentAttrs" :error-messages="errors.current" :readonly="!editMode" />
           <label for="actual">Actual</label>
         </div>
       </div>
@@ -120,17 +49,17 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, inject, ref, watch } from 'vue';
+import { /*computed,*/ inject, ref, watch } from 'vue';
 import {
-  AutoCompleteChangeEvent,
+  //AutoCompleteChangeEvent,
   AutoCompleteCompleteEvent,
   Checkbox,
 } from 'primevue';
 import AppGeographicCascade from '@/core/components/AppGeographicCascade.vue';
 
 import { Country } from '@/core/services/interfaces/auth/country.interface';
-import { GeographicDivisionResponse } from '@/modules/catalogs/interfaces/geographic-division/geographic-division.response.interface';
-import { GeographicDivisionTypeResponse } from '@/modules/catalogs/interfaces/geographic-division-type/geographic-division-type.response.interface';
+//import { GeographicDivisionResponse } from '@/modules/catalogs/interfaces/geographic-division/geographic-division.response.interface';
+//import { GeographicDivisionTypeResponse } from '@/modules/catalogs/interfaces/geographic-division-type/geographic-division-type.response.interface';
 
 import { useAuth } from '../composables/useAuth';
 type useAuthType = ReturnType<typeof useAuth>;
@@ -143,7 +72,7 @@ const {
   neighborhood,
   neighborhoodAttrs,
   geographic_divisions,
-  geographicDivisionsAttrs,
+  //geographicDivisionsAttrs,
   houseNumber,
   houseNumberAttrs,
   block,
@@ -158,24 +87,24 @@ const {
   geographicDivisionsOptions,
   countriesOptions,
   validationInputAlphanumeric,
-  getGeographicalDivisions,
+  //getGeographicalDivisions,
   form,
   editMode,
 } = useAuthInstance;
 
-const geographicDivisionsFiltered = ref<GeographicDivisionResponse[]>([]);
+//const geographicDivisionsFiltered = ref<GeographicDivisionResponse[]>([]);
 const countriesFiltered = ref<Country[]>([]);
 
-const findAutocomplete = (event: AutoCompleteCompleteEvent) => {
-  const query = event?.query;
-  const filtered: GeographicDivisionResponse[] = [];
-  for (const item of geographicDivisionsOptions.value) {
-    if (item?.name?.toLowerCase().indexOf(query.toLowerCase()) === 0) {
-      filtered.push(item);
-    }
-  }
-  geographicDivisionsFiltered.value = filtered;
-};
+// const findAutocomplete = (event: AutoCompleteCompleteEvent) => {
+//   const query = event?.query;
+//   const filtered: GeographicDivisionResponse[] = [];
+//   for (const item of geographicDivisionsOptions.value) {
+//     if (item?.name?.toLowerCase().indexOf(query.toLowerCase()) === 0) {
+//       filtered.push(item);
+//     }
+//   }
+//   geographicDivisionsFiltered.value = filtered;
+// };
 
 
 const findAutocompleteCountries = (event: AutoCompleteCompleteEvent) => {
@@ -192,19 +121,19 @@ const findAutocompleteCountries = (event: AutoCompleteCompleteEvent) => {
   countriesFiltered.value = _filteredItems;
 };
 
-const wrappedGetGeographicalDivisions = async (
-  event: AutoCompleteChangeEvent,
-) => {
-  const params = event?.value.id as string;
-  await getGeographicalDivisions(params);
-};
+// const wrappedGetGeographicalDivisions = async (
+//   event: AutoCompleteChangeEvent,
+// ) => {
+//   const params = event?.value.id as string;
+//   await getGeographicalDivisions(params);
+// };
 const wrappedGetGeographicalDivisionsTypesByCountry = async (
-  event: AutoCompleteChangeEvent,
+  // event: AutoCompleteChangeEvent,
 ) => {
   try {
     form.resetField('geographic_divisions');
     geographicDivisionsOptions.value = [];
-    const params = event.value.id as string;
+    //const params = event.value.id as string;
     // getGeographicalDivisionsTypes ya no es necesario
   } catch (error) {
     console.error(error);
