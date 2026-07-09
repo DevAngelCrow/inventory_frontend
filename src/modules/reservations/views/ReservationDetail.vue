@@ -289,11 +289,13 @@ const cartHeaders = computed<TableHeaders[]>(() => {
   return headers;
 });
 
-const addItemToCart = () => {
+const addItemToCart = async () => {
   if (!selectedProductToAdd.value || selectedQtyToAdd.value <= 0) return;
-  addToCart(selectedProductToAdd.value, selectedQtyToAdd.value);
-  selectedProductToAdd.value = undefined;
-  selectedQtyToAdd.value = 1;
+  const success = await addToCart(selectedProductToAdd.value, selectedQtyToAdd.value);
+  if (success) {
+    selectedProductToAdd.value = undefined;
+    selectedQtyToAdd.value = 1;
+  }
 };
 
 const onSubMit = handleSubmit(async (values) => {

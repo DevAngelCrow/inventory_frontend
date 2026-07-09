@@ -99,6 +99,25 @@ const getInspection = async (id: string) => {
   return response.data;
 };
 
+const checkAvailability = async (
+  id_product: string,
+  event_start: string,
+  event_end: string,
+  quantity: number
+) => {
+  const queryParams: Record<string, unknown> = {
+    id_product,
+    event_start,
+    event_end,
+    quantity,
+  };
+  const response = await httpClient.get<{ data: { available_stock: number; is_available: boolean }; statusCode: number }>(
+    'reservations/check-availability',
+    queryParams
+  );
+  return response.data;
+};
+
 export default {
   getReservations,
   getReservation,
@@ -110,4 +129,5 @@ export default {
   markCompleted,
   registerInspection,
   getInspection,
+  checkAvailability,
 };

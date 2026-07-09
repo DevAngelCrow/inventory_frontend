@@ -219,8 +219,54 @@ export function useReservation() {
     }
   };
 
-  const addToCart = (product: ProductResponse, quantity: number, notes?: string) => {
+  const addToCart = async (product: ProductResponse, quantity: number, notes?: string): Promise<boolean> => {
+    if (!event_start.value || !event_end.value) {
+      alert.showAlert({
+        type: 'error',
+        title: 'Seleccione las fechas del evento primero',
+        show: true,
+      });
+      return false;
+    }
+
+    const startIso = FormatDateToISO(event_start.value as string, 'DD/MM/YYYY hh:mm a', true) || '';
+    const endIso = FormatDateToISO(event_end.value as string, 'DD/MM/YYYY hh:mm a', true) || '';
+
+    if (!startIso || !endIso) {
+      alert.showAlert({
+        type: 'error',
+        title: 'Formato de fechas inválido',
+        show: true,
+      });
+      return false;
+    }
+
     const exists = cartItems.value.find((item) => item.id_product === product.id);
+    const totalQty = exists ? exists.quantity + quantity : quantity;
+
+    try {
+      startLoading();
+      const response = await reservationServices.checkAvailability(product.id, startIso, endIso, totalQty);
+      if (response && !response.data?.is_available) {
+        alert.showAlert({
+          type: 'error',
+          title: `Stock insuficiente. Disponible: ${response.data?.available_stock || 0}`,
+          show: true,
+        });
+        return false;
+      }
+    } catch (error) {
+      console.error(error);
+      alert.showAlert({
+        type: 'error',
+        title: 'Error verificando disponibilidad',
+        show: true,
+      });
+      return false;
+    } finally {
+      finishLoading();
+    }
+
     const price = Number(product.rental_price);
     if (exists) {
       exists.quantity += quantity;
@@ -236,6 +282,7 @@ export function useReservation() {
         notes,
       });
     }
+    return true;
   };
 
   const removeFromCart = (id_product: string) => {
