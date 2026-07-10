@@ -115,40 +115,28 @@
             <div class="flex justify-between items-center flex-wrap gap-3">
               <h3>Artículos Seleccionados para Alquiler</h3>
               <!-- Add Item Form (Inline) -->
-              <div class="flex gap-3 items-center flex-wrap" v-if="!isReadonly">
-                <AppSelect class="w-[250px]" id="add_product" label="Seleccionar Producto"
+              <div class="flex flex-wrap gap-3 items-center" v-if="!isReadonly">
+                <AppSelect class="flex-1 min-w-[300px]" id="add_product" label="Seleccionar Producto"
                   v-model="selectedProductToAdd" :options="productsList" optionLabel="name" />
-                <AppInputNumber class="w-[100px]" id="add_qty" label="Cant." v-model="selectedQtyToAdd" />
-                <Button label="Agregar" icon="pi pi-plus" size="small" @click="addItemToCart" />
+                <AppInputNumber class="flex grow" id="add_qty" label="Cant." v-model="selectedQtyToAdd" />
+                <Button label="Agregar" class="flex grow rounded-md" icon="pi pi-plus" size="small"
+                  @click="addItemToCart" />
               </div>
             </div>
           </template>
           <template #content>
-            <DataTable :value="cartItems" class="p-datatable-sm">
-              <Column field="product_name" header="Producto"></Column>
-              <Column field="sku" header="SKU" headerStyle="width: 15%"></Column>
-              <Column field="quantity" header="Cantidad" headerStyle="width: 15%; text-align: center"
-                bodyStyle="text-align: center"></Column>
-              <Column field="unit_price" header="Precio Unit." headerStyle="width: 15%; text-align: right"
-                bodyStyle="text-align: right">
-                <template #body="{ data }">
-                  ${{ Number(data.unit_price).toFixed(2) }}
-                </template>
-              </Column>
-              <Column field="subtotal" header="Subtotal" headerStyle="width: 15%; text-align: right"
-                bodyStyle="text-align: right">
-                <template #body="{ data }">
-                  ${{ Number(data.subtotal).toFixed(2) }}
-                </template>
-              </Column>
-              <Column header="Acción" headerStyle="width: 10%; text-align: center" bodyStyle="text-align: center"
-                v-if="!isReadonly">
-                <template #body="{ data }">
-                  <Button icon="pi pi-trash" severity="danger" variant="text" rounded
-                    @click="removeFromCart(data.id_product)" />
-                </template>
-              </Column>
-            </DataTable>
+            <AppDataTable :items="cartItems" :headers="cartHeaders" class="p-datatable-sm w-full">
+              <template #body-unit_price="{ data }">
+                ${{ Number(data.unit_price).toFixed(2) }}
+              </template>
+              <template #body-subtotal="{ data }">
+                ${{ Number(data.subtotal).toFixed(2) }}
+              </template>
+              <template #body-accion="{ data }">
+                <Button icon="pi pi-trash" severity="danger" variant="text" rounded
+                  @click="removeFromCart(data.id_product)" />
+              </template>
+            </AppDataTable>
             <div v-if="!cartItems.length" class="text-center py-5 text-gray-500">
               No hay productos agregados en el carrito para esta reserva.
             </div>
@@ -161,11 +149,13 @@
 <script setup lang="ts">
 import { computed, onMounted, provide, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { Button, DataTable, Column } from 'primevue';
+import { Button } from 'primevue';
 import { ProductResponse } from '../../inventory/interfaces/inventory.interfaces';
+import type { TableHeaders } from '@/core/interfaces/datatable.interface';
 
 import AppTitle from '@/core/components/AppTitle.vue';
 import AppCard from '@/core/components/AppCard.vue';
+import AppDataTable from '@/core/components/AppDataTable.vue';
 import AppChipStatus from '@/core/components/AppChipStatus.vue';
 import AppInputText from '@/core/components/AppInputText.vue';
 import AppInputNumber from '@/core/components/AppInputNumber.vue';
@@ -285,11 +275,27 @@ const pageTitle = computed(() => {
   return 'Nueva Reserva';
 });
 
-const addItemToCart = () => {
+const cartHeaders = computed<TableHeaders[]>(() => {
+  const headers: TableHeaders[] = [
+    { field: 'product_name', header: 'Producto', sortable: false },
+    { field: 'sku', header: 'SKU', sortable: false, width: 15 },
+    { field: 'quantity', header: 'Cantidad', sortable: false, width: 15, alignItems: 'center', alignHeaders: 'center' },
+    { field: 'unit_price', header: 'Precio Unit.', sortable: false, width: 15, alignItems: 'end', alignHeaders: 'end' },
+    { field: 'subtotal', header: 'Subtotal', sortable: false, width: 15, alignItems: 'end', alignHeaders: 'end' },
+  ];
+  if (!isReadonly.value) {
+    headers.push({ field: 'accion', header: 'Acción', sortable: false, width: 10, alignItems: 'center', alignHeaders: 'center' });
+  }
+  return headers;
+});
+
+const addItemToCart = async () => {
   if (!selectedProductToAdd.value || selectedQtyToAdd.value <= 0) return;
-  addToCart(selectedProductToAdd.value, selectedQtyToAdd.value);
-  selectedProductToAdd.value = undefined;
-  selectedQtyToAdd.value = 1;
+  const success = await addToCart(selectedProductToAdd.value, selectedQtyToAdd.value);
+  if (success) {
+    selectedProductToAdd.value = undefined;
+    selectedQtyToAdd.value = 1;
+  }
 };
 
 const onSubMit = handleSubmit(async (values) => {

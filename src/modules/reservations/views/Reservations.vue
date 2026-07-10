@@ -37,6 +37,13 @@
             ${{ Number(data.balance_due).toFixed(2) }}
           </span>
         </template>
+        <template #body-mnt_customer.full_address="{ data }">
+          <span class="block truncate max-w-[200px] hover:cursor-pointer rounded-lg bg-primary-100"
+            v-tooltip.bottom="data.mnt_customer?.full_address"
+            @click="copyCustomerAddress(data.mnt_customer?.full_address || '')">
+            {{ data.mnt_customer?.full_address }}
+          </span>
+        </template>
         <template #body-status="{ data }">
           <AppChipStatus :label="data?.status?.name" :backgroundColor="data?.status?.state_color"
             :textColor="data?.status?.text_color" />
@@ -140,6 +147,7 @@ const {
   pagination,
   reservations,
   customersList,
+  alert
 } = reservationInstance;
 
 const cancelDialog = reactive({
@@ -164,11 +172,14 @@ const customerOptions = computed(() => {
   ];
 });
 
-// const getStatusBoolean = (status: string): boolean => {
-//   return status !== 'CANCELLED';
-// };
-
-
+const copyCustomerAddress = async (address: string) => {
+  //const message = `La dirección del cliente ${address} ha sido copiada al portapapeles.`;
+  await navigator.clipboard.writeText(address);
+  alert.showAlert({
+    type: 'success',
+    title: 'La dirección del cliente ha sido copiada al portapapeles'
+  });
+}
 
 const navigateToCreate = () => {
   router.push({ name: 'reservation-detail' });

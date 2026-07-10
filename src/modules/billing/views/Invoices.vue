@@ -3,14 +3,15 @@
     <section id="invoices_content" class="w-full xl:w-[80%] flex flex-row flex-wrap gap-5">
       <AppTitle title="Facturación" class="w-full md:w-auto flex justify-center items-center" />
       <div id="inputs" class="flex rounded-lg py-0.5 px-0.5 gap-3 flex-wrap grow lg:grow-0 w-full">
-        <AppInputText label="ID Reserva" class="min-w-auto w-full sm:w-[25%] grow lg:grow-0 shrink-0 md:w-45 lg:w-60" v-model="filter.filter_reservation"
-          @update:modelValue="validateAlphaInput(filter.filter_reservation)"
+        <AppInputText label="ID Reserva" class="min-w-auto w-full sm:w-[25%] grow lg:grow-0 shrink-0 md:w-45 lg:w-60"
+          v-model="filter.filter_reservation" @update:modelValue="validateAlphaInput(filter.filter_reservation)"
           @keydown.enter="debouncedFindInvoice" />
-        <AppAutocomplete class="min-w-auto w-full sm:w-[25%] grow lg:grow-0 shrink-0 md:w-45 lg:w-60" label="Cliente" v-model="selectedCustomer"
-          :suggestions="customerSuggestions" optionLabel="fullName" @complete="onCustomerComplete"
-          @update:modelValue="onCustomerSelect" dropdown />
-        <AppSelect class="w-full sm:w-[20%] lg:w-auto min-w-0 grow lg:grow-0 shrink-0" label="Estado" v-model="filter.filter_status" :options="invoiceStatuses"
-          optionLabel="name" optionValue="id" @change="findInvoice" />
+        <AppAutocomplete class="min-w-auto w-full sm:w-[25%] grow lg:grow-0 shrink-0 md:w-45 lg:w-60" label="Cliente"
+          v-model="selectedCustomer" :suggestions="customerSuggestions" optionLabel="fullName"
+          @complete="onCustomerComplete" @update:modelValue="onCustomerSelect" dropdown />
+        <AppSelect class="w-full sm:w-[20%] lg:w-auto min-w-0 grow lg:grow-0 shrink-0" label="Estado"
+          v-model="filter.filter_status" :options="invoiceStatuses" optionLabel="name" optionValue="id"
+          @change="findInvoice" />
         <Button class="shrink-0 grow rounded-md md:grow-0" @click="debouncedFindInvoice">Buscar</Button>
         <Button class="shrink-0 grow md:grow-0 rounded-md" outlined @click="debouncedCleanSearch" label="Limpiar"
           :icon="iconFilter"></Button>
@@ -31,9 +32,7 @@
         <template #body-issue_date="{ data }">
           {{ formatDate(data.issue_date) }}
         </template>
-        <template #body-customer="{ data }">
-          {{ data.mnt_customer?.first_name }} {{ data.mnt_customer?.last_name }}
-        </template>
+
 
         <template #body-acciones="{ data }">
           <div class="flex gap-2">

@@ -50,6 +50,7 @@ export interface ReservationResponse {
     last_name: string;
     email?: string | null;
     phone?: string | null;
+    full_address?: string;
   };
 }
 
