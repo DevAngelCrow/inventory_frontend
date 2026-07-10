@@ -491,5 +491,6 @@ export function useReservation() {
     filter,
     pagination,
     reservations,
+    alert,
   };
 }
