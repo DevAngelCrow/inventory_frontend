@@ -89,6 +89,13 @@ export function useReservation() {
       alignItems: 'end',
     },
     {
+      field: 'mnt_customer.full_address',
+      header: 'Dirección Cliente',
+      sortable: false,
+      alignHeaders: 'start',
+      alignItems: 'start',
+    },
+    {
       field: 'status',
       header: 'Estado',
       sortable: false,
