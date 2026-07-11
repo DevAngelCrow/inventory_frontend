@@ -504,7 +504,7 @@ export function useAuth() {
 
       if (values.nationalities && values.nationalities.length > 0) {
         values.nationalities.forEach((nat: any) => {
-          formData.append('nationalities[]', nat.id || nat);
+          formData.append('nationalities', nat.id || nat);
         });
       }
 
