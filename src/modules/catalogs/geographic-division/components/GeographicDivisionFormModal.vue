@@ -137,7 +137,6 @@ const {
   toggleDivision,
 } = divisionInstance;
 
-
 const countriesFiltered = ref<CountryResponse[]>([]);
 const divisionTypesFiltered = ref<GeographicDivisionTypeSimple[]>([]);
 const parentsFiltered = ref<GeographicDivisionParent[]>([]);
@@ -193,12 +192,14 @@ const findCountry = (event: AutoCompleteCompleteEvent) => {
   countriesFiltered.value = filtered;
 };
 
-
 const findDivisionType = (event: AutoCompleteCompleteEvent) => {
   const query = event?.query.toLowerCase();
   const filtered: GeographicDivisionTypeSimple[] = [];
   for (const item of divisionTypesList.value) {
-    if (item?.id_country === country.value?.id && item?.name?.toLowerCase().indexOf(query) === 0) {
+    if (
+      item?.id_country === country.value?.id &&
+      item?.name?.toLowerCase().indexOf(query) === 0
+    ) {
       filtered.push(item);
     }
   }
@@ -209,7 +210,10 @@ const findParent = (event: AutoCompleteCompleteEvent) => {
   const query = event?.query.toLowerCase();
   const filtered: GeographicDivisionParent[] = [];
   for (const item of parentDivisionsList.value) {
-    if (item?.id_country === country.value?.id && item?.name?.toLowerCase().indexOf(query) === 0) {
+    if (
+      item?.id_country === country.value?.id &&
+      item?.name?.toLowerCase().indexOf(query) === 0
+    ) {
       filtered.push(item);
     }
   }
@@ -229,11 +233,19 @@ const onCountryChange = async (selectedCountry: CountryResponse | null) => {
   parentLoading.value = true;
   try {
     // Cargar tipos de división filtrados por país
-    await divisionInstance.getDivisionTypesList({ id_country: selectedCountry.id });
-    divisionTypesFiltered.value = divisionTypesList.value.filter((item) => item.id_country === selectedCountry.id);
+    await divisionInstance.getDivisionTypesList({
+      id_country: selectedCountry.id,
+    });
+    divisionTypesFiltered.value = divisionTypesList.value.filter(
+      item => item.id_country === selectedCountry.id,
+    );
     // Cargar divisiones padre filtradas por país
-    await divisionInstance.getParentDivisionsList({ id_country: selectedCountry.id });
-    parentsFiltered.value = parentDivisionsList.value.filter((item) => item.id_country === selectedCountry.id);
+    await divisionInstance.getParentDivisionsList({
+      id_country: selectedCountry.id,
+    });
+    parentsFiltered.value = parentDivisionsList.value.filter(
+      item => item.id_country === selectedCountry.id,
+    );
   } finally {
     divisionTypeLoading.value = false;
     parentLoading.value = false;

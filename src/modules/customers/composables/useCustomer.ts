@@ -7,7 +7,12 @@ import { useAlertStore, useLoaderStore } from '@/core/store';
 import { sanitizedValueInput } from '@/core/utils/inputTextValidations';
 import { debounce } from '@/core/utils/debounceFunction';
 
-import { CustomerResponse, CustomerForm, CustomerAddressForm, CustomerHistoryResponse } from '../interfaces/customer.interfaces';
+import {
+  CustomerResponse,
+  CustomerForm,
+  CustomerAddressForm,
+  CustomerHistoryResponse,
+} from '../interfaces/customer.interfaces';
 import customerServices from '../Services/customer.services';
 
 type filterType = { filter?: string; active?: boolean | 'Todos' };
@@ -29,7 +34,10 @@ export function useCustomer() {
         .string()
         .required('El nombre es requerido')
         .min(2, 'Debe tener al menos 2 caracteres'),
-      middle_name: yup.string().nullable().transform((value) => (value === '' ? null : value)),
+      middle_name: yup
+        .string()
+        .nullable()
+        .transform(value => (value === '' ? null : value)),
       last_name: yup
         .string()
         .required('El apellido es requerido')
@@ -38,14 +46,24 @@ export function useCustomer() {
         .string()
         .email('Debe ser un correo válido')
         .nullable()
-        .transform((value) => (value === '' ? null : value)),
-      phone: yup
+        .transform(value => (value === '' ? null : value)),
+      phone: yup.string().required('El teléfono es requerido'),
+      phone_secondary: yup
         .string()
-        .required('El teléfono es requerido'),
-      phone_secondary: yup.string().nullable().transform((value) => (value === '' ? null : value)),
-      company_name: yup.string().nullable().transform((value) => (value === '' ? null : value)),
-      tax_id: yup.string().nullable().transform((value) => (value === '' ? null : value)),
-      notes: yup.string().nullable().transform((value) => (value === '' ? null : value)),
+        .nullable()
+        .transform(value => (value === '' ? null : value)),
+      company_name: yup
+        .string()
+        .nullable()
+        .transform(value => (value === '' ? null : value)),
+      tax_id: yup
+        .string()
+        .nullable()
+        .transform(value => (value === '' ? null : value)),
+      notes: yup
+        .string()
+        .nullable()
+        .transform(value => (value === '' ? null : value)),
       id_country: yup.string().required('El país es requerido'),
       addresses: yup.array().of(
         yup.object().shape({
@@ -56,7 +74,7 @@ export function useCustomer() {
           zip_code: yup.string().nullable(),
           is_primary: yup.boolean(),
           id_geographic_division: yup.string().nullable(),
-        })
+        }),
       ),
       active: yup.boolean(),
     }),
@@ -126,7 +144,11 @@ export function useCustomer() {
   const [tax_id, taxIdAttrs] = defineField('tax_id');
   const [notes, notesAttrs] = defineField('notes');
   const [id_country, idCountryAttrs] = defineField('id_country');
-  const { fields: addresses, push: pushAddress, remove: removeAddress } = useFieldArray<CustomerAddressForm>('addresses');
+  const {
+    fields: addresses,
+    push: pushAddress,
+    remove: removeAddress,
+  } = useFieldArray<CustomerAddressForm>('addresses');
   const [active, activeAttrs] = defineField('active');
 
   const filter = reactive<filterType>({
@@ -142,7 +164,10 @@ export function useCustomer() {
         page: pagination.page,
         per_page: pagination.per_page,
         filter_name: filter.filter,
-        status: filter.active === 'Todos' ? undefined : filter.active as boolean | undefined,
+        status:
+          filter.active === 'Todos'
+            ? undefined
+            : (filter.active as boolean | undefined),
       };
       const response = await customerServices.getCustomers(params);
 
@@ -266,7 +291,7 @@ export function useCustomer() {
     setFieldValue('notes', value?.notes);
     setFieldValue('id_country', value?.id_country);
     setFieldValue('active', value?.active);
-    
+
     // Clear and set addresses
     setFieldValue('addresses', value?.addresses?.length ? value.addresses : []);
   };

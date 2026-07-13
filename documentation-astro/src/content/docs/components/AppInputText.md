@@ -24,7 +24,6 @@ El componente en referencia se encuentra ya configurado para poder reutilizarlo,
 | label            | String  | ''                | Etiqueta flotante descriptiva del input.                                                                       |
 | id               | String  | -                 | ID único para el campo, útil para accesibilidad o pruebas.                                                     |
 
-
 A continuacion se muestra un ejemplo de como utilizar el componente del input text
 
 ```
@@ -39,7 +38,6 @@ const modelText = ref();
 </template>
 
 ```
-
 
 El componente útiliza v-bind=“attrs”, hereda las propiedades del componente base de PrimeVue 4, en ese sentido, para ampliar que otras propiedades puede integrar en la tabla, puede visitar la página oficial de PrimeVue https://primevue.org/inputText
 

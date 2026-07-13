@@ -1,12 +1,26 @@
 <template>
   <div class="w-full flex flex-col gap-4">
     <div v-for="(type, idx) in levels" :key="type.id" class="w-full">
-      <AppAutocomplete class="w-full min-w-0" :id="`geo_cascade_${type.id}`"
-        :label="type.name + (isRequired ? '*' : '')" v-model="selectedDivisions[idx]" :readonly="readonly"
+      <AppAutocomplete
+        class="w-full min-w-0"
+        :id="`geo_cascade_${type.id}`"
+        :label="type.name + (isRequired ? '*' : '')"
+        v-model="selectedDivisions[idx]"
+        :readonly="readonly"
         :disabled="readonly || (idx > 0 && !selectedDivisions[idx - 1])"
-        :error-messages="idx === levels.length - 1 ? (Array.isArray(errorMessages) ? errorMessages[0] : errorMessages) : ''"
-        option-label="name" :suggestions="divisionOptions[idx] || []" dropdown @complete="onComplete(idx, $event)"
-        @update:modelValue="onDivisionSelect(idx, $event)" />
+        :error-messages="
+          idx === levels.length - 1
+            ? Array.isArray(errorMessages)
+              ? errorMessages[0]
+              : errorMessages
+            : ''
+        "
+        option-label="name"
+        :suggestions="divisionOptions[idx] || []"
+        dropdown
+        @complete="onComplete(idx, $event)"
+        @update:modelValue="onDivisionSelect(idx, $event)"
+      />
     </div>
   </div>
 </template>
@@ -14,6 +28,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
 import type { AutoCompleteCompleteEvent } from 'primevue';
+
 import AppAutocomplete from '@/core/components/AppAutocomplete.vue';
 import catalogServices from '@/modules/catalogs/Services/catalog.services';
 import { GeographicDivisionTypeSimple } from '@/modules/catalogs/interfaces/geographic-division/geographic-division.type.interface';
@@ -95,7 +110,8 @@ const loadLineage = async (id_division: string) => {
 
 const fetchOptions = async (levelIndex: number, query: string) => {
   const typeId = levels.value[levelIndex].id;
-  const parentId = levelIndex > 0 ? selectedDivisions.value[levelIndex - 1]?.id : undefined;
+  const parentId =
+    levelIndex > 0 ? selectedDivisions.value[levelIndex - 1]?.id : undefined;
 
   // Si es un nivel hijo pero no hay padre seleccionado, no se buscan opciones
   if (levelIndex > 0 && !parentId) {
@@ -121,13 +137,20 @@ const fetchOptions = async (levelIndex: number, query: string) => {
   }
 };
 
-const onComplete = async (levelIndex: number, event: AutoCompleteCompleteEvent) => {
+const onComplete = async (
+  levelIndex: number,
+  event: AutoCompleteCompleteEvent,
+) => {
   await fetchOptions(levelIndex, event.query);
 };
 
-const onDivisionSelect = (levelIndex: number, newValue: GeographicDivisionResponse | string | null | undefined) => {
+const onDivisionSelect = (
+  levelIndex: number,
+  newValue: GeographicDivisionResponse | string | null | undefined,
+) => {
   // If the user clears the input, it might send a string or null
-  const selectedObj = typeof newValue === 'string' || !newValue ? undefined : newValue;
+  const selectedObj =
+    typeof newValue === 'string' || !newValue ? undefined : newValue;
   selectedDivisions.value[levelIndex] = selectedObj;
 
   // Clear all downstream selections
@@ -164,12 +187,12 @@ watch(
         emit('update:modelValue', undefined);
       }
     }
-  }
+  },
 );
 
 watch(
   () => props.modelValue,
-  async (newVal) => {
+  async newVal => {
     if (!newVal) {
       selectedDivisions.value.fill(undefined);
     } else {
@@ -184,6 +207,6 @@ watch(
         await loadLineage(newVal);
       }
     }
-  }
+  },
 );
 </script>

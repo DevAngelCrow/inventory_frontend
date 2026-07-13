@@ -48,16 +48,12 @@ export const routesCatalogs = [
     path: 'catalogs/geographic-division-types',
     name: 'geographic-division-types',
     component: () =>
-      import(
-        '@/modules/catalogs/geographic-division-type/views/GeographicDivisionTypes.vue'
-      ),
+      import('@/modules/catalogs/geographic-division-type/views/GeographicDivisionTypes.vue'),
   },
   {
     path: 'catalogs/geographic-divisions',
     name: 'geographic-divisions',
     component: () =>
-      import(
-        '@/modules/catalogs/geographic-division/views/GeographicDivisions.vue'
-      ),
+      import('@/modules/catalogs/geographic-division/views/GeographicDivisions.vue'),
   },
 ];

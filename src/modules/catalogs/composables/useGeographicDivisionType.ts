@@ -1,8 +1,8 @@
 import { useForm } from 'vee-validate';
 import { nextTick, reactive, ref } from 'vue';
-import { debounce } from '@/core/utils/debounceFunction';
 import * as yup from 'yup';
 
+import { debounce } from '@/core/utils/debounceFunction';
 import { TableHeaders } from '@/core/interfaces';
 import { useAlertStore, useLoaderStore } from '@/core/store';
 import { sanitizedValueInput } from '@/core/utils/inputTextValidations';
@@ -261,7 +261,6 @@ export function useGeographicDivisionType() {
     }
   };
 
-  
   const debouncedFindDivisionType = debounce(findDivisionType, 700);
   const debouncedCleanSearch = debounce(cleanSearch, 700);
 

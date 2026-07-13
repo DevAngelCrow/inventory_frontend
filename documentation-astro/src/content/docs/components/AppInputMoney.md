@@ -6,7 +6,7 @@ description: Descripción del componente AppInputMoney.
 El componente en referencia se encuentra ya configurado para poder reutilizarlo, de esta manera, estas serían las propiedades que corresponden a dicho componente:
 
 | Propiedad        | Tipo    | Valor por defecto | Descripción                                                                                                |
-| ---------------- | ------- | ----------------- | ---------------------------------------------------------------------------------------------------------- |
+| ---------------- | ------- | ----------------- | ---------------------------------------------------------------------------------------------------------- | ---- |
 | class            | String  | 'w-full'          | Clases CSS aplicadas al componente.                                                                        |
 | placeholder      | String  | ''                | Texto de marcador de posición dentro del input.                                                            |
 | severity         | String  | 'error'           | Severidad del mensaje de error o validación (por ejemplo, 'error', 'info').                                |
@@ -21,14 +21,14 @@ El componente en referencia se encuentra ya configurado para poder reutilizarlo,
 | clearIcon        | String  | ''                | Icono que se muestra para limpiar el input.                                                                |
 | autocomplete     | String  | 'off'             | Atributo HTML para controlar el autocompletado del navegador.                                              |
 | label            | String  | ''                | Etiqueta flotante descriptiva del input.                                                                   |
-| id               | String  | -                 | ID único para el campo, útil para accesibilidad o pruebas.                                                 |etc.                                       |
+| id               | String  | -                 | ID único para el campo, útil para accesibilidad o pruebas.                                                 | etc. |
 | currency         | String  | 'USD'             | Código de moneda a usar cuando se requiere formateo de tipo monetario.                                     |
 | locale           | String  | 'en-US'           | Localización para formateo de fechas, números o moneda.                                                    |
 | showButtons      | Boolean | false             | Si se deben mostrar botones de incremento/decremento, útil para inputs numéricos.                          |
 | buttonLayout     | String  | 'vertical'        | Orientación de los botones ('vertical' o 'horizontal').                                                    |
 | min              | Number  | -                 | Valor mínimo permitido para el input numérico.                                                             |
 | max              | Number  | -                 | Valor máximo permitido para el input numérico.                                                             |
-|  |
+|                  |
 
 A continuacion se muestra un ejemplo de como utilizar el componente del input money
 

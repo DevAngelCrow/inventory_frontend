@@ -1,7 +1,7 @@
-import { paginateParams } from "./params.paginate.interface";
+import { paginateParams } from './params.paginate.interface';
 
 export default interface paramsGeneric {
-    paginateParams?: paginateParams;
-    filter_name?: string | null;
-    status?: boolean | null;
+  paginateParams?: paginateParams;
+  filter_name?: string | null;
+  status?: boolean | null;
 }

@@ -23,7 +23,7 @@ const showTopRight = () => {
 
 watch(
   () => alert.show,
-  (newValue) => {
+  newValue => {
     if (newValue) {
       showTopRight();
     } else {

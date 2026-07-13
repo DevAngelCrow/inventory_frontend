@@ -7,7 +7,13 @@ import { useAlertStore, useLoaderStore } from '@/core/store';
 import { sanitizedValueInput } from '@/core/utils/inputTextValidations';
 import { debounce } from '@/core/utils/debounceFunction';
 
-import { ProductResponse, ProductForm, ProductCategoryResponse, CreateProductPayload, UpdateProductPayload } from '../interfaces/inventory.interfaces';
+import {
+  ProductResponse,
+  ProductForm,
+  ProductCategoryResponse,
+  CreateProductPayload,
+  UpdateProductPayload,
+} from '../interfaces/inventory.interfaces';
 import inventoryServices from '../Services/inventory.services';
 
 type filterType = {
@@ -64,9 +70,19 @@ export function useProduct() {
         .integer('El stock de alerta debe ser un número entero')
         .min(0, 'El stock no puede ser negativo')
         .nullable(),
-      color: yup.string().max(50, 'El color no puede tener más de 50 caracteres').nullable(),
-      dimensions: yup.string().max(100, 'Las dimensiones no pueden tener más de 100 caracteres').nullable(),
-      weight_lbs: yup.number().typeError('El peso debe ser un número').min(0).nullable(),
+      color: yup
+        .string()
+        .max(50, 'El color no puede tener más de 50 caracteres')
+        .nullable(),
+      dimensions: yup
+        .string()
+        .max(100, 'Las dimensiones no pueden tener más de 100 caracteres')
+        .nullable(),
+      weight_lbs: yup
+        .number()
+        .typeError('El peso debe ser un número')
+        .min(0)
+        .nullable(),
       image_url: yup.string().max(500).nullable(),
       notes: yup.string().nullable(),
       category_id: yup.string().required('La categoría es requerida'),
@@ -146,7 +162,8 @@ export function useProduct() {
   const [description, descriptionAttrs] = defineField('description');
   const [sku, skuAttrs] = defineField('sku');
   const [rental_price, rentalPriceAttrs] = defineField('rental_price');
-  const [replacement_cost, replacementCostAttrs] = defineField('replacement_cost');
+  const [replacement_cost, replacementCostAttrs] =
+    defineField('replacement_cost');
   const [total_stock, totalStockAttrs] = defineField('total_stock');
   const [min_stock_alert, minStockAlertAttrs] = defineField('min_stock_alert');
   const [color, colorAttrs] = defineField('color');
@@ -172,8 +189,12 @@ export function useProduct() {
         per_page: pagination.per_page,
         filter_name: filter.filter_name,
         sku: filter.sku,
-        category_id: filter.category_id === 'Todos' ? undefined : filter.category_id,
-        active: filter.active === 'Todos' ? undefined : filter.active as boolean | undefined,
+        category_id:
+          filter.category_id === 'Todos' ? undefined : filter.category_id,
+        active:
+          filter.active === 'Todos'
+            ? undefined
+            : (filter.active as boolean | undefined),
       };
       const response = await inventoryServices.getProducts(params);
 
@@ -190,7 +211,10 @@ export function useProduct() {
 
   const loadCategories = async () => {
     try {
-      const response = await inventoryServices.getCategories({ active: true, per_page: 100 });
+      const response = await inventoryServices.getCategories({
+        active: true,
+        per_page: 100,
+      });
       if (response.statusCode === 200) {
         categoriesList.value = response.data.data;
       }
@@ -252,7 +276,10 @@ export function useProduct() {
         notes: form.notes,
         category_id: form.category_id,
       };
-      const response = await inventoryServices.putProduct(form.id!, updatePayload);
+      const response = await inventoryServices.putProduct(
+        form.id!,
+        updatePayload,
+      );
       if (response.status === 200) {
         getProducts();
         alert.showAlert({
@@ -319,12 +346,22 @@ export function useProduct() {
     setFieldValue('description', value?.description);
     setFieldValue('sku', value?.sku);
     setFieldValue('rental_price', Number(value?.rental_price));
-    setFieldValue('replacement_cost', value?.replacement_cost !== null && value?.replacement_cost !== undefined ? Number(value?.replacement_cost) : undefined);
+    setFieldValue(
+      'replacement_cost',
+      value?.replacement_cost !== null && value?.replacement_cost !== undefined
+        ? Number(value?.replacement_cost)
+        : undefined,
+    );
     setFieldValue('total_stock', value?.total_stock);
     setFieldValue('min_stock_alert', value?.min_stock_alert);
     setFieldValue('color', value?.color);
     setFieldValue('dimensions', value?.dimensions);
-    setFieldValue('weight_lbs', value?.weight_lbs !== null && value?.weight_lbs !== undefined ? Number(value?.weight_lbs) : undefined);
+    setFieldValue(
+      'weight_lbs',
+      value?.weight_lbs !== null && value?.weight_lbs !== undefined
+        ? Number(value?.weight_lbs)
+        : undefined,
+    );
     setFieldValue('image_url', value?.image_url);
     setFieldValue('notes', value?.notes);
     setFieldValue('category_id', value?.category_id);

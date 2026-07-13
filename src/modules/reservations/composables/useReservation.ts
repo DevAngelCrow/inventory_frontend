@@ -7,7 +7,10 @@ import { useAlertStore, useLoaderStore } from '@/core/store';
 import { FormatDateToISO, FormatDate } from '@/core/utils/dates';
 import { debounce } from '@/core/utils/debounceFunction';
 
-import { ReservationResponse, ReservationForm } from '../interfaces/reservation.interfaces';
+import {
+  ReservationResponse,
+  ReservationForm,
+} from '../interfaces/reservation.interfaces';
 import reservationServices from '../Services/reservation.services';
 import customerServices from '../../customers/Services/customer.services';
 import inventoryServices from '../../inventory/Services/inventory.services';
@@ -36,17 +39,30 @@ export function useReservation() {
     validationSchema: yup.object({
       id: yup.string().nullable(),
       id_customer: yup.string().required('El cliente es requerido'),
-      event_start: yup.string().required('La fecha/hora de inicio es requerida'),
+      event_start: yup
+        .string()
+        .required('La fecha/hora de inicio es requerida'),
       event_end: yup.string().required('La fecha/hora de fin es requerida'),
       delivery_address: yup.string().max(500, 'Dirección muy larga').nullable(),
-      delivery_address_line2: yup.string().max(255, 'Dirección muy larga').nullable(),
+      delivery_address_line2: yup
+        .string()
+        .max(255, 'Dirección muy larga')
+        .nullable(),
       delivery_zip: yup.string().max(20, 'Código postal muy largo').nullable(),
       delivery_notes: yup.string().nullable(),
       id_customer_address: yup.string().nullable(),
       id_geographic_division: yup.string().nullable(),
-      discount_amount: yup.number().typeError('Debe ser número').min(0).default(0),
+      discount_amount: yup
+        .number()
+        .typeError('Debe ser número')
+        .min(0)
+        .default(0),
       delivery_fee: yup.number().typeError('Debe ser número').min(0).default(0),
-      deposit_amount: yup.number().typeError('Debe ser número').min(0).default(0),
+      deposit_amount: yup
+        .number()
+        .typeError('Debe ser número')
+        .min(0)
+        .default(0),
       notes: yup.string().nullable(),
       status: yup.string().nullable(),
     }),
@@ -109,7 +125,7 @@ export function useReservation() {
       sortable: false,
       alignHeaders: 'center',
       alignItems: 'start',
-      width: 17
+      width: 17,
     },
   ]);
 
@@ -118,15 +134,17 @@ export function useReservation() {
   const productsList = ref<ProductResponse[]>([]);
 
   // Basket/Cart items for adding products to reservation
-  const cartItems = ref<{
-    id_product: string;
-    product_name: string;
-    sku: string;
-    quantity: number;
-    unit_price: number;
-    subtotal: number;
-    notes?: string;
-  }[]>([]);
+  const cartItems = ref<
+    {
+      id_product: string;
+      product_name: string;
+      sku: string;
+      quantity: number;
+      unit_price: number;
+      subtotal: number;
+      notes?: string;
+    }[]
+  >([]);
 
   const pagination = reactive({
     page: 1,
@@ -141,12 +159,19 @@ export function useReservation() {
   const [id_customer, idCustomerAttrs] = defineField('id_customer');
   const [event_start, eventStartAttrs] = defineField('event_start');
   const [event_end, eventEndAttrs] = defineField('event_end');
-  const [delivery_address, deliveryAddressAttrs] = defineField('delivery_address');
-  const [delivery_address_line2, deliveryAddressLine2Attrs] = defineField('delivery_address_line2');
+  const [delivery_address, deliveryAddressAttrs] =
+    defineField('delivery_address');
+  const [delivery_address_line2, deliveryAddressLine2Attrs] = defineField(
+    'delivery_address_line2',
+  );
   const [delivery_zip, deliveryZipAttrs] = defineField('delivery_zip');
   const [delivery_notes, deliveryNotesAttrs] = defineField('delivery_notes');
-  const [id_customer_address, idCustomerAddressAttrs] = defineField('id_customer_address');
-  const [id_geographic_division, idGeographicDivisionAttrs] = defineField('id_geographic_division');
+  const [id_customer_address, idCustomerAddressAttrs] = defineField(
+    'id_customer_address',
+  );
+  const [id_geographic_division, idGeographicDivisionAttrs] = defineField(
+    'id_geographic_division',
+  );
   const [discount_amount, discountAmountAttrs] = defineField('discount_amount');
   const [delivery_fee, deliveryFeeAttrs] = defineField('delivery_fee');
   const [deposit_amount, depositAmountAttrs] = defineField('deposit_amount');
@@ -192,9 +217,14 @@ export function useReservation() {
         page: pagination.page,
         per_page: pagination.per_page,
         status: filter.status === 'Todos' ? undefined : filter.status,
-        id_customer: filter.id_customer === 'Todos' ? undefined : filter.id_customer,
-        start_date: filter.start_date ? FormatDateToISO(filter.start_date, 'DD/MM/YYYY') : undefined,
-        end_date: filter.end_date ? FormatDateToISO(filter.end_date, 'DD/MM/YYYY') : undefined,
+        id_customer:
+          filter.id_customer === 'Todos' ? undefined : filter.id_customer,
+        start_date: filter.start_date
+          ? FormatDateToISO(filter.start_date, 'DD/MM/YYYY')
+          : undefined,
+        end_date: filter.end_date
+          ? FormatDateToISO(filter.end_date, 'DD/MM/YYYY')
+          : undefined,
       };
       const response = await reservationServices.getReservations(params);
 
@@ -213,11 +243,17 @@ export function useReservation() {
 
   const loadDependencies = async () => {
     try {
-      const custResp = await customerServices.getCustomers({ status: true, per_page: 100 });
+      const custResp = await customerServices.getCustomers({
+        status: true,
+        per_page: 100,
+      });
       if (custResp.statusCode === 200) {
         customersList.value = custResp.data.data;
       }
-      const prodResp = await inventoryServices.getProducts({ active: true, per_page: 100 });
+      const prodResp = await inventoryServices.getProducts({
+        active: true,
+        per_page: 100,
+      });
       if (prodResp.statusCode === 200) {
         productsList.value = prodResp.data.data;
       }
@@ -226,7 +262,11 @@ export function useReservation() {
     }
   };
 
-  const addToCart = async (product: ProductResponse, quantity: number, notes?: string): Promise<boolean> => {
+  const addToCart = async (
+    product: ProductResponse,
+    quantity: number,
+    notes?: string,
+  ): Promise<boolean> => {
     if (!event_start.value || !event_end.value) {
       alert.showAlert({
         type: 'error',
@@ -236,8 +276,15 @@ export function useReservation() {
       return false;
     }
 
-    const startIso = FormatDateToISO(event_start.value as string, 'DD/MM/YYYY hh:mm a', true) || '';
-    const endIso = FormatDateToISO(event_end.value as string, 'DD/MM/YYYY hh:mm a', true) || '';
+    const startIso =
+      FormatDateToISO(
+        event_start.value as string,
+        'DD/MM/YYYY hh:mm a',
+        true,
+      ) || '';
+    const endIso =
+      FormatDateToISO(event_end.value as string, 'DD/MM/YYYY hh:mm a', true) ||
+      '';
 
     if (!startIso || !endIso) {
       alert.showAlert({
@@ -248,12 +295,17 @@ export function useReservation() {
       return false;
     }
 
-    const exists = cartItems.value.find((item) => item.id_product === product.id);
+    const exists = cartItems.value.find(item => item.id_product === product.id);
     const totalQty = exists ? exists.quantity + quantity : quantity;
 
     try {
       startLoading();
-      const response = await reservationServices.checkAvailability(product.id, startIso, endIso, totalQty);
+      const response = await reservationServices.checkAvailability(
+        product.id,
+        startIso,
+        endIso,
+        totalQty,
+      );
       if (response && !response.data?.is_available) {
         alert.showAlert({
           type: 'error',
@@ -293,14 +345,18 @@ export function useReservation() {
   };
 
   const removeFromCart = (id_product: string) => {
-    cartItems.value = cartItems.value.filter((item) => item.id_product !== id_product);
+    cartItems.value = cartItems.value.filter(
+      item => item.id_product !== id_product,
+    );
   };
 
   const clearCart = () => {
     cartItems.value = [];
   };
 
-  const saveReservation = async (formValues: ReservationForm & { status?: any }) => {
+  const saveReservation = async (
+    formValues: ReservationForm & { status?: any },
+  ) => {
     try {
       startLoading();
       if (!cartItems.value.length) {
@@ -313,8 +369,11 @@ export function useReservation() {
       }
 
       // Convert date/time fields to ISO strings
-      const startIso = FormatDateToISO(formValues.event_start, 'DD/MM/YYYY hh:mm a', true) || '';
-      const endIso = FormatDateToISO(formValues.event_end, 'DD/MM/YYYY hh:mm a', true) || '';
+      const startIso =
+        FormatDateToISO(formValues.event_start, 'DD/MM/YYYY hh:mm a', true) ||
+        '';
+      const endIso =
+        FormatDateToISO(formValues.event_end, 'DD/MM/YYYY hh:mm a', true) || '';
 
       const payload: ReservationForm = {
         id_customer: formValues.id_customer,
@@ -332,8 +391,16 @@ export function useReservation() {
         delivery_fee: Number(formValues.delivery_fee || 0),
         discount_amount: Number(formValues.discount_amount || 0),
         notes: formValues.notes,
-        ...(formValues.id ? { status: (typeof formValues.status === 'object' && formValues.status !== null ? (formValues.status as { code: string }).code : formValues.status as string) || 'PENDING' } : {}),
-        items: cartItems.value.map((i) => ({
+        ...(formValues.id
+          ? {
+              status:
+                (typeof formValues.status === 'object' &&
+                formValues.status !== null
+                  ? (formValues.status as { code: string }).code
+                  : (formValues.status as string)) || 'PENDING',
+            }
+          : {}),
+        items: cartItems.value.map(i => ({
           id_product: i.id_product,
           quantity: i.quantity,
           unit_price: i.unit_price,
@@ -343,7 +410,10 @@ export function useReservation() {
 
       let response;
       if (formValues.id) {
-        response = await reservationServices.putReservation(formValues.id, payload);
+        response = await reservationServices.putReservation(
+          formValues.id,
+          payload,
+        );
       } else {
         response = await reservationServices.postReservation(payload);
       }
@@ -364,7 +434,11 @@ export function useReservation() {
     }
   };
 
-  const changeStatus = async (id: string, action: 'confirm' | 'cancel' | 'in-progress' | 'complete', reasonOrDatetime?: string) => {
+  const changeStatus = async (
+    id: string,
+    action: 'confirm' | 'cancel' | 'in-progress' | 'complete',
+    reasonOrDatetime?: string,
+  ) => {
     try {
       startLoading();
       let response;
@@ -373,18 +447,33 @@ export function useReservation() {
           response = await reservationServices.confirmReservation(id);
           break;
         case 'cancel':
-          response = await reservationServices.cancelReservation(id, reasonOrDatetime || 'Cancelación de reserva');
+          response = await reservationServices.cancelReservation(
+            id,
+            reasonOrDatetime || 'Cancelación de reserva',
+          );
           break;
         case 'in-progress':
-          response = await reservationServices.markInProgress(id, reasonOrDatetime);
+          response = await reservationServices.markInProgress(
+            id,
+            reasonOrDatetime,
+          );
           break;
         case 'complete':
-          response = await reservationServices.markCompleted(id, reasonOrDatetime);
+          response = await reservationServices.markCompleted(
+            id,
+            reasonOrDatetime,
+          );
           break;
       }
       // Depending on httpClient return type, it usually has statusCode or status
       const res = response as { statusCode?: number; status?: number };
-      if (res && (res.statusCode === 200 || res.statusCode === 201 || res.status === 200 || res.status === 201)) {
+      if (
+        res &&
+        (res.statusCode === 200 ||
+          res.statusCode === 201 ||
+          res.status === 200 ||
+          res.status === 201)
+      ) {
         getReservations();
         alert.showAlert({
           type: 'success',
@@ -413,8 +502,14 @@ export function useReservation() {
   const setReservationItem = (value: ReservationResponse) => {
     setFieldValue('id', value?.id);
     setFieldValue('id_customer', value?.id_customer);
-    setFieldValue('event_start', FormatDate(value?.event_start, 'DD/MM/YYYY hh:mm a'));
-    setFieldValue('event_end', FormatDate(value?.event_end, 'DD/MM/YYYY hh:mm a'));
+    setFieldValue(
+      'event_start',
+      FormatDate(value?.event_start, 'DD/MM/YYYY hh:mm a'),
+    );
+    setFieldValue(
+      'event_end',
+      FormatDate(value?.event_end, 'DD/MM/YYYY hh:mm a'),
+    );
     setFieldValue('delivery_address', value?.delivery_address);
     setFieldValue('delivery_address_line2', value?.delivery_address_line2);
     setFieldValue('delivery_zip', value?.delivery_zip);
@@ -431,7 +526,7 @@ export function useReservation() {
     pickup_datetime.value = value?.pickup_datetime;
 
     // Populate cart
-    cartItems.value = (value?.items || []).map((i) => ({
+    cartItems.value = (value?.items || []).map(i => ({
       id_product: i.id_product,
       product_name: i.mnt_product?.name || 'Producto',
       sku: i.mnt_product?.sku || '',
@@ -453,20 +548,34 @@ export function useReservation() {
     setFieldError,
     setFieldValue,
     values,
-    id, idAttrs,
-    id_customer, idCustomerAttrs,
-    event_start, eventStartAttrs,
-    event_end, eventEndAttrs,
-    delivery_address, deliveryAddressAttrs,
-    delivery_address_line2, deliveryAddressLine2Attrs,
-    delivery_zip, deliveryZipAttrs,
-    delivery_notes, deliveryNotesAttrs,
-    id_customer_address, idCustomerAddressAttrs,
-    id_geographic_division, idGeographicDivisionAttrs,
-    discount_amount, discountAmountAttrs,
-    delivery_fee, deliveryFeeAttrs,
-    deposit_amount, depositAmountAttrs,
-    notes, notesAttrs,
+    id,
+    idAttrs,
+    id_customer,
+    idCustomerAttrs,
+    event_start,
+    eventStartAttrs,
+    event_end,
+    eventEndAttrs,
+    delivery_address,
+    deliveryAddressAttrs,
+    delivery_address_line2,
+    deliveryAddressLine2Attrs,
+    delivery_zip,
+    deliveryZipAttrs,
+    delivery_notes,
+    deliveryNotesAttrs,
+    id_customer_address,
+    idCustomerAddressAttrs,
+    id_geographic_division,
+    idGeographicDivisionAttrs,
+    discount_amount,
+    discountAmountAttrs,
+    delivery_fee,
+    deliveryFeeAttrs,
+    deposit_amount,
+    depositAmountAttrs,
+    notes,
+    notesAttrs,
     status,
     delivery_datetime,
     pickup_datetime,

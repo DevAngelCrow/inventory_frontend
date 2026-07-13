@@ -1,77 +1,215 @@
 <template>
-  <AppModal :title="props.modalState.title" :show="props.modalState.show" :title-btn-cancel="modalButtons.cancelText"
-    :title-btn-confirm="modalButtons.confirmText" footer-buttons show-icon-close width="55rem" @close-modal="closeModal"
-    @confirm-modal="onSubMit" :showBtnConfirmFooter="props.modalState.mode !== 'view'">
-    
-    <section v-if="props.modalState.mode !== 'delete'" id="body_modal"
-      class="grid grid-cols-1 md:grid-cols-2 gap-5 py-1.5 w-full">
-      
-      <AppInputText class="w-full min-w-0" id="first_name" label="Nombres*" v-model="first_name" :error-messages="errors.first_name"
-        v-bind="firstNameAttrs" :readonly="props.modalState.isReadonly" />
+  <AppModal
+    :title="props.modalState.title"
+    :show="props.modalState.show"
+    :title-btn-cancel="modalButtons.cancelText"
+    :title-btn-confirm="modalButtons.confirmText"
+    footer-buttons
+    show-icon-close
+    width="55rem"
+    @close-modal="closeModal"
+    @confirm-modal="onSubMit"
+    :showBtnConfirmFooter="props.modalState.mode !== 'view'"
+  >
+    <section
+      v-if="props.modalState.mode !== 'delete'"
+      id="body_modal"
+      class="grid grid-cols-1 md:grid-cols-2 gap-5 py-1.5 w-full"
+    >
+      <AppInputText
+        class="w-full min-w-0"
+        id="first_name"
+        label="Nombres*"
+        v-model="first_name"
+        :error-messages="errors.first_name"
+        v-bind="firstNameAttrs"
+        :readonly="props.modalState.isReadonly"
+      />
 
-      <AppInputText class="w-full min-w-0" id="middle_name" label="Segundo Nombre" v-model="middle_name" :error-messages="errors.middle_name"
-        v-bind="middleNameAttrs" :readonly="props.modalState.isReadonly" />
+      <AppInputText
+        class="w-full min-w-0"
+        id="middle_name"
+        label="Segundo Nombre"
+        v-model="middle_name"
+        :error-messages="errors.middle_name"
+        v-bind="middleNameAttrs"
+        :readonly="props.modalState.isReadonly"
+      />
 
-      <AppInputText class="w-full min-w-0" id="last_name" label="Apellidos*" v-model="last_name" :error-messages="errors.last_name"
-        v-bind="lastNameAttrs" :readonly="props.modalState.isReadonly" />
+      <AppInputText
+        class="w-full min-w-0"
+        id="last_name"
+        label="Apellidos*"
+        v-model="last_name"
+        :error-messages="errors.last_name"
+        v-bind="lastNameAttrs"
+        :readonly="props.modalState.isReadonly"
+      />
 
-      <AppSelect class="w-full min-w-0" id="id_country" label="País*" v-model="id_country" :options="countryOptions"
-        optionLabel="name" optionValue="id" :error-messages="errors.id_country" v-bind="idCountryAttrs"
-        :readonly="props.modalState.isReadonly" @change="onCountryChange" />
+      <AppSelect
+        class="w-full min-w-0"
+        id="id_country"
+        label="País*"
+        v-model="id_country"
+        :options="countryOptions"
+        optionLabel="name"
+        optionValue="id"
+        :error-messages="errors.id_country"
+        v-bind="idCountryAttrs"
+        :readonly="props.modalState.isReadonly"
+        @change="onCountryChange"
+      />
 
-      <AppInputMask class="w-full min-w-0" id="phone" label="Teléfono principal*" v-model="phone" :error-messages="errors.phone"
-        v-bind="phoneAttrs" :readonly="props.modalState.isReadonly" :mask="currentPhoneMask" />
+      <AppInputMask
+        class="w-full min-w-0"
+        id="phone"
+        label="Teléfono principal*"
+        v-model="phone"
+        :error-messages="errors.phone"
+        v-bind="phoneAttrs"
+        :readonly="props.modalState.isReadonly"
+        :mask="currentPhoneMask"
+      />
 
-      <AppInputMask class="w-full min-w-0" id="phone_secondary" label="Teléfono secundario" v-model="phone_secondary" :error-messages="errors.phone_secondary"
-        v-bind="phoneSecondaryAttrs" :readonly="props.modalState.isReadonly" :mask="currentPhoneMask" />
+      <AppInputMask
+        class="w-full min-w-0"
+        id="phone_secondary"
+        label="Teléfono secundario"
+        v-model="phone_secondary"
+        :error-messages="errors.phone_secondary"
+        v-bind="phoneSecondaryAttrs"
+        :readonly="props.modalState.isReadonly"
+        :mask="currentPhoneMask"
+      />
 
-      <AppInputText class="w-full min-w-0" id="email" label="Email" v-model="email" :error-messages="errors.email"
-        v-bind="emailAttrs" :readonly="props.modalState.isReadonly" />
+      <AppInputText
+        class="w-full min-w-0"
+        id="email"
+        label="Email"
+        v-model="email"
+        :error-messages="errors.email"
+        v-bind="emailAttrs"
+        :readonly="props.modalState.isReadonly"
+      />
 
-      <AppInputText class="w-full min-w-0" id="company_name" label="Nombre de Empresa" v-model="company_name" :error-messages="errors.company_name"
-        v-bind="companyNameAttrs" :readonly="props.modalState.isReadonly" />
+      <AppInputText
+        class="w-full min-w-0"
+        id="company_name"
+        label="Nombre de Empresa"
+        v-model="company_name"
+        :error-messages="errors.company_name"
+        v-bind="companyNameAttrs"
+        :readonly="props.modalState.isReadonly"
+      />
 
-      <AppInputText class="w-full min-w-0" id="tax_id" label="Registro Fiscal (EIN/DUI/NIT)" v-model="tax_id" :error-messages="errors.tax_id"
-        v-bind="taxIdAttrs" :readonly="props.modalState.isReadonly" />
+      <AppInputText
+        class="w-full min-w-0"
+        id="tax_id"
+        label="Registro Fiscal (EIN/DUI/NIT)"
+        v-model="tax_id"
+        :error-messages="errors.tax_id"
+        v-bind="taxIdAttrs"
+        :readonly="props.modalState.isReadonly"
+      />
 
-      <AppInputextArea class="w-full min-w-0 md:col-span-2" id="notes" label="Notas Adicionales del Cliente" v-model="notes"
-        :error-messages="errors.notes" v-bind="notesAttrs" :readonly="props.modalState.isReadonly" />
+      <AppInputextArea
+        class="w-full min-w-0 md:col-span-2"
+        id="notes"
+        label="Notas Adicionales del Cliente"
+        v-model="notes"
+        :error-messages="errors.notes"
+        v-bind="notesAttrs"
+        :readonly="props.modalState.isReadonly"
+      />
 
       <!-- Addresses Section -->
       <div class="col-span-1 md:col-span-2 mt-4 border-t pt-4">
         <div class="flex justify-between items-center mb-4">
           <h3 class="text-lg font-semibold">Direcciones</h3>
-          <button v-if="!props.modalState.isReadonly" type="button" @click="addNewAddress" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+          <button
+            v-if="!props.modalState.isReadonly"
+            type="button"
+            @click="addNewAddress"
+            class="text-blue-600 hover:text-blue-800 text-sm font-medium"
+          >
             + Agregar Dirección
           </button>
         </div>
 
-        <div v-for="(address, idx) in addresses" :key="address.key" class="border border-gray-300 p-4 rounded-lg mb-4 grid grid-cols-1 md:grid-cols-2 gap-4 relative">
-          <button v-if="!props.modalState.isReadonly && addresses.length > 1" type="button" @click="removeAddress(idx)" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold" title="Eliminar">
-             &times;
+        <div
+          v-for="(address, idx) in addresses"
+          :key="address.key"
+          class="border border-gray-300 p-4 rounded-lg mb-4 grid grid-cols-1 md:grid-cols-2 gap-4 relative"
+        >
+          <button
+            v-if="!props.modalState.isReadonly && addresses.length > 1"
+            type="button"
+            @click="removeAddress(idx)"
+            class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold"
+            title="Eliminar"
+          >
+            &times;
           </button>
 
-          <AppInputText class="w-full min-w-0 md:col-span-2" :id="`label_${idx}`" label="Etiqueta (Ej. Casa, Trabajo)*" v-model="address.value.label" 
-            :error-messages="errors[`addresses[${idx}].label`]" :readonly="props.modalState.isReadonly" />
+          <AppInputText
+            class="w-full min-w-0 md:col-span-2"
+            :id="`label_${idx}`"
+            label="Etiqueta (Ej. Casa, Trabajo)*"
+            v-model="address.value.label"
+            :error-messages="errors[`addresses[${idx}].label`]"
+            :readonly="props.modalState.isReadonly"
+          />
 
-          <AppInputText class="w-full min-w-0 md:col-span-2" :id="`address_line1_${idx}`" label="Dirección Línea 1*" v-model="address.value.address_line1" 
-            :error-messages="errors[`addresses[${idx}].address_line1`]" :readonly="props.modalState.isReadonly" />
+          <AppInputText
+            class="w-full min-w-0 md:col-span-2"
+            :id="`address_line1_${idx}`"
+            label="Dirección Línea 1*"
+            v-model="address.value.address_line1"
+            :error-messages="errors[`addresses[${idx}].address_line1`]"
+            :readonly="props.modalState.isReadonly"
+          />
 
-          <AppInputText class="w-full min-w-0 md:col-span-2" :id="`address_line2_${idx}`" label="Dirección Línea 2" v-model="address.value.address_line2" 
-            :error-messages="errors[`addresses[${idx}].address_line2`]" :readonly="props.modalState.isReadonly" />
+          <AppInputText
+            class="w-full min-w-0 md:col-span-2"
+            :id="`address_line2_${idx}`"
+            label="Dirección Línea 2"
+            v-model="address.value.address_line2"
+            :error-messages="errors[`addresses[${idx}].address_line2`]"
+            :readonly="props.modalState.isReadonly"
+          />
 
-          <AppGeographicCascade class="w-full min-w-0 md:col-span-2" :id="`state_${idx}`" v-model="address.value.id_geographic_division" 
-            :id_country="id_country as string" :error-messages="errors[`addresses[${idx}].id_geographic_division`]" 
-            :readonly="props.modalState.isReadonly || !id_country" :isRequired="true" />
+          <AppGeographicCascade
+            class="w-full min-w-0 md:col-span-2"
+            :id="`state_${idx}`"
+            v-model="address.value.id_geographic_division"
+            :id_country="id_country as string"
+            :error-messages="errors[`addresses[${idx}].id_geographic_division`]"
+            :readonly="props.modalState.isReadonly || !id_country"
+            :isRequired="true"
+          />
 
-          <AppInputText class="w-full min-w-0" :id="`zip_code_${idx}`" label="Código Postal" v-model="address.value.zip_code" 
-            :error-messages="errors[`addresses[${idx}].zip_code`]" :readonly="props.modalState.isReadonly" />
-          
+          <AppInputText
+            class="w-full min-w-0"
+            :id="`zip_code_${idx}`"
+            label="Código Postal"
+            v-model="address.value.zip_code"
+            :error-messages="errors[`addresses[${idx}].zip_code`]"
+            :readonly="props.modalState.isReadonly"
+          />
+
           <div class="flex items-center md:col-span-2">
-            <AppCheckBox :id="`is_primary_${idx}`" label="Dirección Principal" v-model="address.value.is_primary" :disabled="props.modalState.isReadonly" @change="setPrimary(idx)" />
+            <AppCheckBox
+              :id="`is_primary_${idx}`"
+              label="Dirección Principal"
+              v-model="address.value.is_primary"
+              :disabled="props.modalState.isReadonly"
+              @change="setPrimary(idx)"
+            />
           </div>
         </div>
-        <div v-if="!addresses.length" class="text-sm text-gray-500 italic">No hay direcciones registradas.</div>
+        <div v-if="!addresses.length" class="text-sm text-gray-500 italic">
+          No hay direcciones registradas.
+        </div>
       </div>
     </section>
 
@@ -93,12 +231,15 @@ import AppGeographicCascade from '@/core/components/AppGeographicCascade.vue';
 import AppInputMask from '@/core/components/AppInputMask.vue';
 import AppCheckBox from '@/core/components/AppCheckBox.vue';
 import { useLoaderStore } from '@/core/store';
-
-import { useCustomer } from '../composables/useCustomer';
-import { CustomerForm, CustomerAddressForm } from '../interfaces/customer.interfaces';
 import { useCountries } from '@/modules/catalogs/composables/useCountries';
 import { useGeographicDivision } from '@/modules/catalogs/composables/useGeographicDivision';
 import { CountryResponse } from '@/modules/catalogs/interfaces/country.response.interface';
+
+import {
+  CustomerForm,
+  CustomerAddressForm,
+} from '../interfaces/customer.interfaces';
+import { useCustomer } from '../composables/useCustomer';
 
 type CustomerType = ReturnType<typeof useCustomer>;
 
@@ -149,7 +290,7 @@ const {
 } = customerInstance;
 
 const { getCountries } = useCountries();
-const { } = useGeographicDivision();
+const {} = useGeographicDivision();
 const countryOptions = ref<CountryResponse[]>([]);
 
 const loadCountries = async () => {
@@ -159,23 +300,20 @@ const loadCountries = async () => {
   }
 };
 
-
 onMounted(async () => {
   await loadCountries();
 });
 
 watch(
   () => props.modalState.show,
-  async (newVal) => {
+  async newVal => {
     if (newVal) {
       if (props.modalState.mode === 'add' && addresses.value.length === 0) {
         addNewAddress();
       }
     }
-  }
+  },
 );
-
-
 
 const onCountryChange = () => {
   addresses.value.forEach(addr => {

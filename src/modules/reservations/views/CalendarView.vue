@@ -1,6 +1,9 @@
 <template>
   <div class="py-5 px-5 h-full max-h-full flex items-start justify-center">
-    <section id="calendar_view_content" class="w-full xl:w-[90%] flex flex-col gap-6">
+    <section
+      id="calendar_view_content"
+      class="w-full xl:w-[90%] flex flex-col gap-6"
+    >
       <AppTitle title="Agenda de Entregas y Eventos" />
 
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -13,12 +16,23 @@
             <div class="flex flex-col gap-4">
               <DatePicker v-model="selectedDate" inline class="w-full">
                 <template #date="slotProps">
-                  <div class="flex flex-col items-center justify-center w-full h-full pb-1">
+                  <div
+                    class="flex flex-col items-center justify-center w-full h-full pb-1"
+                  >
                     <span>{{ slotProps.date.day }}</span>
                     <div class="flex gap-0.5 mt-0.5 h-1">
-                      <span v-if="getIndicatorsForDate(slotProps.date)?.delivery" class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                      <span v-if="getIndicatorsForDate(slotProps.date)?.event" class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                      <span v-if="getIndicatorsForDate(slotProps.date)?.pickup" class="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                      <span
+                        v-if="getIndicatorsForDate(slotProps.date)?.delivery"
+                        class="w-1.5 h-1.5 rounded-full bg-green-500"
+                      ></span>
+                      <span
+                        v-if="getIndicatorsForDate(slotProps.date)?.event"
+                        class="w-1.5 h-1.5 rounded-full bg-blue-500"
+                      ></span>
+                      <span
+                        v-if="getIndicatorsForDate(slotProps.date)?.pickup"
+                        class="w-1.5 h-1.5 rounded-full bg-purple-500"
+                      ></span>
                     </div>
                   </div>
                 </template>
@@ -57,38 +71,61 @@
                 <p class="mt-2 text-gray-500">Cargando agenda...</p>
               </div>
 
-              <div v-else-if="!filteredAgendaItems.length" class="text-center py-10 text-gray-500">
-                <i class="pi pi-calendar-minus text-4xl block mb-2 text-gray-300"></i>
+              <div
+                v-else-if="!filteredAgendaItems.length"
+                class="text-center py-10 text-gray-500"
+              >
+                <i
+                  class="pi pi-calendar-minus text-4xl block mb-2 text-gray-300"
+                ></i>
                 No hay actividades de alquiler programadas para esta fecha.
               </div>
 
               <div v-else class="flex flex-col gap-4">
-                <div v-for="(event, idx) in filteredAgendaItems" :key="idx"
+                <div
+                  v-for="(event, idx) in filteredAgendaItems"
+                  :key="idx"
                   class="border-l-4 p-4 rounded-r-lg bg-gray-50 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-xs hover:shadow-md transition-all duration-200"
-                  :class="getTimelineBorderClass(event.type)">
+                  :class="getTimelineBorderClass(event.type)"
+                >
                   <div class="flex flex-col gap-1">
                     <div class="flex items-center gap-2 flex-wrap">
-                      <span class="text-sm font-semibold uppercase tracking-wider px-2 py-0.5 rounded text-white"
-                        :class="getTimelineBadgeClass(event.type)">
+                      <span
+                        class="text-sm font-semibold uppercase tracking-wider px-2 py-0.5 rounded text-white"
+                        :class="getTimelineBadgeClass(event.type)"
+                      >
                         {{ getTimelineTypeLabel(event.type) }}
                       </span>
                       <span class="text-xs text-gray-500">
                         {{ event.time }}
                       </span>
                     </div>
-                    <span class="text-lg font-bold">{{ event.reservation.reservation_number }}</span>
+                    <span class="text-lg font-bold">{{
+                      event.reservation.reservation_number
+                    }}</span>
                     <span class="text-sm text-gray-700">
-                      <strong>Cliente:</strong> {{ event.reservation.mnt_customer?.first_name }} {{
-                        event.reservation.mnt_customer?.last_name }}
+                      <strong>Cliente:</strong>
+                      {{ event.reservation.mnt_customer?.first_name }}
+                      {{ event.reservation.mnt_customer?.last_name }}
                     </span>
-                    <span class="text-xs text-gray-600" v-if="event.reservation.delivery_address">
-                      <strong>Dirección:</strong> {{ event.reservation.delivery_address }}
+                    <span
+                      class="text-xs text-gray-600"
+                      v-if="event.reservation.delivery_address"
+                    >
+                      <strong>Dirección:</strong>
+                      {{ event.reservation.delivery_address }}
                     </span>
                   </div>
 
                   <div class="flex items-center gap-2">
-                    <Button icon="pi pi-eye" outlined rounded severity="secondary" size="small"
-                      @click="viewReservation(event.reservation.id)" />
+                    <Button
+                      icon="pi pi-eye"
+                      outlined
+                      rounded
+                      severity="secondary"
+                      size="small"
+                      @click="viewReservation(event.reservation.id)"
+                    />
                   </div>
                 </div>
               </div>
@@ -145,42 +182,66 @@ const selectToday = () => {
 };
 
 const viewReservation = (id: string) => {
-  router.push({ name: 'reservation-detail', params: { id }, query: { mode: 'view' } });
+  router.push({
+    name: 'reservation-detail',
+    params: { id },
+    query: { mode: 'view' },
+  });
 };
 
 // Map to hold indicators for each date in the current month
 const calendarIndicators = computed(() => {
-  const indicators: Record<string, { delivery: boolean; event: boolean; pickup: boolean }> = {};
-  
-  reservationsList.value.forEach((res) => {
+  const indicators: Record<
+    string,
+    { delivery: boolean; event: boolean; pickup: boolean }
+  > = {};
+
+  reservationsList.value.forEach(res => {
     // Deliveries
     if (res.delivery_datetime) {
       const dateStr = dayjs(res.delivery_datetime).format('YYYY-MM-DD');
-      if (!indicators[dateStr]) indicators[dateStr] = { delivery: false, event: false, pickup: false };
+      if (!indicators[dateStr])
+        indicators[dateStr] = { delivery: false, event: false, pickup: false };
       indicators[dateStr].delivery = true;
     }
-    
+
     // Events
     if (res.event_start) {
       const eventStartDateStr = dayjs(res.event_start).format('YYYY-MM-DD');
-      if (!indicators[eventStartDateStr]) indicators[eventStartDateStr] = { delivery: false, event: false, pickup: false };
+      if (!indicators[eventStartDateStr])
+        indicators[eventStartDateStr] = {
+          delivery: false,
+          event: false,
+          pickup: false,
+        };
       indicators[eventStartDateStr].event = true;
     }
-    
+
     // Pickups
     if (res.pickup_datetime) {
       const pickDateStr = dayjs(res.pickup_datetime).format('YYYY-MM-DD');
-      if (!indicators[pickDateStr]) indicators[pickDateStr] = { delivery: false, event: false, pickup: false };
+      if (!indicators[pickDateStr])
+        indicators[pickDateStr] = {
+          delivery: false,
+          event: false,
+          pickup: false,
+        };
       indicators[pickDateStr].pickup = true;
     }
   });
-  
+
   return indicators;
 });
 
-const getIndicatorsForDate = (date: { year: number; month: number; day: number }) => {
+const getIndicatorsForDate = (date: {
+  year: number;
+  month: number;
+  day: number;
+}) => {
   // PrimeVue date slotProps.date month is 0-indexed
-  const dStr = dayjs(new Date(date.year, date.month, date.day)).format('YYYY-MM-DD');
+  const dStr = dayjs(new Date(date.year, date.month, date.day)).format(
+    'YYYY-MM-DD',
+  );
   return calendarIndicators.value[dStr] || null;
 };
 
@@ -193,7 +254,7 @@ const filteredAgendaItems = computed(() => {
     reservation: ReservationResponse;
   }[] = [];
 
-  reservationsList.value.forEach((res) => {
+  reservationsList.value.forEach(res => {
     // Deliveries
     if (res.delivery_datetime) {
       const delDate = dayjs(res.delivery_datetime);

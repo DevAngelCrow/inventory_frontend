@@ -30,9 +30,13 @@ const getAllRoutes = async (
   return response.data;
 };
 
-const getAllRoutesWithOutPaginate = async (params: paginateParams & ParamsFilter,) => {
-  const response =
-    await httpClient.get<ApiResponseGeneric<RoutesResponse>>('security/routes/', params);
+const getAllRoutesWithOutPaginate = async (
+  params: paginateParams & ParamsFilter,
+) => {
+  const response = await httpClient.get<ApiResponseGeneric<RoutesResponse>>(
+    'security/routes/',
+    params,
+  );
 
   return response.data;
 };

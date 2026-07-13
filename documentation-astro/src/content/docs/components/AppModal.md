@@ -55,4 +55,5 @@ const confirmModal = () => {
 
 </script>
 ```
+
 ![AppModal](../../../assets/AppModal.gif);

@@ -4,15 +4,24 @@ import * as yup from 'yup';
 
 import { useAlertStore, useLoaderStore } from '@/core/store';
 import { FormatDateToISO } from '@/core/utils/dates';
-import { DamageItem, InspectionForm, InspectionPayload } from '../interfaces/reservation.interfaces';
+
+import {
+  DamageItem,
+  InspectionForm,
+  InspectionPayload,
+} from '../interfaces/reservation.interfaces';
 import reservationServices from '../Services/reservation.services';
 
 export function useInspection() {
   const validationSchema = yup.object({
     id_reservation: yup.string().required(),
-    inspection_date: yup.string().required('La fecha de inspección es requerida'),
+    inspection_date: yup
+      .string()
+      .required('La fecha de inspección es requerida'),
     general_notes: yup.string().nullable(),
-    overall_condition: yup.string().required('La condición general es requerida'),
+    overall_condition: yup
+      .string()
+      .required('La condición general es requerida'),
     status: yup.string().default('PENDING'),
   });
 
@@ -34,7 +43,8 @@ export function useInspection() {
   const [id_reservation, idReservationAttrs] = defineField('id_reservation');
   const [inspection_date, inspectionDateAttrs] = defineField('inspection_date');
   const [general_notes, generalNotesAttrs] = defineField('general_notes');
-  const [overall_condition, overallConditionAttrs] = defineField('overall_condition');
+  const [overall_condition, overallConditionAttrs] =
+    defineField('overall_condition');
   const [status, statusAttrs] = defineField('status');
 
   const addDamageItem = (item: DamageItem) => {
@@ -50,18 +60,22 @@ export function useInspection() {
   };
 
   const totalCharges = computed(() => {
-    return damageItems.value.reduce((sum, item) => sum + Number(item.charge_amount), 0);
+    return damageItems.value.reduce(
+      (sum, item) => sum + Number(item.charge_amount),
+      0,
+    );
   });
 
   const submitInspection = async (formValues: InspectionForm) => {
     try {
       startLoading();
       const payload: InspectionPayload = {
-        inspection_date: FormatDateToISO(formValues.inspection_date, 'DD/MM/YYYY') || '',
+        inspection_date:
+          FormatDateToISO(formValues.inspection_date, 'DD/MM/YYYY') || '',
         general_notes: formValues.general_notes,
         overall_condition: formValues.overall_condition,
         status: formValues.status || 'PENDING',
-        damageItems: damageItems.value.map((item) => ({
+        damageItems: damageItems.value.map(item => ({
           id_product: item.id_product,
           damage_type: item.damage_type,
           description: item.description,
@@ -70,7 +84,10 @@ export function useInspection() {
         })),
       };
 
-      const response = await reservationServices.registerInspection(formValues.id_reservation, payload);
+      const response = await reservationServices.registerInspection(
+        formValues.id_reservation,
+        payload,
+      );
       if (response.status === 201 || response.status === 200) {
         alert.showAlert({
           type: 'success',

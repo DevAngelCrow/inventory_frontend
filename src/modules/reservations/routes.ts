@@ -7,7 +7,8 @@ export const routesReservations = [
   {
     path: '/reservations/detail/:id?',
     name: 'reservation-detail',
-    component: () => import('@/modules/reservations/views/ReservationDetail.vue'),
+    component: () =>
+      import('@/modules/reservations/views/ReservationDetail.vue'),
   },
   {
     path: '/reservations/calendar',

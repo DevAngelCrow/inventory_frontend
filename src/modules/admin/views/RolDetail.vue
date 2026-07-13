@@ -1,7 +1,10 @@
 <template>
   <div class="py-5 px-5 h-full max-h-full flex gap-3 flex-col">
     <AppTitle :title="actionMode.title" />
-    <section id="options" class="w-full flex justify-center md:justify-end gap-2 flex-wrap">
+    <section
+      id="options"
+      class="w-full flex justify-center md:justify-end gap-2 flex-wrap"
+    >
       <Button
         v-if="actionMode.mode === 'view'"
         class="transform animate-ease-in min-w-25 grow md:grow-0"
@@ -331,7 +334,7 @@ onMounted(async () => {
     }
   } catch (error) {
     console.error(error);
-  }finally {
+  } finally {
     loadMounted.value = true;
   }
 });

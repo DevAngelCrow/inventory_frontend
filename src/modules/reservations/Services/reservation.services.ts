@@ -1,7 +1,12 @@
 import { httpClient } from '@/core/utils/httpClient';
 import { ApiResponseGeneric } from '@/core/services/interfaces/apiResponseGeneric.interface';
 import { ApiPostResponse } from '@/core/services/apiPostResponse.interface';
-import { ReservationResponse, ReservationForm, InspectionPayload } from '../interfaces/reservation.interfaces';
+
+import {
+  ReservationResponse,
+  ReservationForm,
+  InspectionPayload,
+} from '../interfaces/reservation.interfaces';
 
 const getReservations = async (params?: {
   page?: number;
@@ -19,61 +24,66 @@ const getReservations = async (params?: {
     filter_date_start: params?.start_date,
     filter_date_end: params?.end_date,
   };
-  const response = await httpClient.get<ApiResponseGeneric<ReservationResponse>>(
-    'reservations',
-    queryParams
-  );
+  const response = await httpClient.get<
+    ApiResponseGeneric<ReservationResponse>
+  >('reservations', queryParams);
   return response.data;
 };
 
-const getReservation = async (id: string): Promise<{ data: ReservationResponse; statusCode: number }> => {
-  const response = await httpClient.get<{ data: ReservationResponse; statusCode: number }>(
-    `reservations/${id}`
-  );
+const getReservation = async (
+  id: string,
+): Promise<{ data: ReservationResponse; statusCode: number }> => {
+  const response = await httpClient.get<{
+    data: ReservationResponse;
+    statusCode: number;
+  }>(`reservations/${id}`);
   return response.data;
 };
 
 const postReservation = async (data: ReservationForm) => {
-  const response = await httpClient.post<ApiPostResponse>(
-    'reservations',
-    data
-  );
+  const response = await httpClient.post<ApiPostResponse>('reservations', data);
   return response;
 };
 
 const putReservation = async (id: string, data: ReservationForm) => {
   const response = await httpClient.put<ApiPostResponse>(
     `reservations/${id}`,
-    data
+    data,
   );
   return response;
 };
 
 const confirmReservation = async (id: string) => {
-  const response = await httpClient.patch<ApiResponseGeneric<ReservationResponse>>(
-    `reservations/${id}/status`, { status: 'CONFIRMED' }
-  );
+  const response = await httpClient.patch<
+    ApiResponseGeneric<ReservationResponse>
+  >(`reservations/${id}/status`, { status: 'CONFIRMED' });
   return response;
 };
 
 const cancelReservation = async (id: string, reason: string) => {
-  const response = await httpClient.patch<ApiResponseGeneric<ReservationResponse>>(
-    `reservations/${id}/status`, { status: 'CANCELLED', reason }
-  );
+  const response = await httpClient.patch<
+    ApiResponseGeneric<ReservationResponse>
+  >(`reservations/${id}/status`, { status: 'CANCELLED', reason });
   return response;
 };
 
 const markInProgress = async (id: string, deliveryDatetime?: string) => {
-  const response = await httpClient.patch<ApiResponseGeneric<ReservationResponse>>(
-    `reservations/${id}/status`, { status: 'IN_PROGRESS', ...(deliveryDatetime ? { delivery_datetime: deliveryDatetime } : {}) }
-  );
+  const response = await httpClient.patch<
+    ApiResponseGeneric<ReservationResponse>
+  >(`reservations/${id}/status`, {
+    status: 'IN_PROGRESS',
+    ...(deliveryDatetime ? { delivery_datetime: deliveryDatetime } : {}),
+  });
   return response;
 };
 
 const markCompleted = async (id: string, pickupDatetime?: string) => {
-  const response = await httpClient.patch<ApiResponseGeneric<ReservationResponse>>(
-    `reservations/${id}/status`, { status: 'COMPLETED', ...(pickupDatetime ? { pickup_datetime: pickupDatetime } : {}) }
-  );
+  const response = await httpClient.patch<
+    ApiResponseGeneric<ReservationResponse>
+  >(`reservations/${id}/status`, {
+    status: 'COMPLETED',
+    ...(pickupDatetime ? { pickup_datetime: pickupDatetime } : {}),
+  });
   return response;
 };
 
@@ -87,14 +97,14 @@ const registerInspection = async (id: string, data: InspectionPayload) => {
 
   const response = await httpClient.post<ApiPostResponse>(
     `inspections`,
-    backendData
+    backendData,
   );
   return response;
 };
 
 const getInspection = async (id: string) => {
   const response = await httpClient.get<ApiResponseGeneric<unknown>>(
-    `inspections?filter_reservation=${id}`
+    `inspections?filter_reservation=${id}`,
   );
   return response.data;
 };
@@ -103,7 +113,7 @@ const checkAvailability = async (
   id_product: string,
   event_start: string,
   event_end: string,
-  quantity: number
+  quantity: number,
 ) => {
   const queryParams: Record<string, unknown> = {
     id_product,
@@ -111,10 +121,10 @@ const checkAvailability = async (
     event_end,
     quantity,
   };
-  const response = await httpClient.get<{ data: { available_stock: number; is_available: boolean }; statusCode: number }>(
-    'reservations/check-availability',
-    queryParams
-  );
+  const response = await httpClient.get<{
+    data: { available_stock: number; is_available: boolean };
+    statusCode: number;
+  }>('reservations/check-availability', queryParams);
   return response.data;
 };
 

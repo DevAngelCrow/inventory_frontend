@@ -7,7 +7,12 @@ import { useAlertStore, useLoaderStore } from '@/core/store';
 import { sanitizedValueInput } from '@/core/utils/inputTextValidations';
 import { debounce } from '@/core/utils/debounceFunction';
 
-import { ProductCategoryResponse, ProductCategoryForm, CreateCategoryPayload, UpdateCategoryPayload } from '../interfaces/inventory.interfaces';
+import {
+  ProductCategoryResponse,
+  ProductCategoryForm,
+  CreateCategoryPayload,
+  UpdateCategoryPayload,
+} from '../interfaces/inventory.interfaces';
 import inventoryServices from '../Services/inventory.services';
 
 type filterType = {
@@ -114,7 +119,9 @@ export function useProductCategory() {
         page: pagination.page,
         per_page: pagination.per_page,
         filter_name: filter.filter_name,
-        active: (filter.active === 'Todos' || filter.active === '' ? undefined : filter.active) as boolean | undefined,
+        active: (filter.active === 'Todos' || filter.active === ''
+          ? undefined
+          : filter.active) as boolean | undefined,
       };
       const response = await inventoryServices.getCategories(params);
 

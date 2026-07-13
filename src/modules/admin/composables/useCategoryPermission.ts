@@ -5,9 +5,9 @@ import * as yup from 'yup';
 import { TableHeaders } from '@/core/interfaces';
 import { useAlertStore, useLoaderStore } from '@/core/store';
 import { sanitizedValueInput } from '@/core/utils/inputTextValidations';
+import { debounce } from '@/core/utils/debounceFunction';
 
 import adminServices from '../services/admin.services';
-import { debounce } from '@/core/utils/debounceFunction';
 import { CategoryPermissionsResponse } from '../interfaces/category-permissions/category-permissions-response.interface';
 import { CategoryPermissionForm } from '../interfaces/category-permissions/category-permission-form.interface';
 type filterType = { filter_name?: string; status?: boolean | 'Todos' };

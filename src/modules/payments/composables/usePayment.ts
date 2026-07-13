@@ -4,30 +4,32 @@ import * as yup from 'yup';
 
 import { useAlertStore, useLoaderStore } from '@/core/store';
 import { debounce } from '@/core/utils/debounceFunction';
-import { PaymentMethodResponse, PaymentResponse, PaymentForm } from '../interfaces/payment.interfaces';
-import paymentServices from '../Services/payment.services';
 import catalogServices from '@/modules/catalogs/Services/catalog.services';
 
+import {
+  PaymentMethodResponse,
+  PaymentResponse,
+  PaymentForm,
+} from '../interfaces/payment.interfaces';
+import paymentServices from '../Services/payment.services';
+
 export function usePayment() {
-  const {
-    errors,
-    defineField,
-    handleSubmit,
-    resetForm,
-    setFieldValue,
-  } = useForm({
-    validationSchema: yup.object({
-      id_reservation: yup.string().required('La reserva es requerida'),
-      id_payment_method: yup.string().required('El método de pago es requerido'),
-      amount: yup
-        .number()
-        .typeError('El monto debe ser un número')
-        .required('El monto es requerido')
-        .min(0.01, 'El monto debe ser mayor a 0'),
-      reference_number: yup.string().nullable(),
-      notes: yup.string().nullable(),
-    }),
-  });
+  const { errors, defineField, handleSubmit, resetForm, setFieldValue } =
+    useForm({
+      validationSchema: yup.object({
+        id_reservation: yup.string().required('La reserva es requerida'),
+        id_payment_method: yup
+          .string()
+          .required('El método de pago es requerido'),
+        amount: yup
+          .number()
+          .typeError('El monto debe ser un número')
+          .required('El monto es requerido')
+          .min(0.01, 'El monto debe ser mayor a 0'),
+        reference_number: yup.string().nullable(),
+        notes: yup.string().nullable(),
+      }),
+    });
 
   const paymentMethodsList = ref<PaymentMethodResponse[]>([]);
   const reservationPayments = ref<PaymentResponse[]>([]);
@@ -42,35 +44,45 @@ export function usePayment() {
     filter_status: 'Todos',
   });
 
-  const paymentStatuses = ref<{name: string, id: string | 'Todos'}[]>([{name: 'Todos', id: 'Todos'}]);
+  const paymentStatuses = ref<{ name: string; id: string | 'Todos' }[]>([
+    { name: 'Todos', id: 'Todos' },
+  ]);
 
   const fetchPaymentStatuses = async () => {
     try {
-      const response = await catalogServices.getGlobalStatus({ code_category: 'PAY', per_page: 100 } as unknown as Parameters<typeof catalogServices.getGlobalStatus>[0]);
+      const response = await catalogServices.getGlobalStatus({
+        code_category: 'PAY',
+        per_page: 100,
+      } as unknown as Parameters<typeof catalogServices.getGlobalStatus>[0]);
       if (response && response.data && response.data.data) {
-         const statuses = response.data.data.map((s: { name: string; code: string; }) => ({ name: s.name, id: s.code }));
-         paymentStatuses.value = [{ name: 'Todos', id: 'Todos' }, ...statuses];
+        const statuses = response.data.data.map(
+          (s: { name: string; code: string }) => ({ name: s.name, id: s.code }),
+        );
+        paymentStatuses.value = [{ name: 'Todos', id: 'Todos' }, ...statuses];
       }
     } catch (error) {
       console.error(error);
     }
   };
 
-
   const { startLoading, finishLoading } = useLoaderStore();
   const alert = useAlertStore();
 
   const [id_reservation, idReservationAttrs] = defineField('id_reservation');
-  const [id_payment_method, idPaymentMethodAttrs] = defineField('id_payment_method');
+  const [id_payment_method, idPaymentMethodAttrs] =
+    defineField('id_payment_method');
   const [amount, amountAttrs] = defineField('amount');
-  const [reference_number, referenceNumberAttrs] = defineField('reference_number');
+  const [reference_number, referenceNumberAttrs] =
+    defineField('reference_number');
   const [notes, notesAttrs] = defineField('notes');
 
   const loadPaymentMethods = async () => {
     try {
       const resp = await paymentServices.getPaymentMethods();
       if (resp && resp.data) {
-        paymentMethodsList.value = resp.data.filter((m: PaymentMethodResponse) => m.active);
+        paymentMethodsList.value = resp.data.filter(
+          (m: PaymentMethodResponse) => m.active,
+        );
       }
     } catch (error) {
       console.error(error);
@@ -80,13 +92,18 @@ export function usePayment() {
   const loadPaymentsForReservation = async (reservationId: string) => {
     try {
       startLoading();
-      const resp = await paymentServices.getPaymentsByReservation(reservationId);
+      const resp =
+        await paymentServices.getPaymentsByReservation(reservationId);
       if (resp && resp.data && resp.data.data) {
         reservationPayments.value = resp.data.data.map((p: PaymentResponse) => {
-          const method = paymentMethodsList.value.find((m: PaymentMethodResponse) => m.id === p.id_payment_method);
+          const method = paymentMethodsList.value.find(
+            (m: PaymentMethodResponse) => m.id === p.id_payment_method,
+          );
           return {
             ...p,
-            ctl_payment_method: method ? method : ({ name: 'N/A' } as PaymentMethodResponse)
+            ctl_payment_method: method
+              ? method
+              : ({ name: 'N/A' } as PaymentMethodResponse),
           };
         });
       } else {
@@ -127,19 +144,28 @@ export function usePayment() {
     }
   };
 
-  const submitPayment = async (form: PaymentForm) => {
+  const submitPayment = async (form: PaymentForm, idempotencyKey: string) => {
     try {
       startLoading();
-      
-      const method = paymentMethodsList.value.find(m => m.id === form.id_payment_method);
-      const payload: PaymentForm & { payment_method_code: string; id_currency: string; payment_date: string } = {
+
+      const method = paymentMethodsList.value.find(
+        m => m.id === form.id_payment_method,
+      );
+      const payload: PaymentForm & {
+        payment_method_code: string;
+        id_currency: string;
+        payment_date: string;
+      } = {
         ...form,
         payment_method_code: method ? method.code : 'CASH',
         id_currency: '00000000-0000-0000-0000-000000000000', // Default currency UUID
         payment_date: new Date().toISOString(),
       };
-      
-      const response = await paymentServices.registerPayment(payload);
+
+      const response = await paymentServices.registerPayment(
+        payload,
+        idempotencyKey,
+      );
       if (response.status === 201 || response.status === 200) {
         alert.showAlert({
           type: 'success',
@@ -193,7 +219,6 @@ export function usePayment() {
 
   const debouncedApplyFilters = debounce(applyFilters, 700);
   const debouncedClearFilters = debounce(clearFilters, 700);
-
 
   return {
     errors,

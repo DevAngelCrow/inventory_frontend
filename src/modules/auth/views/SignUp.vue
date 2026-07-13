@@ -125,9 +125,9 @@
 import { Card, Button } from 'primevue';
 
 import AppInputText from '@/core/components/AppInputText.vue';
+import { debounce } from '@/core/utils/debounceFunction';
 
 import { useAuth } from '../composables/useAuth';
-import { debounce } from '@/core/utils/debounceFunction';
 
 const {
   errors,

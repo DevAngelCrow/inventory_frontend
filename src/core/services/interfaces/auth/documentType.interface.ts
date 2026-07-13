@@ -3,5 +3,5 @@ export interface DocumentType {
   name: string;
   description: string;
   active: boolean;
-  mask: string
+  mask: string;
 }

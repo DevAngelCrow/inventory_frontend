@@ -54,7 +54,13 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-const { total, selected, color, size = '50px', strokeWidth = 20 } = defineProps<{
+const {
+  total,
+  selected,
+  color,
+  size = '50px',
+  strokeWidth = 20,
+} = defineProps<{
   total: number;
   selected: number;
   color?: string;

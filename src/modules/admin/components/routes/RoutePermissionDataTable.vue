@@ -103,9 +103,10 @@ import {
 } from 'vue';
 import { AutoCompleteCompleteEvent, Button } from 'primevue';
 
+import { debounce } from '@/core/utils/debounceFunction';
+
 import { useAdmin } from '../../composables/useAdmin';
 import { CategoryPermissionsResponse } from '../../interfaces/role/role.category-permisions.response.interface';
-import { debounce } from '@/core/utils/debounceFunction';
 
 type AdminType = ReturnType<typeof useAdmin>;
 
@@ -187,7 +188,10 @@ const searchPermission = async (value: {
   setPermissionsIds(permissionsList.value);
 };
 
-const debouncedSearchPermission = debounce(() => searchPermission(filter_permission.value), 700);
+const debouncedSearchPermission = debounce(
+  () => searchPermission(filter_permission.value),
+  700,
+);
 
 const handlePagination = async (page: number) => {
   if (modalState.value === 'view') {
