@@ -1,27 +1,83 @@
 <template>
-  <AppModal :title="props.modalState.title" :show="props.modalState.show" :title-btn-cancel="modalButtons.cancelText"
-    :title-btn-confirm="modalButtons.confirmText" footer-buttons show-icon-close width="45rem" @close-modal="closeModal"
-    @confirm-modal="onSubMit" :showBtnConfirmFooter="props.modalState.mode !== 'view'">
-    <section v-if="props.modalState.mode !== 'delete'" id="body_modal"
-      class="flex justify-center items-center flex-wrap flex-row gap-5 py-1.5 w-full">
-      <AppInputText class="w-full min-w-0" id="name" label="Nombre*" v-model="name" :error-messages="errors.name"
-        v-bind="nameAttrs" :readonly="props.modalState.isReadonly" />
-      <AppInputText class="w-full min-w-0" id="description" label="Descripción*" v-model="description"
-        :error-messages="errors.description" v-bind="descriptionAttrs" :readonly="props.modalState.isReadonly" />
-      <AppInputText class="w-full min-w-0" id="code" label="Código*" v-model="code" :error-messages="errors.code"
-        v-bind="codeAttrs" :readonly="props.modalState.isReadonly" :disabled="code_status.includes(code) &&
+  <AppModal
+    :title="props.modalState.title"
+    :show="props.modalState.show"
+    :title-btn-cancel="modalButtons.cancelText"
+    :title-btn-confirm="modalButtons.confirmText"
+    footer-buttons
+    show-icon-close
+    width="45rem"
+    @close-modal="closeModal"
+    @confirm-modal="onSubMit"
+    :showBtnConfirmFooter="props.modalState.mode !== 'view'"
+  >
+    <section
+      v-if="props.modalState.mode !== 'delete'"
+      id="body_modal"
+      class="flex justify-center items-center flex-wrap flex-row gap-5 py-1.5 w-full"
+    >
+      <AppInputText
+        class="w-full min-w-0"
+        id="name"
+        label="Nombre*"
+        v-model="name"
+        :error-messages="errors.name"
+        v-bind="nameAttrs"
+        :readonly="props.modalState.isReadonly"
+      />
+      <AppInputText
+        class="w-full min-w-0"
+        id="description"
+        label="Descripción*"
+        v-model="description"
+        :error-messages="errors.description"
+        v-bind="descriptionAttrs"
+        :readonly="props.modalState.isReadonly"
+      />
+      <AppInputText
+        class="w-full min-w-0"
+        id="code"
+        label="Código*"
+        v-model="code"
+        :error-messages="errors.code"
+        v-bind="codeAttrs"
+        :readonly="props.modalState.isReadonly"
+        :disabled="
+          code_status.includes(code) &&
           code_status.includes(category_status?.code) &&
           !props.modalState.isReadonly
-          " />
-      <AppAutocomplete class="w-full" id="category_status" label="Categoría de estado*" v-model="category_status"
-        v-bind="categoryStatusAttrs" :error-messages="errors.category_status" option-label="name"
-        :suggestions="categoryStatusFiltered" dropdown @complete="findAutocomplete"
-        :readonly="props.modalState.isReadonly" />
+        "
+      />
+      <AppAutocomplete
+        class="w-full"
+        id="category_status"
+        label="Categoría de estado*"
+        v-model="category_status"
+        v-bind="categoryStatusAttrs"
+        :error-messages="errors.category_status"
+        option-label="name"
+        :suggestions="categoryStatusFiltered"
+        dropdown
+        @complete="findAutocomplete"
+        :readonly="props.modalState.isReadonly"
+      />
       <div class="flex justify-between w-full flex-wrap gap-2">
-        <AppColorPicker class="w-auto min-w-0" v-model="state_color" id="state_color"
-          :error-messages="errors.state_color" v-bind="stateColorAttrs" label="Color de estado" />
-        <AppColorPicker class="w-auto min-w-0" v-model="text_color" id="text_color" :error-messages="errors.text_color"
-          v-bind="textColorAttrs" label="Color de texto" />
+        <AppColorPicker
+          class="w-auto min-w-0"
+          v-model="state_color"
+          id="state_color"
+          :error-messages="errors.state_color"
+          v-bind="stateColorAttrs"
+          label="Color de estado"
+        />
+        <AppColorPicker
+          class="w-auto min-w-0"
+          v-model="text_color"
+          id="text_color"
+          :error-messages="errors.text_color"
+          v-bind="textColorAttrs"
+          label="Color de texto"
+        />
       </div>
     </section>
     <section v-else id="body_delete_modal" class="w-full flex flex-wrap gap-5">

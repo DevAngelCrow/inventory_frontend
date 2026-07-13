@@ -97,10 +97,18 @@
           >
           </AppChipStatus>
         </template>
-        <template #body-name="{data}">
+        <template #body-name="{ data }">
           <div class="flex items-center gap-2">
             <span v-if="data.iso2" class="text-lg">
-              <span :class="`fi fi-${data.iso2.toLowerCase()}`"  style="width: 1.5em; height: 1.1em; display: inline-block; border-radius: 2px;"></span>
+              <span
+                :class="`fi fi-${data.iso2.toLowerCase()}`"
+                style="
+                  width: 1.5em;
+                  height: 1.1em;
+                  display: inline-block;
+                  border-radius: 2px;
+                "
+              ></span>
             </span>
             <span>{{ data.name }}</span>
           </div>

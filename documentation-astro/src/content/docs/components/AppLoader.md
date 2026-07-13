@@ -23,4 +23,3 @@ const {loader} = useLoaderStore();
 ```
 
 ![AppLoader](../../../assets/AppLoader.gif)
-

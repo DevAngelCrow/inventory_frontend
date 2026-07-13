@@ -292,7 +292,7 @@ export function useAuth() {
 
         throw new Error(
           errorData.message ||
-          `Error ${response.status}: ${response.statusText}`,
+            `Error ${response.status}: ${response.statusText}`,
         );
       }
 

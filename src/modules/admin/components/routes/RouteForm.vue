@@ -1,40 +1,113 @@
 <template>
   <div class="flex justify-center items-center flex-wrap flex-row gap-5 w-full">
     <div class="w-full flex flex-wrap gap-5">
-      <AppInputText class="flex-1 min-w-0" id="name" label="Nombre*" v-model="name" :error-messages="errors.name"
-        v-bind="nameAttrs" :readonly="props.modalState.isReadonly" />
-      <AppInputText class="flex-1 min-w-0" id="title" label="Título*" v-model="title" :error-messages="errors.title"
-        v-bind="titleAttrs" :readonly="props.modalState.isReadonly" />
+      <AppInputText
+        class="flex-1 min-w-0"
+        id="name"
+        label="Nombre*"
+        v-model="name"
+        :error-messages="errors.name"
+        v-bind="nameAttrs"
+        :readonly="props.modalState.isReadonly"
+      />
+      <AppInputText
+        class="flex-1 min-w-0"
+        id="title"
+        label="Título*"
+        v-model="title"
+        :error-messages="errors.title"
+        v-bind="titleAttrs"
+        :readonly="props.modalState.isReadonly"
+      />
     </div>
     <div class="w-full flex flex-wrap gap-5">
-      <AppInputText class="flex-1 min-w-0" id="uri" label="Uri*" v-model="uri" :error-messages="errors.uri"
-        v-bind="uriAttrs" @update:modelValue="validateInputUri(uri, 'uri')" :readonly="props.modalState.isReadonly" />
-      <AppInputText class="flex-1 min-w-0" id="description" label="Descripción*" v-model="description"
-        :error-messages="errors.description" v-bind="descriptionAttrs" :readonly="props.modalState.isReadonly" />
+      <AppInputText
+        class="flex-1 min-w-0"
+        id="uri"
+        label="Uri*"
+        v-model="uri"
+        :error-messages="errors.uri"
+        v-bind="uriAttrs"
+        @update:modelValue="validateInputUri(uri, 'uri')"
+        :readonly="props.modalState.isReadonly"
+      />
+      <AppInputText
+        class="flex-1 min-w-0"
+        id="description"
+        label="Descripción*"
+        v-model="description"
+        :error-messages="errors.description"
+        v-bind="descriptionAttrs"
+        :readonly="props.modalState.isReadonly"
+      />
     </div>
     <div class="w-full flex flex-wrap gap-5">
-      <AppInputNumber class="grow" id="order" label="Orden*" v-model.number="order" :error-messages="errors.order"
-        v-bind="orderAttrs" :readonly="props.modalState.isReadonly" />
-      <AppInputText class="grow" id="icon" label="Ícono (nombre)*" v-model="icon" :error-messages="errors.icon"
-        v-bind="iconAttrs" :readonly="props.modalState.isReadonly" />
+      <AppInputNumber
+        class="grow"
+        id="order"
+        label="Orden*"
+        v-model.number="order"
+        :error-messages="errors.order"
+        v-bind="orderAttrs"
+        :readonly="props.modalState.isReadonly"
+      />
+      <AppInputText
+        class="grow"
+        id="icon"
+        label="Ícono (nombre)*"
+        v-model="icon"
+        :error-messages="errors.icon"
+        v-bind="iconAttrs"
+        :readonly="props.modalState.isReadonly"
+      />
     </div>
     <div class="w-full flex flex-wrap justify-start gap-5">
       <div class="flex-1">
-        <AppCheckBox id="child_route" label="Es sub-ruta" v-model="child_route" v-bind="child_routeAttrs" binary
-          :readonly="props.modalState.isReadonly" @change="parent = null" />
+        <AppCheckBox
+          id="child_route"
+          label="Es sub-ruta"
+          v-model="child_route"
+          v-bind="child_routeAttrs"
+          binary
+          :readonly="props.modalState.isReadonly"
+          @change="parent = null"
+        />
       </div>
       <div class="flex-1">
-        <AppCheckBox id="show" label="Mostrar en el menú" v-model="show" v-bind="showAttrs" binary
-          :readonly="props.modalState.isReadonly" />
+        <AppCheckBox
+          id="show"
+          label="Mostrar en el menú"
+          v-model="show"
+          v-bind="showAttrs"
+          binary
+          :readonly="props.modalState.isReadonly"
+        />
       </div>
       <div class="w-full mt-5">
-        <AppAutocomplete :class="showParentRoute" id="patern_route" label="Ruta padre" v-model="parent"
-          v-bind="parentAttrs" :error-messages="errors.parent" option-label="title" :suggestions="routesFiltered"
-          dropdown @complete="findAutocomplete" :readonly="props.modalState.isReadonly" :disabled="!child_route" />
+        <AppAutocomplete
+          :class="showParentRoute"
+          id="patern_route"
+          label="Ruta padre"
+          v-model="parent"
+          v-bind="parentAttrs"
+          :error-messages="errors.parent"
+          option-label="title"
+          :suggestions="routesFiltered"
+          dropdown
+          @complete="findAutocomplete"
+          :readonly="props.modalState.isReadonly"
+          :disabled="!child_route"
+        />
       </div>
       <div class="flex-1">
-        <AppCheckBox id="required_auth" label="Requiere autenticación" v-model="required_auth"
-          v-bind="required_authAttrs" binary :readonly="props.modalState.isReadonly" />
+        <AppCheckBox
+          id="required_auth"
+          label="Requiere autenticación"
+          v-model="required_auth"
+          v-bind="required_authAttrs"
+          binary
+          :readonly="props.modalState.isReadonly"
+        />
       </div>
     </div>
   </div>

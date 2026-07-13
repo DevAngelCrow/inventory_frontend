@@ -1,35 +1,84 @@
 <template>
   <div class="py-5 px-5 h-full max-h-full flex items-start justify-center">
-    <section id="content" class="w-full xl:w-[80%] flex flex-col flex-wrap gap-5">
-      <AppTitle title="Usuarios" class="w-full md:w-auto flex justify-start items-start" />
-      <div id="inputs" class="flex rounded-lg py-0.5 px-0.5 gap-3 flex-wrap grow lg:grow-0 w-full">
-        <AppInputText label="Buscar..." class="min-w-auto w-auto grow lg:grow-0 shrink-0 md:w-83.75"
-          v-model="filter_name" append-icon="pi pi-search" @update:modelValue="validateAlphaInput(filter_name)"
-          @keydown.enter="debouncedFindUser" />
-        <Button class="shrink-0 grow md:grow-0 rounded-md" @click="debouncedFindUser">Buscar</Button>
-        <Button class="shrink-0 grow md:grow-0 rounded-md" outlined @click="debouncedCleanSearch" label="Limpiar"
-          :icon="iconFilter"></Button>
+    <section
+      id="content"
+      class="w-full xl:w-[80%] flex flex-col flex-wrap gap-5"
+    >
+      <AppTitle
+        title="Usuarios"
+        class="w-full md:w-auto flex justify-start items-start"
+      />
+      <div
+        id="inputs"
+        class="flex rounded-lg py-0.5 px-0.5 gap-3 flex-wrap grow lg:grow-0 w-full"
+      >
+        <AppInputText
+          label="Buscar..."
+          class="min-w-auto w-auto grow lg:grow-0 shrink-0 md:w-83.75"
+          v-model="filter_name"
+          append-icon="pi pi-search"
+          @update:modelValue="validateAlphaInput(filter_name)"
+          @keydown.enter="debouncedFindUser"
+        />
+        <Button
+          class="shrink-0 grow md:grow-0 rounded-md"
+          @click="debouncedFindUser"
+          >Buscar</Button
+        >
+        <Button
+          class="shrink-0 grow md:grow-0 rounded-md"
+          outlined
+          @click="debouncedCleanSearch"
+          label="Limpiar"
+          :icon="iconFilter"
+        ></Button>
       </div>
-      <AppDataTable class="w-full" :headers="headers" :items="users" :paginator="true" :per_page="pagination.per_page"
-        :total_items="pagination.total_items" :page="pagination.page" :show-per-page-options="true"
-        :per-page-options="[10, 2, 50, 100]" @page-update="handlePagination" @per-page-update="handlePerPagePagination">
+      <AppDataTable
+        class="w-full"
+        :headers="headers"
+        :items="users"
+        :paginator="true"
+        :per_page="pagination.per_page"
+        :total_items="pagination.total_items"
+        :page="pagination.page"
+        :show-per-page-options="true"
+        :per-page-options="[10, 2, 50, 100]"
+        @page-update="handlePagination"
+        @per-page-update="handlePerPagePagination"
+      >
         <template #body-acciones="{ data }">
           <div class="flex gap-0 justify-center">
-            <Button class="rounded-full mx-0 my-0 px-0 py-0" variant="text" icon="pi pi-eye"
-              @click="openModal('view', data)" v-tooltip.bottom="'Ver roles'" />
-            <Button class="rounded-full mx-0 my-0 px-0 py-0" variant="text" icon="pi pi-pencil"
-              @click="openModal('edit', data)" v-tooltip.bottom="'Editar roles'" />
+            <Button
+              class="rounded-full mx-0 my-0 px-0 py-0"
+              variant="text"
+              icon="pi pi-eye"
+              @click="openModal('view', data)"
+              v-tooltip.bottom="'Ver roles'"
+            />
+            <Button
+              class="rounded-full mx-0 my-0 px-0 py-0"
+              variant="text"
+              icon="pi pi-pencil"
+              @click="openModal('edit', data)"
+              v-tooltip.bottom="'Editar roles'"
+            />
           </div>
         </template>
         <template #body-is_validated="{ data }">
-          <i :class="data.is_validated
-              ? 'pi pi-check-circle text-green-500'
-              : 'pi pi-times-circle text-red-500'
-            " />
+          <i
+            :class="
+              data.is_validated
+                ? 'pi pi-check-circle text-green-500'
+                : 'pi pi-times-circle text-red-500'
+            "
+          />
         </template>
         <template #body-status.name="{ data }">
-          <AppChipStatus :label="data?.status?.name" :background-color="data?.status?.state_color"
-            :text-color="data?.status?.text_color" />
+          <AppChipStatus
+            :label="data?.status?.name"
+            :background-color="data?.status?.state_color"
+            :text-color="data?.status?.text_color"
+          />
         </template>
       </AppDataTable>
     </section>
@@ -78,8 +127,6 @@ const modalState = reactive<{
   userName: '',
   userEmail: '',
 });
-
-
 
 const openModal = async (action: 'view' | 'edit', data: UsersResponse) => {
   modalState.selectedItem = data.id;

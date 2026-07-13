@@ -5,14 +5,13 @@ description: Descripción del componente AppDocumentVisor.
 
 Este componente nos permitira mostrar documentos multimedia a través de un modal.
 
-| Propiedad           | Tipo     | Valor por defecto     | Descripción                                                                 |
-|---------------------|----------|------------------------|-----------------------------------------------------------------------------|
-| documentName        | String   | ''                     | Nombre del documento que se mostrará o utilizará como referencia.           |
-| file                | String   | ''                     | Ruta o base64 del archivo que se desea mostrar o procesar.                  |
-| show                | Boolean  | false                  | Determina si el documento debe mostrarse o no.                              |
-| validType           | String   | 'application/pdf'      | Tipo MIME válido del archivo, por defecto es PDF.                           |
-| stylesShowDocument  | Boolean  | true                   | Si se aplican estilos personalizados al mostrar el documento.               |
-
+| Propiedad          | Tipo    | Valor por defecto | Descripción                                                       |
+| ------------------ | ------- | ----------------- | ----------------------------------------------------------------- |
+| documentName       | String  | ''                | Nombre del documento que se mostrará o utilizará como referencia. |
+| file               | String  | ''                | Ruta o base64 del archivo que se desea mostrar o procesar.        |
+| show               | Boolean | false             | Determina si el documento debe mostrarse o no.                    |
+| validType          | String  | 'application/pdf' | Tipo MIME válido del archivo, por defecto es PDF.                 |
+| stylesShowDocument | Boolean | true              | Si se aplican estilos personalizados al mostrar el documento.     |
 
 Puede utilizar de esta manera:
 
@@ -48,4 +47,3 @@ const closeModal = (value: boolean) => {
 ```
 
 ![AppDocumentVisor](../../../assets/AppVisorDocument.gif)
-

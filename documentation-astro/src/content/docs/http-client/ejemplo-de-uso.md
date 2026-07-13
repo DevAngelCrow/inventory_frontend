@@ -3,7 +3,6 @@ title: Ejemplo HttpClient
 description: Descripción de como utilizar la utilidad HttpClient.
 ---
 
-
 ```
 import { httpClient } from '../utils/httpClient';
 import type { pruebaInterface } from './interfaces/prueba.interfaces';

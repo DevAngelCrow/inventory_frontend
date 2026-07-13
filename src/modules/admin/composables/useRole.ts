@@ -7,9 +7,9 @@ import { useAlertStore, useLoaderStore } from '@/core/store';
 import { sanitizedValueInput } from '@/core/utils/inputTextValidations';
 import catalogServices from '@/modules/catalogs/Services/catalog.services';
 import { CategoryStatus } from '@/types/global-status.type';
+import { debounce } from '@/core/utils/debounceFunction';
 
 import adminServices from '../services/admin.services';
-import { debounce } from '@/core/utils/debounceFunction';
 import { RoleStatus } from '../interfaces/role/role.status.response.interface';
 import { RoleResponse } from '../interfaces/role/role.response.interface';
 import { RoleForm } from '../interfaces/role/role.form.interface';

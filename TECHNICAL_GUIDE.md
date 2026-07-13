@@ -8,16 +8,16 @@ Esta guía detalla la arquitectura, estándares de diseño, patrones de código 
 
 El proyecto está construido utilizando la última versión de **Vue 3** y empaquetado con **Vite**. Sigue un enfoque modular y orientado a componentes independientes.
 
-| Capa | Tecnología / Librería | Descripción |
-| :--- | :--- | :--- |
-| **Framework** | Vue 3 (Composition API) | Uso estricto de `<script setup lang="ts">`. |
-| **Estilos** | TailwindCSS 4.0 | Utilidades utilitarias premium para posicionamiento y micro-ajustes. |
-| **Componentes UI** | PrimeVue v4 | Biblioteca de componentes ricos con animaciones fluidas y accesibilidad. |
-| **Tema Custom** | PrimeVue Aura / Custom | Definido en `src/customTheme.ts` con variables HSL armonizadas. |
-| **Gestión de Estado** | Pinia 3.0 | Tiendas ligeras para sesión (`useAuthStore`) y UI (`useLayoutStore`). |
-| **Manejo de Formularios** | VeeValidate 4.15 + Yup 1.6 | Control estricto de validación en tiempo real y tipado de campos. |
-| **Cliente HTTP** | Axios 1.10 | Envoltura personalizada `httpClient` para interceptores JWT/Refresh. |
-| **Gestión de Fechas** | DayJS 1.11 | Parseo y formateo de fechas y horas locales. |
+| Capa                      | Tecnología / Librería      | Descripción                                                              |
+| :------------------------ | :------------------------- | :----------------------------------------------------------------------- |
+| **Framework**             | Vue 3 (Composition API)    | Uso estricto de `<script setup lang="ts">`.                              |
+| **Estilos**               | TailwindCSS 4.0            | Utilidades utilitarias premium para posicionamiento y micro-ajustes.     |
+| **Componentes UI**        | PrimeVue v4                | Biblioteca de componentes ricos con animaciones fluidas y accesibilidad. |
+| **Tema Custom**           | PrimeVue Aura / Custom     | Definido en `src/customTheme.ts` con variables HSL armonizadas.          |
+| **Gestión de Estado**     | Pinia 3.0                  | Tiendas ligeras para sesión (`useAuthStore`) y UI (`useLayoutStore`).    |
+| **Manejo de Formularios** | VeeValidate 4.15 + Yup 1.6 | Control estricto de validación en tiempo real y tipado de campos.        |
+| **Cliente HTTP**          | Axios 1.10                 | Envoltura personalizada `httpClient` para interceptores JWT/Refresh.     |
+| **Gestión de Fechas**     | DayJS 1.11                 | Parseo y formateo de fechas y horas locales.                             |
 
 ---
 
@@ -51,6 +51,7 @@ src/
 ```
 
 ### Anatomía de un Módulo de Negocio
+
 Cada subcarpeta dentro de `src/modules/` debe seguir esta estructura interna para garantizar el desacoplamiento:
 
 ```text
@@ -68,9 +69,10 @@ src/modules/mi-modulo/
 ## 🎨 Guía de Estilos y Diseño Premium
 
 El diseño del sistema se alinea a los principios de **Rich Aesthetics**:
-* **Modo y Paleta:** Se prioriza un esquema de color moderno utilizando variables CSS enlazadas a Tailwind y PrimeVue. Evitamos colores planos agresivos (red/blue puros).
-* **Animaciones:** Todas las interacciones de hover, apertura de modales y transiciones de carga utilizan transiciones suaves (`transition-all duration-300`).
-* **Tipografía:** Se configura una fuente moderna legible y limpia desde el archivo principal de estilos.
+
+- **Modo y Paleta:** Se prioriza un esquema de color moderno utilizando variables CSS enlazadas a Tailwind y PrimeVue. Evitamos colores planos agresivos (red/blue puros).
+- **Animaciones:** Todas las interacciones de hover, apertura de modales y transiciones de carga utilizan transiciones suaves (`transition-all duration-300`).
+- **Tipografía:** Se configura una fuente moderna legible y limpia desde el archivo principal de estilos.
 
 ---
 
@@ -79,7 +81,9 @@ El diseño del sistema se alinea a los principios de **Rich Aesthetics**:
 Para asegurar la uniformidad, no se deben usar componentes nativos de PrimeVue directamente en las vistas si existe un componente wrapper en el `core`:
 
 ### 1. `AppDataTable.vue`
+
 Maneja de forma transparente la paginación, el buscador y las filas de datos.
+
 ```vue
 <AppDataTable
   :headers="headers"
@@ -98,10 +102,11 @@ Maneja de forma transparente la paginación, el buscador y las filas de datos.
 ```
 
 ### 2. Inputs de Formulario con FloatLabel
-* **`AppInputText`**: Entrada de texto regular con FloatLabel y soporte de errores integrados.
-* **`AppInputNumber`**: Para cantidades de stock o números enteros.
-* **`AppInputMoney`**: Entrada de valores monetarios con formato USD.
-* **`AppDatePicker`**: Selector de fechas formateado en `DD/MM/AAAA` con soporte para horas de evento.
+
+- **`AppInputText`**: Entrada de texto regular con FloatLabel y soporte de errores integrados.
+- **`AppInputNumber`**: Para cantidades de stock o números enteros.
+- **`AppInputMoney`**: Entrada de valores monetarios con formato USD.
+- **`AppDatePicker`**: Selector de fechas formateado en `DD/MM/AAAA` con soporte para horas de evento.
 
 ---
 
@@ -110,28 +115,26 @@ Maneja de forma transparente la paginación, el buscador y las filas de datos.
 Toda la lógica de validación se encapsula en el **Composable** del módulo y se conecta con la vista a través de `provide/inject`.
 
 ### 1. Definición en el Composable (`useMiModulo.ts`)
+
 ```typescript
 import { useForm } from 'vee-validate';
 import * as yup from 'yup';
 
 export function useMiModulo() {
-  const {
-    errors,
-    defineField,
-    handleSubmit,
-    resetForm,
-    setFieldValue,
-  } = useForm({
-    validationSchema: yup.object({
-      name: yup.string().required('El nombre es requerido').min(3),
-      price: yup.number().required('El precio es requerido').min(0.01),
-    }),
-  });
+  const { errors, defineField, handleSubmit, resetForm, setFieldValue } =
+    useForm({
+      validationSchema: yup.object({
+        name: yup.string().required('El nombre es requerido').min(3),
+        price: yup.number().required('El precio es requerido').min(0.01),
+      }),
+    });
 
   const [name, nameAttrs] = defineField('name');
   const [price, priceAttrs] = defineField('price');
 
-  const createItem = async (form: any) => { /* axios request */ };
+  const createItem = async (form: any) => {
+    /* axios request */
+  };
 
   return {
     errors,
@@ -147,19 +150,31 @@ export function useMiModulo() {
 ```
 
 ### 2. Conexión en el Modal Formulario (`MiModuloFormModal.vue`)
+
 ```vue
 <template>
   <AppModal :show="show" @confirm-modal="onSubMit">
-    <AppInputText v-model="name" :error-messages="errors.name" v-bind="nameAttrs" label="Nombre" />
-    <AppInputMoney v-model="price" :error-messages="errors.price" v-bind="priceAttrs" label="Precio" />
+    <AppInputText
+      v-model="name"
+      :error-messages="errors.name"
+      v-bind="nameAttrs"
+      label="Nombre"
+    />
+    <AppInputMoney
+      v-model="price"
+      :error-messages="errors.price"
+      v-bind="priceAttrs"
+      label="Precio"
+    />
   </AppModal>
 </template>
 
 <script setup lang="ts">
 import { inject } from 'vue';
-const { errors, name, nameAttrs, price, priceAttrs, handleSubmit, createItem } = inject('useMiModulo');
+const { errors, name, nameAttrs, price, priceAttrs, handleSubmit, createItem } =
+  inject('useMiModulo');
 
-const onSubMit = handleSubmit(async (values) => {
+const onSubMit = handleSubmit(async values => {
   await createItem(values);
 });
 </script>
@@ -175,8 +190,13 @@ Toda comunicación hacia la API backend debe pasar por `httpClient` (`src/core/u
 import { httpClient } from '@/core/utils/httpClient';
 import { ApiResponseGeneric } from '@/core/services/interfaces/apiResponseGeneric.interface';
 
-const getProducts = async (params?: any): Promise<ApiResponseGeneric<ProductResponse>> => {
-  const response = await httpClient.get<ApiResponseGeneric<ProductResponse>>('inventory/products', params);
+const getProducts = async (
+  params?: any,
+): Promise<ApiResponseGeneric<ProductResponse>> => {
+  const response = await httpClient.get<ApiResponseGeneric<ProductResponse>>(
+    'inventory/products',
+    params,
+  );
   return response.data;
 };
 ```
@@ -186,6 +206,7 @@ const getProducts = async (params?: any): Promise<ApiResponseGeneric<ProductResp
 ## 🔑 Menús y Permisos Dinámicos
 
 Las opciones que un usuario visualiza en la barra de navegación lateral y superior se controlan dinámicamente desde el backend.
+
 1. Al iniciar sesión, el endpoint de autenticación retorna un árbol de menús (`menu.data.menus`) asignados al rol del usuario.
 2. Estos menús se guardan en el store `useAuthStore` bajo la propiedad `menu`.
 3. El componente `AppHeader.vue` lee esta propiedad de forma computada y emite la información para que `Layout.vue` renderice el sidebar dinámico mediante `AppSideBar.vue`.

@@ -1,8 +1,14 @@
 <template>
-  <div class="relative w-full h-screen flex justify-center items-center overflow-hidden">
+  <div
+    class="relative w-full h-screen flex justify-center items-center overflow-hidden"
+  >
     <!-- Background -->
-    <div class="absolute inset-0 bg-gradient-to-br from-zinc-950 via-zinc-900 to-primary-950 z-0" />
-    <div class="absolute inset-0 z-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_100%,rgba(var(--p-primary-500-rgb),0.15),transparent)]" />
+    <div
+      class="absolute inset-0 bg-gradient-to-br from-zinc-950 via-zinc-900 to-primary-950 z-0"
+    />
+    <div
+      class="absolute inset-0 z-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_100%,rgba(var(--p-primary-500-rgb),0.15),transparent)]"
+    />
 
     <!-- Card -->
     <Transition name="fade-up" appear>
@@ -17,12 +23,18 @@
         <!-- Header -->
         <template #header>
           <div class="flex flex-col items-center pt-8 pb-2 px-8 gap-3">
-            <div class="w-12 h-12 rounded-2xl bg-primary-600 flex items-center justify-center shadow-lg">
+            <div
+              class="w-12 h-12 rounded-2xl bg-primary-600 flex items-center justify-center shadow-lg"
+            >
               <i class="pi pi-shield text-white text-xl" />
             </div>
             <div class="text-center">
-              <h1 class="text-2xl font-semibold text-white tracking-tight">Bienvenido</h1>
-              <p class="text-sm text-zinc-400 mt-1">Ingresa tus credenciales para continuar</p>
+              <h1 class="text-2xl font-semibold text-white tracking-tight">
+                Bienvenido
+              </h1>
+              <p class="text-sm text-zinc-400 mt-1">
+                Ingresa tus credenciales para continuar
+              </p>
             </div>
           </div>
         </template>
@@ -75,8 +87,16 @@
             <!-- Remember + Forgot -->
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
-                <Checkbox binary v-model="rememberDevice" :disabled="isLoading" inputId="remember" />
-                <label for="remember" class="text-sm text-zinc-400 cursor-pointer select-none">
+                <Checkbox
+                  binary
+                  v-model="rememberDevice"
+                  :disabled="isLoading"
+                  inputId="remember"
+                />
+                <label
+                  for="remember"
+                  class="text-sm text-zinc-400 cursor-pointer select-none"
+                >
                   Recordar dispositivo
                 </label>
               </div>
@@ -117,8 +137,9 @@ import { useForm } from 'vee-validate';
 import * as yup from 'yup';
 
 import AppInputText from '@/core/components/AppInputText.vue';
-import { useAuth } from '../composables/useAuth';
 import { debounce } from '@/core/utils/debounceFunction';
+
+import { useAuth } from '../composables/useAuth';
 
 const { errors, defineField, handleSubmit } = useForm({
   validationSchema: yup.object({

@@ -91,6 +91,12 @@ export interface ProductMaintenanceForm {
   id_product: string;
 }
 
-export type CreateMaintenancePayload = Omit<ProductMaintenanceForm, 'id' | 'resolved' | 'date_end'> & { date_end?: string };
-export type UpdateMaintenancePayload = Omit<ProductMaintenanceForm, 'id' | 'resolved' | 'date_end'> & { cost?: number };
-export type ResolveMaintenancePayload = { date_end: string, cost?: number };
+export type CreateMaintenancePayload = Omit<
+  ProductMaintenanceForm,
+  'id' | 'resolved' | 'date_end'
+> & { date_end?: string };
+export type UpdateMaintenancePayload = Omit<
+  ProductMaintenanceForm,
+  'id' | 'resolved' | 'date_end'
+> & { cost?: number };
+export type ResolveMaintenancePayload = { date_end: string; cost?: number };

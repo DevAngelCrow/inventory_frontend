@@ -5,9 +5,9 @@ import * as yup from 'yup';
 import { TableHeaders } from '@/core/interfaces';
 import { useAlertStore, useLoaderStore } from '@/core/store';
 import { sanitizedValueInput } from '@/core/utils/inputTextValidations';
+import { debounce } from '@/core/utils/debounceFunction';
 
 import adminServices from '../services/admin.services';
-import { debounce } from '@/core/utils/debounceFunction';
 import { PermissionsResponse } from '../interfaces/permissions/permissions.response.interface';
 import { PermissionsCategory } from '../interfaces/permissions/permission.category.interface';
 import { PermissionsCategoryResponse } from '../interfaces/permissions/permission.category.response.interface';

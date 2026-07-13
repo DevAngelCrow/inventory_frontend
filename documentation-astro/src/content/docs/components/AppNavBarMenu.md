@@ -9,28 +9,26 @@ A continuación se muestra la única propiedad del menubar:
 | --------- | ----------- | ----------------- | ----------------------------------------------------------------------------------------------- |
 | menu      | MenuModel[] | []                | Arreglo de ítems de menú. Cada elemento puede tener submenús anidados y opcionalmente un ícono. |
 
-
 Para una mejor comprensión a continuación se muestra como esta compuesto el tipo MenuModel:
 
 ### Estructura del tipo `MenuModel`
 
-| Propiedad | Tipo         | Requerido | Descripción                                                           |
-|-----------|--------------|-----------|-----------------------------------------------------------------------|
-| label     | string       | Sí        | Texto que se mostrará como título del ítem de menú.                   |
-| icon      | string       | No        | Nombre del icono asociado al ítem.                                    |
-| items     | SubMenu[]    | No        | Arreglo de submenús anidados bajo el ítem principal.                  |
-| isUser    | boolean      | No        | Indica si el ítem está relacionado con un usuario (por ejemplo, perfil). |
+| Propiedad | Tipo      | Requerido | Descripción                                                              |
+| --------- | --------- | --------- | ------------------------------------------------------------------------ |
+| label     | string    | Sí        | Texto que se mostrará como título del ítem de menú.                      |
+| icon      | string    | No        | Nombre del icono asociado al ítem.                                       |
+| items     | SubMenu[] | No        | Arreglo de submenús anidados bajo el ítem principal.                     |
+| isUser    | boolean   | No        | Indica si el ítem está relacionado con un usuario (por ejemplo, perfil). |
 
 ### Estructura del tipo `SubMenu`
 
-| Propiedad | Tipo         | Requerido | Descripción                                                   |
-|-----------|--------------|-----------|---------------------------------------------------------------|
-| label     | string       | Sí        | Texto que se mostrará como título del submenú.                |
-| icon      | string       | No        | Nombre del icono asociado al submenú.                         |
-| items     | SubMenu[]    | No        | Submenús anidados (puede ser recursivo).                      |
+| Propiedad | Tipo      | Requerido | Descripción                                    |
+| --------- | --------- | --------- | ---------------------------------------------- |
+| label     | string    | Sí        | Texto que se mostrará como título del submenú. |
+| icon      | string    | No        | Nombre del icono asociado al submenú.          |
+| items     | SubMenu[] | No        | Submenús anidados (puede ser recursivo).       |
 
 Cabe mencionar que actualmente este componente se encuentra acoplado al componente global AppHeader.vue, pero igualmente se puede utilizar de esta manera.
-
 
 ```
 <template>
@@ -119,6 +117,5 @@ const items = ref<Menu[]>([
 <style scoped></style>
 
 ```
-
 
 ![AppNavBarMenu](../../../assets/AppNavBarMenu.gif)

@@ -37,7 +37,9 @@
           :showValue="false"
           class="md:w-20rem h-1 w-full md:ml-auto"
         >
-          <span class="whitespace-nowrap">{{ formatSize(totalSize) }} / {{ formatSize(maxSize) }}</span>
+          <span class="whitespace-nowrap"
+            >{{ formatSize(totalSize) }} / {{ formatSize(maxSize) }}</span
+          >
         </ProgressBar>
       </div>
     </template>
@@ -180,7 +182,7 @@
               : 'Arrastre y suelte la foto de perfil aquí para cargarla'
           }}
         </p>
-        
+
         <div class="mt-2 text-sm text-muted-color text-center space-y-1">
           <p v-if="showFormats" class="mb-1">
             <strong>Formatos:</strong> {{ acceptedFormatsMessage }}
@@ -347,10 +349,13 @@ const onRemoveTemplatingFile = (
     totalSize.value > 0 ? (totalSize.value / props.maxSize) * 100 : 0;
 };
 
-const validateFileType = (file: File | undefined | null, accept: string): boolean => {
+const validateFileType = (
+  file: File | undefined | null,
+  accept: string,
+): boolean => {
   // Validar que el archivo existe
   if (!file) return false;
-  
+
   if (!accept || accept === '*/*') return true;
 
   const acceptedTypes = accept.split(',').map(type => type.trim());
@@ -358,7 +363,9 @@ const validateFileType = (file: File | undefined | null, accept: string): boolea
   return acceptedTypes.some(acceptedType => {
     if (acceptedType.startsWith('.')) {
       // Extension-based validation
-      return file.name?.toLowerCase().endsWith(acceptedType.toLowerCase()) || false;
+      return (
+        file.name?.toLowerCase().endsWith(acceptedType.toLowerCase()) || false
+      );
     } else if (acceptedType.endsWith('/*')) {
       // MIME type wildcard (e.g., "image/*")
       const baseType = acceptedType.split('/')[0];
@@ -376,7 +383,9 @@ const onSelectedFiles = (event: FileUploadSelectEvent) => {
   ) as PrimeVueFile[];
 
   // Primero filtrar archivos válidos (no undefined o null)
-  const validFiles = selectedFiles.filter(file => file !== undefined && file !== null);
+  const validFiles = selectedFiles.filter(
+    file => file !== undefined && file !== null,
+  );
 
   if (validFiles.length === 0) {
     errors.value = 'No se pudieron cargar los archivos seleccionados';
@@ -385,23 +394,27 @@ const onSelectedFiles = (event: FileUploadSelectEvent) => {
 
   // Validar tipos de archivo
   const invalidFiles = validFiles.filter(
-    file => !validateFileType(file, props.accept)
+    file => !validateFileType(file, props.accept),
   );
 
   if (invalidFiles.length > 0) {
-    const fileNames = invalidFiles.map(f => f.name || 'archivo desconocido').join(', ');
-    const fileTypes = invalidFiles.map(f => f.type || 'tipo desconocido').join(', ');
+    const fileNames = invalidFiles
+      .map(f => f.name || 'archivo desconocido')
+      .join(', ');
+    const fileTypes = invalidFiles
+      .map(f => f.type || 'tipo desconocido')
+      .join(', ');
     errors.value = `Tipo de archivo no permitido: ${fileTypes}. Archivos: ${fileNames}. Solo se aceptan: ${props.accept}`;
     return;
   }
 
   // Validar tamaño de archivo
-  const oversizedFiles = validFiles.filter(
-    file => file.size > props.maxSize
-  );
+  const oversizedFiles = validFiles.filter(file => file.size > props.maxSize);
 
   if (oversizedFiles.length > 0) {
-    const fileNames = oversizedFiles.map(f => f.name || 'archivo desconocido').join(', ');
+    const fileNames = oversizedFiles
+      .map(f => f.name || 'archivo desconocido')
+      .join(', ');
     const fileSizes = oversizedFiles.map(f => formatSize(f.size)).join(', ');
     errors.value = `Archivo(s) demasiado grande(s): ${fileNames} (${fileSizes}). Tamaño máximo permitido: ${formatSize(props.maxSize)}`;
     return;
@@ -474,10 +487,10 @@ const acceptedFormatsMessage = computed(() => {
       // MIME type wildcard (e.g., "image/*", "video/*")
       const baseType = type.split('/')[0];
       const typeNames: Record<string, string> = {
-        'image': 'Imágenes (JPG, PNG, GIF, etc.)',
-        'video': 'Videos (MP4, AVI, etc.)',
-        'audio': 'Audio (MP3, WAV, etc.)',
-        'application': 'Documentos'
+        image: 'Imágenes (JPG, PNG, GIF, etc.)',
+        video: 'Videos (MP4, AVI, etc.)',
+        audio: 'Audio (MP3, WAV, etc.)',
+        application: 'Documentos',
       };
       formats.push(typeNames[baseType] || baseType.toUpperCase());
     } else {

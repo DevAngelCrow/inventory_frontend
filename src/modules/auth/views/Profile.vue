@@ -65,6 +65,7 @@ import { Card, Divider, Button } from 'primevue';
 import { computed, onMounted, provide, ref } from 'vue';
 
 import AppTitle from '@/core/components/AppTitle.vue';
+import { debounce } from '@/core/utils/debounceFunction';
 
 import ProfileAvatar from '../components/ProfileAvatar.vue';
 import { useAuth } from '../composables/useAuth';
@@ -72,7 +73,6 @@ import AccountInformation from '../components/AccountInformation.vue';
 import PersonalInformation from '../components/PersonalInformation.vue';
 import DocumentInformation from '../components/DocumentInformation.vue';
 import AddressInformation from '../components/AddressInformation.vue';
-import { debounce } from '@/core/utils/debounceFunction';
 
 const useAuthInstance = useAuth();
 provide('useAuthInstance', useAuthInstance);

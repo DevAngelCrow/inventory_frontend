@@ -27,7 +27,9 @@ const props = defineProps({
   },
 });
 
-const displayLabel = computed(() => props.label || props.statusName || 'Desconocido');
+const displayLabel = computed(
+  () => props.label || props.statusName || 'Desconocido',
+);
 
 const color = computed(() => {
   switch (displayLabel.value) {

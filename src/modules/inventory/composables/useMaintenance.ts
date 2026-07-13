@@ -6,7 +6,14 @@ import { TableHeaders } from '@/core/interfaces';
 import { useAlertStore, useLoaderStore } from '@/core/store';
 import { debounce } from '@/core/utils/debounceFunction';
 
-import { ProductMaintenanceResponse, ProductMaintenanceForm, ProductResponse, CreateMaintenancePayload, ResolveMaintenancePayload, UpdateMaintenancePayload } from '../interfaces/inventory.interfaces';
+import {
+  ProductMaintenanceResponse,
+  ProductMaintenanceForm,
+  ProductResponse,
+  CreateMaintenancePayload,
+  ResolveMaintenancePayload,
+  UpdateMaintenancePayload,
+} from '../interfaces/inventory.interfaces';
 import inventoryServices from '../Services/inventory.services';
 
 type filterType = {
@@ -42,12 +49,8 @@ export function useMaintenance() {
         .integer('La cantidad debe ser un número entero')
         .required('La cantidad de artículos es requerida')
         .min(1, 'La cantidad mínima es 1'),
-      date_start: yup
-        .string()
-        .required('La fecha de inicio es requerida'),
-      date_end: yup
-        .string()
-        .nullable(),
+      date_start: yup.string().required('La fecha de inicio es requerida'),
+      date_end: yup.string().nullable(),
       resolved: yup.boolean(),
       id_product: yup.string().required('El producto es requerido'),
     }),
@@ -131,8 +134,12 @@ export function useMaintenance() {
       const params = {
         page: pagination.page,
         per_page: pagination.per_page,
-        id_product: filter.id_product === 'Todos' ? undefined : filter.id_product,
-        resolved: filter.resolved === 'Todos' ? undefined : filter.resolved as boolean | undefined,
+        id_product:
+          filter.id_product === 'Todos' ? undefined : filter.id_product,
+        resolved:
+          filter.resolved === 'Todos'
+            ? undefined
+            : (filter.resolved as boolean | undefined),
       };
       const response = await inventoryServices.getMaintenances(params);
 
@@ -149,7 +156,10 @@ export function useMaintenance() {
 
   const loadProducts = async () => {
     try {
-      const response = await inventoryServices.getProducts({ active: true, per_page: 100 });
+      const response = await inventoryServices.getProducts({
+        active: true,
+        per_page: 100,
+      });
       if (response.statusCode === 200) {
         productsList.value = response.data.data;
       }
@@ -189,7 +199,16 @@ export function useMaintenance() {
   const editMaintenance = async (form: ProductMaintenanceForm) => {
     try {
       startLoading();
-      const { id, date_end, cost, resolved, description, quantity, date_start, id_product } = form;
+      const {
+        id,
+        date_end,
+        cost,
+        resolved,
+        description,
+        quantity,
+        date_start,
+        id_product,
+      } = form;
 
       const updatePayload: UpdateMaintenancePayload = {
         description,
@@ -199,11 +218,18 @@ export function useMaintenance() {
         cost,
       };
 
-      const updateResponse = await inventoryServices.putMaintenance(id!, updatePayload);
+      const updateResponse = await inventoryServices.putMaintenance(
+        id!,
+        updatePayload,
+      );
 
       if (resolved) {
         if (!date_end) {
-          alert.showAlert({ type: 'error', title: 'Fecha de resolución es requerida para resolver', show: true });
+          alert.showAlert({
+            type: 'error',
+            title: 'Fecha de resolución es requerida para resolver',
+            show: true,
+          });
           finishLoading();
           return false;
         }

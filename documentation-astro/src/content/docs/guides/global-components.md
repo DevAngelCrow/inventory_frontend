@@ -3,7 +3,6 @@ title: 4- Estructura de componentes globales.
 description: Descripcion componentes globales.
 ---
 
-
 Estos componentes son los que se pueden utilizar sin necesidad de hacer una importación.
 
 De acuerdo a la necesidad de cada caso de uso que surja, se podrá agregar más componentes globales.
@@ -31,4 +30,4 @@ De acuerdo a la necesidad de cada caso de uso que surja, se podrá agregar más 
  ├── 🧩 AppTimePicker.vue
  └── 🧩 AppTittle.vue
 
- ```
+```

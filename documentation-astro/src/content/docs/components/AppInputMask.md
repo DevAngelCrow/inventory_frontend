@@ -25,7 +25,6 @@ El componente en referencia se encuentra ya configurado para poder reutilizarlo,
 | id               | String  | -                 | ID único para el campo, útil para accesibilidad o pruebas.                                                     |
 | mask             | String  | ''                | Máscara de entrada para formatear datos como fechas, teléfonos, etc.                                           |
 
-
 A continuacion se muestra un ejemplo de como utilizar el componente del input mask
 
 ```

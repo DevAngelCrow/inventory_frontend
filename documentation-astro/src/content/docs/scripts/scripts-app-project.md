@@ -3,7 +3,6 @@ title: Scripts
 description: Descripción de la funcionalidad de cada script de la aplicación.
 ---
 
-
 ## dev
 
 Inicia la aplicación en modo desarrollo.
@@ -70,7 +69,7 @@ Verifica que la versión de Node.js instalada sea igual o mayor a la especificad
 
 ## dev:setup
 
-Preparación del entorno de desarrollo, *este debe ejecutarse estrictamente posterior al npm install*
+Preparación del entorno de desarrollo, _este debe ejecutarse estrictamente posterior al npm install_
 
 ## prepare
 
@@ -80,7 +79,7 @@ Configura Husky para habilitar los hooks de Git en el proyecto.
 
 Crea (o actualiza) el hook de Git pre-commit para que, antes de cada commit, se ejecute lint-staged con Husky.
 
-## commitlint 
+## commitlint
 
 Crea (o actualiza) el hook de Git commit-msg para validar el mensaje del commit usando commitlint.
 

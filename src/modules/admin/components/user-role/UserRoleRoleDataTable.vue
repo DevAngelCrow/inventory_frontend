@@ -86,8 +86,9 @@ import {
 } from 'vue';
 import { Button } from 'primevue';
 
-import { useUserRole } from '../../composables/useUserRole';
 import { debounce } from '@/core/utils/debounceFunction';
+
+import { useUserRole } from '../../composables/useUserRole';
 
 type UserRoleType = ReturnType<typeof useUserRole>;
 

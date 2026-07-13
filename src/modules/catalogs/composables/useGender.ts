@@ -1,6 +1,6 @@
 import { ref, reactive, nextTick } from 'vue';
-import { debounce } from '@/core/utils/debounceFunction';
 
+import { debounce } from '@/core/utils/debounceFunction';
 import { TableHeaders } from '@/core/interfaces';
 import { useLoaderStore } from '@/core/store';
 import { sanitizedValueInput } from '@/core/utils/inputTextValidations';
@@ -87,7 +87,6 @@ export function useGender() {
     }
   };
 
-  
   const debouncedFindGender = debounce(findGender, 700);
   const debouncedCleanSearch = debounce(cleanSearch, 700);
 
