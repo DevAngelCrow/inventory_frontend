@@ -93,6 +93,13 @@ const getProducts = async (params?: {
   return response.data;
 };
 
+const getProductById = async (id: string) => {
+  const response = await httpClient.get<{ data: ProductResponse; statusCode: number; message: string }>(
+    `inventory/products/${id}`,
+  );
+  return response.data;
+};
+
 const postProduct = async (data: FormData) => {
   const response = await httpClient.post<ApiPostResponse>(
     'inventory/products',
@@ -172,6 +179,7 @@ export default {
   putCategory,
   toggleCategory,
   getProducts,
+  getProductById,
   postProduct,
   putProduct,
   toggleProduct,

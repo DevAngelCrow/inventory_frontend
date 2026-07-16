@@ -1,153 +1,53 @@
 <template>
-  <AppModal
-    :title="props.modalState.title"
-    :show="props.modalState.show"
-    :title-btn-cancel="modalButtons.cancelText"
-    :title-btn-confirm="modalButtons.confirmText"
-    footer-buttons
-    show-icon-close
-    width="55rem"
-    @close-modal="closeModal"
-    @confirm-modal="onSubMit"
-    :showBtnConfirmFooter="props.modalState.mode !== 'view'"
-  >
-    <section
-      v-if="props.modalState.mode !== 'delete'"
-      id="body_modal"
-      class="grid grid-cols-1 md:grid-cols-2 gap-5 py-1.5 w-full"
-    >
-      <AppInputText
-        class="w-full min-w-0"
-        id="name"
-        label="Nombre del Producto*"
-        v-model="name"
-        :error-messages="errors.name"
-        v-bind="nameAttrs"
-        :readonly="props.modalState.isReadonly"
-      />
-      <AppInputText
-        class="w-full min-w-0"
-        id="sku"
-        label="SKU*"
-        v-model="sku"
-        :error-messages="errors.sku"
-        v-bind="skuAttrs"
-        :readonly="props.modalState.isReadonly"
-      />
+  <AppModal :title="props.modalState.title" :show="props.modalState.show" :title-btn-cancel="modalButtons.cancelText"
+    :title-btn-confirm="modalButtons.confirmText" footer-buttons show-icon-close width="55rem" @close-modal="closeModal"
+    @confirm-modal="onSubMit" :showBtnConfirmFooter="props.modalState.mode !== 'view'">
+    <section v-if="props.modalState.mode !== 'delete'" id="body_modal"
+      class="grid grid-cols-1 md:grid-cols-2 gap-5 py-1.5 w-full">
+      <AppInputText class="w-full min-w-0" id="name" label="Nombre del Producto*" v-model="name"
+        :error-messages="errors.name" v-bind="nameAttrs" :readonly="props.modalState.isReadonly" />
+      <AppInputText class="w-full min-w-0" id="sku" label="SKU*" v-model="sku" :error-messages="errors.sku"
+        v-bind="skuAttrs" :readonly="props.modalState.isReadonly" />
 
-      <AppSelect
-        class="w-full min-w-0"
-        id="category_id"
-        label="Categoría*"
-        v-model="category_id"
-        :error-messages="errors.category_id"
-        v-bind="categoryIdAttrs"
-        :options="categoriesList"
-        optionLabel="name"
-        optionValue="id"
-        :readonly="props.modalState.isReadonly"
-      />
-      <AppInputMoney
-        class="w-full min-w-0"
-        id="rental_price"
-        label="Precio de Alquiler*"
-        v-model="rental_price"
-        :error-messages="errors.rental_price"
-        v-bind="rentalPriceAttrs"
-        :readonly="props.modalState.isReadonly"
-      />
+      <AppSelect class="w-full min-w-0" id="category_id" label="Categoría*" v-model="category_id"
+        :error-messages="errors.category_id" v-bind="categoryIdAttrs" :options="categoriesList" optionLabel="name"
+        optionValue="id" :readonly="props.modalState.isReadonly" />
+      <AppInputMoney class="w-full min-w-0" id="rental_price" label="Precio de Alquiler*" v-model="rental_price"
+        :error-messages="errors.rental_price" v-bind="rentalPriceAttrs" :readonly="props.modalState.isReadonly" />
 
-      <AppInputMoney
-        class="w-full min-w-0"
-        id="replacement_cost"
-        label="Costo de Reposición"
-        v-model="replacement_cost"
-        :error-messages="errors.replacement_cost"
-        v-bind="replacementCostAttrs"
-        :readonly="props.modalState.isReadonly"
-      />
-      <AppInputNumber
-        class="w-full min-w-0"
-        id="total_stock"
-        label="Stock Total*"
-        v-model="total_stock"
-        :error-messages="errors.total_stock"
-        v-bind="totalStockAttrs"
-        :readonly="props.modalState.isReadonly"
-      />
+      <AppInputMoney class="w-full min-w-0" id="replacement_cost" label="Costo de Reposición" v-model="replacement_cost"
+        :error-messages="errors.replacement_cost" v-bind="replacementCostAttrs"
+        :readonly="props.modalState.isReadonly" />
+      <AppInputNumber class="w-full min-w-0" id="total_stock" label="Stock Total*" v-model="total_stock"
+        :error-messages="errors.total_stock" v-bind="totalStockAttrs" :readonly="props.modalState.isReadonly" />
 
-      <AppInputNumber
-        class="w-full min-w-0"
-        id="min_stock_alert"
-        label="Alerta de Stock Mínimo"
-        v-model="min_stock_alert"
-        :error-messages="errors.min_stock_alert"
-        v-bind="minStockAlertAttrs"
-        :readonly="props.modalState.isReadonly"
-      />
-      <AppColorPicker
-        class="w-full min-w-0"
-        id="color"
-        label="Color"
-        v-model="color"
-        :error-messages="errors.color"
-        v-bind="colorAttrs"
-        :readonly="props.modalState.isReadonly"
-      />
+      <AppInputNumber class="w-full min-w-0" id="min_stock_alert" label="Alerta de Stock Mínimo"
+        v-model="min_stock_alert" :error-messages="errors.min_stock_alert" v-bind="minStockAlertAttrs"
+        :readonly="props.modalState.isReadonly" />
+      <AppColorPicker class="w-full min-w-0" id="color" label="Color" v-model="color" :error-messages="errors.color"
+        v-bind="colorAttrs" :readonly="props.modalState.isReadonly" />
 
-      <AppInputText
-        class="w-full min-w-0"
-        id="dimensions"
-        label="Dimensiones (ej: 6ft x 2.5ft)"
-        v-model="dimensions"
-        :error-messages="errors.dimensions"
-        v-bind="dimensionsAttrs"
-        :readonly="props.modalState.isReadonly"
-      />
-      <AppInputNumber
-        class="w-full min-w-0"
-        id="weight_lbs"
-        label="Peso (libras)"
-        v-model="weight_lbs"
-        :error-messages="errors.weight_lbs"
-        v-bind="weightLbsAttrs"
-        :readonly="props.modalState.isReadonly"
-      />
+      <AppInputText class="w-full min-w-0" id="dimensions" label="Dimensiones (ej: 6ft x 2.5ft)" v-model="dimensions"
+        :error-messages="errors.dimensions" v-bind="dimensionsAttrs" :readonly="props.modalState.isReadonly" />
+      <AppInputNumber class="w-full min-w-0" id="weight_lbs" label="Peso (libras)" v-model="weight_lbs"
+        :error-messages="errors.weight_lbs" v-bind="weightLbsAttrs" :readonly="props.modalState.isReadonly" />
 
-      <div class="w-full min-w-0 md:col-span-2 flex flex-col gap-2">
+      <div class="w-full min-w-0 md:col-span-2 flex flex-col gap-2 justify-center items-center">
         <label class="text-sm font-medium text-surface-900 dark:text-surface-0">Imagen</label>
         <template v-if="props.modalState.mode === 'view'">
-          <img v-if="image_url" :src="image_url" alt="Imagen del producto" class="w-full max-w-sm rounded-lg shadow-md object-cover" />
+          <img v-if="image_url" :src="image_url" alt="Imagen del producto"
+            class="w-full max-w-sm rounded-lg shadow-md object-cover" />
           <span v-else class="text-sm text-surface-500">Sin imagen</span>
         </template>
-        <AppDragDropFile
-          v-else
-          v-model="image_file"
-          :error-messages="errors.image_file"
-          v-bind="imageFileAttrs"
-          accept="image/*"
-        />
+        <AppDragDropFile v-else v-model="image_file" :error-messages="errors.image_file" v-bind="imageFileAttrs"
+          accept="image/*" />
       </div>
 
-      <AppInputextArea
-        class="w-full min-w-0 md:col-span-2"
-        id="description"
-        label="Descripción"
-        v-model="description"
-        :error-messages="errors.description"
-        v-bind="descriptionAttrs"
-        :readonly="props.modalState.isReadonly"
-      />
+      <AppInputextArea class="w-full min-w-0 md:col-span-2" id="description" label="Descripción" v-model="description"
+        :error-messages="errors.description" v-bind="descriptionAttrs" :readonly="props.modalState.isReadonly" />
 
-      <AppInputextArea
-        class="w-full min-w-0 md:col-span-2"
-        id="notes"
-        label="Notas Internas"
-        v-model="notes"
-        :error-messages="errors.notes"
-        v-bind="notesAttrs"
-        :readonly="props.modalState.isReadonly"
-      />
+      <AppInputextArea class="w-full min-w-0 md:col-span-2" id="notes" label="Notas Internas" v-model="notes"
+        :error-messages="errors.notes" v-bind="notesAttrs" :readonly="props.modalState.isReadonly" />
     </section>
     <section v-else id="body_delete_modal" class="w-full flex flex-wrap gap-5">
       <div class="w-full flex justify-center text-center items-center">
