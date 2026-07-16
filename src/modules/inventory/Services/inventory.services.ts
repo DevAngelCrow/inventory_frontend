@@ -93,7 +93,7 @@ const getProducts = async (params?: {
   return response.data;
 };
 
-const postProduct = async (data: CreateProductPayload) => {
+const postProduct = async (data: FormData) => {
   const response = await httpClient.post<ApiPostResponse>(
     'inventory/products',
     data,
@@ -101,7 +101,7 @@ const postProduct = async (data: CreateProductPayload) => {
   return response;
 };
 
-const putProduct = async (id: string, data: UpdateProductPayload) => {
+const putProduct = async (id: string, data: FormData) => {
   const response = await httpClient.put<ApiPostResponse>(
     `inventory/products/${id}`,
     data,

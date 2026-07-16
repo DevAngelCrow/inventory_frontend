@@ -85,7 +85,7 @@
         v-bind="minStockAlertAttrs"
         :readonly="props.modalState.isReadonly"
       />
-      <AppInputText
+      <AppColorPicker
         class="w-full min-w-0"
         id="color"
         label="Color"
@@ -114,15 +114,20 @@
         :readonly="props.modalState.isReadonly"
       />
 
-      <AppInputText
-        class="w-full min-w-0 md:col-span-2"
-        id="image_url"
-        label="URL de Imagen"
-        v-model="image_url"
-        :error-messages="errors.image_url"
-        v-bind="imageUrlAttrs"
-        :readonly="props.modalState.isReadonly"
-      />
+      <div class="w-full min-w-0 md:col-span-2 flex flex-col gap-2">
+        <label class="text-sm font-medium text-surface-900 dark:text-surface-0">Imagen</label>
+        <template v-if="props.modalState.mode === 'view'">
+          <img v-if="image_url" :src="image_url" alt="Imagen del producto" class="w-full max-w-sm rounded-lg shadow-md object-cover" />
+          <span v-else class="text-sm text-surface-500">Sin imagen</span>
+        </template>
+        <AppDragDropFile
+          v-else
+          v-model="image_file"
+          :error-messages="errors.image_file"
+          v-bind="imageFileAttrs"
+          accept="image/*"
+        />
+      </div>
 
       <AppInputextArea
         class="w-full min-w-0 md:col-span-2"
@@ -160,6 +165,8 @@ import AppInputNumber from '@/core/components/AppInputNumber.vue';
 import AppInputMoney from '@/core/components/AppInputMoney.vue';
 import AppSelect from '@/core/components/AppSelect.vue';
 import AppInputextArea from '@/core/components/AppInputextArea.vue';
+import AppColorPicker from '@/core/components/AppColorPicker.vue';
+import AppDragDropFile from '@/core/components/AppDragDropFile.vue';
 import { useLoaderStore } from '@/core/store';
 
 import { useProduct } from '../composables/useProduct';
@@ -206,6 +213,8 @@ const {
   weightLbsAttrs,
   image_url,
   imageUrlAttrs,
+  image_file,
+  imageFileAttrs,
   notes,
   notesAttrs,
   category_id,
@@ -236,6 +245,7 @@ const onSubMit = handleSubmit(async values => {
       dimensions: values?.dimensions,
       weight_lbs: values?.weight_lbs ? Number(values?.weight_lbs) : undefined,
       image_url: values?.image_url,
+      image_file: values?.image_file,
       notes: values?.notes,
       category_id: values?.category_id,
     };
