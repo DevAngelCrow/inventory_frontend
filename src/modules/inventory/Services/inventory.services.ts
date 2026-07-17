@@ -9,8 +9,6 @@ import {
   GetCategoriesParams,
   CreateCategoryPayload,
   UpdateCategoryPayload,
-  CreateProductPayload,
-  UpdateProductPayload,
   CreateMaintenancePayload,
   UpdateMaintenancePayload,
   ResolveMaintenancePayload,

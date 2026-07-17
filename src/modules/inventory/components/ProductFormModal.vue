@@ -112,7 +112,6 @@ const {
   weight_lbs,
   weightLbsAttrs,
   image_url,
-  imageUrlAttrs,
   image_file,
   imageFileAttrs,
   notes,
