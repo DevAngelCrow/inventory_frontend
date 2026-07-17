@@ -11,6 +11,7 @@ import {
   ProductResponse,
   ProductForm,
   ProductCategoryResponse,
+  MeasurementUnitResponse,
 } from '../interfaces/inventory.interfaces';
 import inventoryServices from '../Services/inventory.services';
 
@@ -73,15 +74,37 @@ export function useProduct() {
         .max(50, 'El color no puede tener más de 50 caracteres')
         .nullable(),
       dimensions: yup
-        .string()
-        .max(100, 'Las dimensiones no pueden tener más de 100 caracteres')
-        .nullable(),
+        .object({
+          width: yup
+            .number()
+            .typeError('El ancho debe ser numérico')
+            .min(0, 'No puede ser negativo')
+            .optional()
+            .nullable(),
+          height: yup
+            .number()
+            .typeError('El alto debe ser numérico')
+            .min(0, 'No puede ser negativo')
+            .optional()
+            .nullable(),
+          depth: yup
+            .number()
+            .typeError('La profundidad debe ser numérica')
+            .nullable()
+            .min(0, 'No puede ser negativo')
+            .transform((value, originalValue) =>
+              String(originalValue).trim() === '' ? null : value,
+            ),
+          unitId: yup.string().optional().nullable(),
+        })
+        .nullable()
+        .optional(),
       weight_lbs: yup
         .number()
         .typeError('El peso debe ser un número')
         .min(0)
         .nullable(),
-      image_url: yup.string().max(500).nullable(),
+      image_url: yup.string().nullable(),
       image_file: yup.array().nullable(),
       notes: yup.string().nullable(),
       category_id: yup.string().required('La categoría es requerida'),
@@ -147,6 +170,7 @@ export function useProduct() {
 
   const products = ref<ProductResponse[]>([]);
   const categoriesList = ref<ProductCategoryResponse[]>([]);
+  const measurementUnitsList = ref<MeasurementUnitResponse[]>([]);
   const pagination = reactive({
     page: 1,
     per_page: 10,
@@ -223,21 +247,36 @@ export function useProduct() {
     }
   };
 
+  const loadMeasurementUnits = async () => {
+    try {
+      const data = await inventoryServices.getActiveMeasurementUnits();
+      measurementUnitsList.value = data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const buildProductFormData = (form: ProductForm): FormData => {
     const formData = new FormData();
     if (form.name) formData.append('name', form.name);
     if (form.description) formData.append('description', form.description);
     if (form.sku) formData.append('sku', form.sku);
-    if (form.rental_price !== undefined && form.rental_price !== null) formData.append('rental_price', String(form.rental_price));
-    if (form.replacement_cost !== undefined && form.replacement_cost !== null) formData.append('replacement_cost', String(form.replacement_cost));
-    if (form.total_stock !== undefined && form.total_stock !== null) formData.append('total_stock', String(form.total_stock));
-    if (form.min_stock_alert !== undefined && form.min_stock_alert !== null) formData.append('min_stock_alert', String(form.min_stock_alert));
+    if (form.rental_price !== undefined && form.rental_price !== null)
+      formData.append('rental_price', String(form.rental_price));
+    if (form.replacement_cost !== undefined && form.replacement_cost !== null)
+      formData.append('replacement_cost', String(form.replacement_cost));
+    if (form.total_stock !== undefined && form.total_stock !== null)
+      formData.append('total_stock', String(form.total_stock));
+    if (form.min_stock_alert !== undefined && form.min_stock_alert !== null)
+      formData.append('min_stock_alert', String(form.min_stock_alert));
     if (form.color) formData.append('color', form.color);
-    if (form.dimensions) formData.append('dimensions', form.dimensions);
-    if (form.weight_lbs !== undefined && form.weight_lbs !== null) formData.append('weight_lbs', String(form.weight_lbs));
+    if (form.dimensions)
+      formData.append('dimensions', JSON.stringify(form.dimensions));
+    if (form.weight_lbs !== undefined && form.weight_lbs !== null)
+      formData.append('weight_lbs', String(form.weight_lbs));
     if (form.notes) formData.append('notes', form.notes);
     if (form.category_id) formData.append('category_id', form.category_id);
-    
+
     if (form.image_file && form.image_file.length > 0) {
       const file = form.image_file[0];
       // Only append if it's a real File object with size > 0, to avoid uploading the mocked objectURL
@@ -254,7 +293,7 @@ export function useProduct() {
       const formData = buildProductFormData(form);
       const response = await inventoryServices.postProduct(formData);
       if (response.status === 201) {
-        getProducts();
+        await getProducts();
         alert.showAlert({
           type: 'success',
           title: `${response.data.message || 'Producto creado con éxito'}`,
@@ -273,12 +312,9 @@ export function useProduct() {
     try {
       startLoading();
       const formData = buildProductFormData(form);
-      const response = await inventoryServices.putProduct(
-        form.id!,
-        formData,
-      );
+      const response = await inventoryServices.putProduct(form.id!, formData);
       if (response.status === 200) {
-        getProducts();
+        await getProducts();
         alert.showAlert({
           type: 'success',
           title: `${response.data.message || 'Producto actualizado con éxito'}`,
@@ -298,7 +334,7 @@ export function useProduct() {
       startLoading();
       const response = await inventoryServices.toggleProduct(id);
       if (response.status === 200) {
-        getProducts();
+        await getProducts();
         alert.showAlert({
           type: 'success',
           title: `${response.data.message || 'Estado del producto modificado'}`,
@@ -361,12 +397,14 @@ export function useProduct() {
     );
     setFieldValue('image_url', value?.image_url);
     if (value?.image_url) {
-      setFieldValue('image_file', [{
-        name: 'imagen-actual',
-        size: 0,
-        type: 'image/jpeg',
-        objectURL: value.image_url,
-      } as unknown as File]);
+      setFieldValue('image_file', [
+        {
+          name: 'imagen-actual',
+          size: 0,
+          type: 'image/jpeg',
+          objectURL: value.image_url,
+        } as unknown as File,
+      ]);
     } else {
       setFieldValue('image_file', []);
     }
@@ -439,8 +477,10 @@ export function useProduct() {
     pagination,
     products,
     categoriesList,
+    measurementUnitsList,
     addProduct,
     editProduct,
     patchProduct,
+    loadMeasurementUnits,
   };
 }

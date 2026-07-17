@@ -181,7 +181,7 @@ export function useMaintenance() {
       };
       const response = await inventoryServices.postMaintenance(createPayload);
       if (response.status === 201) {
-        getMaintenances();
+        await getMaintenances();
         alert.showAlert({
           type: 'success',
           title: `${response.data.message || 'Mantenimiento registrado con éxito'}`,
@@ -241,7 +241,7 @@ export function useMaintenance() {
       }
 
       if (updateResponse.status === 200) {
-        getMaintenances();
+        await getMaintenances();
         alert.showAlert({
           type: 'success',
           title: `Mantenimiento ${resolved ? 'resuelto' : 'actualizado'} con éxito`,

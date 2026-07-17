@@ -177,7 +177,8 @@
 
         <p class="mt-6 mb-0 text-center">
           {{
-            emptyMessage || (multiple
+            emptyMessage ||
+            (multiple
               ? 'Arrastre y suelte archivos aquí para cargarlos.'
               : 'Arrastre y suelte la imagen aquí para cargarla')
           }}

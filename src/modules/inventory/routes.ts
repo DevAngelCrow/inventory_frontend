@@ -14,4 +14,9 @@ export const routesInventory = [
     name: 'inventory-maintenance',
     component: () => import('@/modules/inventory/views/ProductMaintenance.vue'),
   },
+  {
+    path: 'inventory/measurement-units',
+    name: 'inventory-measurement-units',
+    component: () => import('@/modules/inventory/views/MeasurementUnits.vue'),
+  },
 ];

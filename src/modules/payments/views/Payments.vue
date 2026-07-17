@@ -121,7 +121,6 @@ import type { TableHeaders } from '@/core/interfaces/datatable.interface';
 import { usePayment } from '../composables/usePayment';
 import type { PaymentResponse } from '../interfaces/payment.interfaces';
 
-
 const loader = useLoaderStore();
 const {
   paymentsList,
