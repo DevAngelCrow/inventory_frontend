@@ -11,8 +11,6 @@ import {
   ProductResponse,
   ProductForm,
   ProductCategoryResponse,
-  CreateProductPayload,
-  UpdateProductPayload,
 } from '../interfaces/inventory.interfaces';
 import inventoryServices from '../Services/inventory.services';
 
@@ -84,6 +82,7 @@ export function useProduct() {
         .min(0)
         .nullable(),
       image_url: yup.string().max(500).nullable(),
+      image_file: yup.array().nullable(),
       notes: yup.string().nullable(),
       category_id: yup.string().required('La categoría es requerida'),
       active: yup.boolean(),
@@ -170,6 +169,7 @@ export function useProduct() {
   const [dimensions, dimensionsAttrs] = defineField('dimensions');
   const [weight_lbs, weightLbsAttrs] = defineField('weight_lbs');
   const [image_url, imageUrlAttrs] = defineField('image_url');
+  const [image_file, imageFileAttrs] = defineField('image_file');
   const [notes, notesAttrs] = defineField('notes');
   const [category_id, categoryIdAttrs] = defineField('category_id');
   const [active, activeAttrs] = defineField('active');
@@ -223,25 +223,36 @@ export function useProduct() {
     }
   };
 
+  const buildProductFormData = (form: ProductForm): FormData => {
+    const formData = new FormData();
+    if (form.name) formData.append('name', form.name);
+    if (form.description) formData.append('description', form.description);
+    if (form.sku) formData.append('sku', form.sku);
+    if (form.rental_price !== undefined && form.rental_price !== null) formData.append('rental_price', String(form.rental_price));
+    if (form.replacement_cost !== undefined && form.replacement_cost !== null) formData.append('replacement_cost', String(form.replacement_cost));
+    if (form.total_stock !== undefined && form.total_stock !== null) formData.append('total_stock', String(form.total_stock));
+    if (form.min_stock_alert !== undefined && form.min_stock_alert !== null) formData.append('min_stock_alert', String(form.min_stock_alert));
+    if (form.color) formData.append('color', form.color);
+    if (form.dimensions) formData.append('dimensions', form.dimensions);
+    if (form.weight_lbs !== undefined && form.weight_lbs !== null) formData.append('weight_lbs', String(form.weight_lbs));
+    if (form.notes) formData.append('notes', form.notes);
+    if (form.category_id) formData.append('category_id', form.category_id);
+    
+    if (form.image_file && form.image_file.length > 0) {
+      const file = form.image_file[0];
+      // Only append if it's a real File object with size > 0, to avoid uploading the mocked objectURL
+      if (file instanceof File && file.size > 0) {
+        formData.append('image_file', file);
+      }
+    }
+    return formData;
+  };
+
   const addProduct = async (form: ProductForm) => {
     try {
       startLoading();
-      const createPayload: CreateProductPayload = {
-        name: form.name,
-        description: form.description,
-        sku: form.sku,
-        rental_price: form.rental_price,
-        replacement_cost: form.replacement_cost,
-        total_stock: form.total_stock,
-        min_stock_alert: form.min_stock_alert,
-        color: form.color,
-        dimensions: form.dimensions,
-        weight_lbs: form.weight_lbs,
-        image_url: form.image_url,
-        notes: form.notes,
-        category_id: form.category_id,
-      };
-      const response = await inventoryServices.postProduct(createPayload);
+      const formData = buildProductFormData(form);
+      const response = await inventoryServices.postProduct(formData);
       if (response.status === 201) {
         getProducts();
         alert.showAlert({
@@ -261,24 +272,10 @@ export function useProduct() {
   const editProduct = async (form: ProductForm) => {
     try {
       startLoading();
-      const updatePayload: UpdateProductPayload = {
-        name: form.name,
-        description: form.description,
-        sku: form.sku,
-        rental_price: form.rental_price,
-        replacement_cost: form.replacement_cost,
-        total_stock: form.total_stock,
-        min_stock_alert: form.min_stock_alert,
-        color: form.color,
-        dimensions: form.dimensions,
-        weight_lbs: form.weight_lbs,
-        image_url: form.image_url,
-        notes: form.notes,
-        category_id: form.category_id,
-      };
+      const formData = buildProductFormData(form);
       const response = await inventoryServices.putProduct(
         form.id!,
-        updatePayload,
+        formData,
       );
       if (response.status === 200) {
         getProducts();
@@ -363,6 +360,16 @@ export function useProduct() {
         : undefined,
     );
     setFieldValue('image_url', value?.image_url);
+    if (value?.image_url) {
+      setFieldValue('image_file', [{
+        name: 'imagen-actual',
+        size: 0,
+        type: 'image/jpeg',
+        objectURL: value.image_url,
+      } as unknown as File]);
+    } else {
+      setFieldValue('image_file', []);
+    }
     setFieldValue('notes', value?.notes);
     setFieldValue('category_id', value?.category_id);
     setFieldValue('active', value?.active);
@@ -419,6 +426,8 @@ export function useProduct() {
     weightLbsAttrs,
     image_url,
     imageUrlAttrs,
+    image_file,
+    imageFileAttrs,
     notes,
     notesAttrs,
     category_id,

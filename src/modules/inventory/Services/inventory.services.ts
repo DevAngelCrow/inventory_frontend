@@ -9,8 +9,6 @@ import {
   GetCategoriesParams,
   CreateCategoryPayload,
   UpdateCategoryPayload,
-  CreateProductPayload,
-  UpdateProductPayload,
   CreateMaintenancePayload,
   UpdateMaintenancePayload,
   ResolveMaintenancePayload,
@@ -93,7 +91,14 @@ const getProducts = async (params?: {
   return response.data;
 };
 
-const postProduct = async (data: CreateProductPayload) => {
+const getProductById = async (id: string) => {
+  const response = await httpClient.get<{ data: ProductResponse; statusCode: number; message: string }>(
+    `inventory/products/${id}`,
+  );
+  return response.data;
+};
+
+const postProduct = async (data: FormData) => {
   const response = await httpClient.post<ApiPostResponse>(
     'inventory/products',
     data,
@@ -101,7 +106,7 @@ const postProduct = async (data: CreateProductPayload) => {
   return response;
 };
 
-const putProduct = async (id: string, data: UpdateProductPayload) => {
+const putProduct = async (id: string, data: FormData) => {
   const response = await httpClient.put<ApiPostResponse>(
     `inventory/products/${id}`,
     data,
@@ -172,6 +177,7 @@ export default {
   putCategory,
   toggleCategory,
   getProducts,
+  getProductById,
   postProduct,
   putProduct,
   toggleProduct,

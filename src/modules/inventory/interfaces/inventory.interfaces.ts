@@ -59,6 +59,7 @@ export interface ProductForm {
   dimensions?: string;
   weight_lbs?: number;
   image_url?: string;
+  image_file?: any[];
   notes?: string;
   active?: boolean;
   category_id: string;

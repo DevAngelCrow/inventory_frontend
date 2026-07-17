@@ -143,6 +143,7 @@ import AppChipStatus from '@/core/components/AppChipStatus.vue';
 import { useProduct } from '../composables/useProduct';
 import { ProductResponse } from '../interfaces/inventory.interfaces';
 import ProductFormModal from '../components/ProductFormModal.vue';
+import inventoryServices from '../Services/inventory.services';
 
 const productInstance = useProduct();
 provide('useProduct', productInstance);
@@ -179,7 +180,7 @@ const modalState = reactive<{
   selectedItem: null,
 });
 
-const openModal = (
+const openModal = async (
   action: 'add' | 'view' | 'edit' | 'delete',
   data?: ProductResponse,
 ) => {
@@ -191,12 +192,19 @@ const openModal = (
       modalState.title = 'Agregar Producto al Inventario';
       break;
     case 'view':
-      modalState.title = 'Ver Detalle de Producto';
-      setProductItem(data!);
-      break;
     case 'edit':
-      modalState.title = 'Editar Producto de Inventario';
-      setProductItem(data!);
+      modalState.title = action === 'view' ? 'Ver Detalle de Producto' : 'Editar Producto de Inventario';
+      startLoading();
+      try {
+        const response = await inventoryServices.getProductById(data!.id);
+        if (response) {
+          setProductItem(response.data);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        finishLoading();
+      }
       break;
     case 'delete':
       setProductItem(data!);
