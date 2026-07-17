@@ -276,6 +276,7 @@ export function useProduct() {
       formData.append('weight_lbs', String(form.weight_lbs));
     if (form.notes) formData.append('notes', form.notes);
     if (form.category_id) formData.append('category_id', form.category_id);
+    if (form.image_url) formData.append('image_url', form.image_url);
 
     if (form.image_file && form.image_file.length > 0) {
       const file = form.image_file[0];
