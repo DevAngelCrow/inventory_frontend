@@ -21,6 +21,7 @@
         v-model="file_img"
         v-bind="fileImgAttrs"
         :error-messages="errors.file_img"
+        empty-message="Arrastre y suelte la foto de perfil aquí para cargarla"
       />
     </div>
   </div>

@@ -8,10 +8,10 @@ import { sanitizedValueInput } from '@/core/utils/inputTextValidations';
 import { debounce } from '@/core/utils/debounceFunction';
 
 import {
-  ProductCategoryResponse,
-  ProductCategoryForm,
-  CreateCategoryPayload,
-  UpdateCategoryPayload,
+  MeasurementUnitResponse,
+  MeasurementUnitForm,
+  CreateMeasurementUnitPayload,
+  UpdateMeasurementUnitPayload,
 } from '../interfaces/inventory.interfaces';
 import inventoryServices from '../Services/inventory.services';
 
@@ -20,7 +20,7 @@ type filterType = {
   active?: boolean | 'Todos' | '';
 };
 
-export function useProductCategory() {
+export function useMeasurementUnit() {
   const {
     errors,
     defineField,
@@ -35,17 +35,13 @@ export function useProductCategory() {
       id: yup.string().nullable(),
       name: yup
         .string()
-        .required('El nombre de la categoría es requerido')
-        .min(3, 'El nombre debe tener al menos 3 caracteres')
-        .max(150, 'El nombre no puede tener más de 150 caracteres'),
-      description: yup
+        .required('El nombre de la unidad es requerido')
+        .min(1, 'El nombre debe tener al menos 1 caracter')
+        .max(100, 'El nombre no puede tener más de 100 caracteres'),
+      abbreviation: yup
         .string()
-        .max(255, 'La descripción no puede tener más de 255 caracteres')
-        .nullable(),
-      icon: yup
-        .string()
-        .max(100, 'El icono no puede tener más de 100 caracteres')
-        .nullable(),
+        .required('La abreviatura es requerida')
+        .max(20, 'La abreviatura no puede tener más de 20 caracteres'),
       active: yup.boolean(),
     }),
   });
@@ -59,20 +55,12 @@ export function useProductCategory() {
       alignItems: 'start',
     },
     {
-      field: 'description',
-      header: 'Descripción',
+      field: 'abbreviation',
+      header: 'Abreviatura',
       sortable: false,
       alignHeaders: 'start',
       alignItems: 'start',
       width: 45,
-    },
-    {
-      field: 'icon',
-      header: 'Icono',
-      sortable: false,
-      alignHeaders: 'center',
-      alignItems: 'center',
-      width: 10,
     },
     {
       field: 'active',
@@ -91,7 +79,7 @@ export function useProductCategory() {
     },
   ]);
 
-  const categories = ref<ProductCategoryResponse[]>([]);
+  const measurementUnits = ref<MeasurementUnitResponse[]>([]);
   const pagination = reactive({
     page: 1,
     per_page: 10,
@@ -103,8 +91,7 @@ export function useProductCategory() {
 
   const [id, idAttrs] = defineField('id');
   const [name, nameAttrs] = defineField('name');
-  const [description, descriptionAttrs] = defineField('description');
-  const [icon, iconAttrs] = defineField('icon');
+  const [abbreviation, abbreviationAttrs] = defineField('abbreviation');
   const [active, activeAttrs] = defineField('active');
 
   const filter = reactive<filterType>({
@@ -113,7 +100,7 @@ export function useProductCategory() {
   });
   const findRegex = /[^a-zA-ZáÁéÉíÍóÓúÚñÑ.0-9 ]/g;
 
-  const getCategories = async () => {
+  const getMeasurementUnits = async () => {
     try {
       const params = {
         page: pagination.page,
@@ -123,10 +110,10 @@ export function useProductCategory() {
           ? undefined
           : filter.active) as boolean | undefined,
       };
-      const response = await inventoryServices.getCategories(params);
+      const response = await inventoryServices.getMeasurementUnits(params);
 
       if (response.statusCode === 200) {
-        categories.value = response.data.data;
+        measurementUnits.value = response.data.data;
         pagination.page = response.data.current_page;
         pagination.per_page = response.data.per_page;
         pagination.total_items = response.data.total_items;
@@ -136,20 +123,20 @@ export function useProductCategory() {
     }
   };
 
-  const addCategory = async (form: ProductCategoryForm) => {
+  const addMeasurementUnit = async (form: MeasurementUnitForm) => {
     try {
       startLoading();
-      const createPayload: CreateCategoryPayload = {
+      const createPayload: CreateMeasurementUnitPayload = {
         name: form.name,
-        description: form.description,
-        icon: form.icon,
+        abbreviation: form.abbreviation,
       };
-      const response = await inventoryServices.postCategory(createPayload);
+      const response =
+        await inventoryServices.postMeasurementUnit(createPayload);
       if (response.status === 201) {
-        await getCategories();
+        await getMeasurementUnits();
         alert.showAlert({
           type: 'success',
-          title: `${response.data.message || 'Categoría creada con éxito'}`,
+          title: `${response.data.message || 'Unidad de medida creada con éxito'}`,
           show: true,
         });
         return response.data;
@@ -161,21 +148,23 @@ export function useProductCategory() {
     }
   };
 
-  const editCategory = async (form: ProductCategoryForm) => {
+  const editMeasurementUnit = async (form: MeasurementUnitForm) => {
     try {
       startLoading();
-      const { id, name, description, icon } = form;
-      const updatePayload: UpdateCategoryPayload = {
+      const { id, name, abbreviation } = form;
+      const updatePayload: UpdateMeasurementUnitPayload = {
         name,
-        description,
-        icon,
+        abbreviation,
       };
-      const response = await inventoryServices.putCategory(id!, updatePayload);
+      const response = await inventoryServices.putMeasurementUnit(
+        id!,
+        updatePayload,
+      );
       if (response.status === 200) {
-        await getCategories();
+        await getMeasurementUnits();
         alert.showAlert({
           type: 'success',
-          title: `${response.data.message || 'Categoría actualizada con éxito'}`,
+          title: `${response.data.message || 'Unidad de medida actualizada con éxito'}`,
           show: true,
         });
         return response.data;
@@ -187,15 +176,15 @@ export function useProductCategory() {
     }
   };
 
-  const patchCategory = async (id: string) => {
+  const patchMeasurementUnit = async (id: string) => {
     try {
       startLoading();
-      const response = await inventoryServices.toggleCategory(id);
+      const response = await inventoryServices.toggleMeasurementUnit(id);
       if (response.status === 200) {
-        await getCategories();
+        await getMeasurementUnits();
         alert.showAlert({
           type: 'success',
-          title: `${response.data.message || 'Estado de categoría modificado'}`,
+          title: `${response.data.message || 'Estado de unidad modificado'}`,
           show: true,
         });
         return response.data;
@@ -230,27 +219,26 @@ export function useProductCategory() {
     startLoading();
     filter.filter_name = undefined;
     filter.active = 'Todos';
-    await getCategories();
+    await getMeasurementUnits();
     finishLoading();
   };
 
-  const setCategoryItem = (value: ProductCategoryResponse) => {
+  const setMeasurementUnitItem = (value: MeasurementUnitResponse) => {
     setFieldValue('id', value?.id);
     setFieldValue('name', value?.name);
-    setFieldValue('description', value?.description);
-    setFieldValue('icon', value?.icon);
+    setFieldValue('abbreviation', value?.abbreviation);
     setFieldValue('active', value?.active);
   };
 
-  const findCategory = async () => {
+  const findMeasurementUnit = async () => {
     if (filter.filter_name || filter.active !== undefined) {
       startLoading();
-      await getCategories();
+      await getMeasurementUnits();
       finishLoading();
     }
   };
 
-  const debouncedFindCategory = debounce(findCategory, 700);
+  const debouncedFindMeasurementUnit = debounce(findMeasurementUnit, 700);
   const debouncedCleanSearch = debounce(cleanSearch, 700);
 
   return {
@@ -263,29 +251,27 @@ export function useProductCategory() {
     resetField,
     setFieldError,
     setFieldValue,
-    getCategories,
+    getMeasurementUnits,
     validateAlphaInput,
     cleanSearch,
     debouncedCleanSearch,
-    setCategoryItem,
-    findCategory,
-    debouncedFindCategory,
+    setMeasurementUnitItem,
+    findMeasurementUnit,
+    debouncedFindMeasurementUnit,
     id,
     idAttrs,
     name,
     nameAttrs,
-    description,
-    descriptionAttrs,
-    icon,
-    iconAttrs,
+    abbreviation,
+    abbreviationAttrs,
     active,
     activeAttrs,
     alert,
     filter,
     pagination,
-    categories,
-    addCategory,
-    editCategory,
-    patchCategory,
+    measurementUnits,
+    addMeasurementUnit,
+    editMeasurementUnit,
+    patchMeasurementUnit,
   };
 }

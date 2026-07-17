@@ -140,7 +140,6 @@ import type { TableHeaders } from '@/core/interfaces/datatable.interface';
 import { useInvoice } from '../composables/useInvoice';
 import type { Invoice } from '../interfaces/billing.interfaces';
 
-
 const {
   invoices,
   fetchInvoices,

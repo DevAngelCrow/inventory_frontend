@@ -158,6 +158,7 @@ const {
   setProductItem,
   getProducts,
   loadCategories,
+  loadMeasurementUnits,
   headers,
   pagination,
   products,
@@ -193,7 +194,10 @@ const openModal = async (
       break;
     case 'view':
     case 'edit':
-      modalState.title = action === 'view' ? 'Ver Detalle de Producto' : 'Editar Producto de Inventario';
+      modalState.title =
+        action === 'view'
+          ? 'Ver Detalle de Producto'
+          : 'Editar Producto de Inventario';
       startLoading();
       try {
         const response = await inventoryServices.getProductById(data!.id);
@@ -269,6 +273,7 @@ onMounted(async () => {
   try {
     startLoading();
     await loadCategories();
+    await loadMeasurementUnits();
     await getProducts();
   } catch (error) {
     console.error(error);

@@ -177,9 +177,10 @@
 
         <p class="mt-6 mb-0 text-center">
           {{
-            multiple
+            emptyMessage ||
+            (multiple
               ? 'Arrastre y suelte archivos aquí para cargarlos.'
-              : 'Arrastre y suelte la foto de perfil aquí para cargarla'
+              : 'Arrastre y suelte la imagen aquí para cargarla')
           }}
         </p>
 
@@ -229,6 +230,11 @@ const props = defineProps({
     type: Boolean,
 
     default: false,
+  },
+
+  emptyMessage: {
+    type: String,
+    default: '',
   },
 
   accept: {

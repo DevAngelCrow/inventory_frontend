@@ -12,6 +12,10 @@ import {
   CreateMaintenancePayload,
   UpdateMaintenancePayload,
   ResolveMaintenancePayload,
+  MeasurementUnitResponse,
+  GetMeasurementUnitsParams,
+  CreateMeasurementUnitPayload,
+  UpdateMeasurementUnitPayload,
 } from '../interfaces/inventory.interfaces';
 
 // --- CATEGORIES ---
@@ -59,6 +63,58 @@ const toggleCategory = async (id: string) => {
   return response;
 };
 
+// --- MEASUREMENT UNITS ---
+const getMeasurementUnits = async (
+  params?: GetMeasurementUnitsParams,
+): Promise<ApiResponseGeneric<MeasurementUnitResponse>> => {
+  const queryParams: Record<string, any> = {
+    page: params?.page,
+    per_page: params?.per_page,
+  };
+  Object.keys(queryParams).forEach(
+    key => queryParams[key] === undefined && delete queryParams[key],
+  );
+  const response = await httpClient.get<
+    ApiResponseGeneric<MeasurementUnitResponse>
+  >('inventory/measurement-units', queryParams);
+  return response.data;
+};
+
+const getActiveMeasurementUnits = async (): Promise<
+  MeasurementUnitResponse[]
+> => {
+  const response = await httpClient.get<MeasurementUnitResponse[]>(
+    'inventory/measurement-units/active',
+  );
+  return response.data;
+};
+
+const postMeasurementUnit = async (data: CreateMeasurementUnitPayload) => {
+  const response = await httpClient.post<ApiPostResponse>(
+    'inventory/measurement-units',
+    data,
+  );
+  return response;
+};
+
+const putMeasurementUnit = async (
+  id: string,
+  data: UpdateMeasurementUnitPayload,
+) => {
+  const response = await httpClient.put<ApiPostResponse>(
+    `inventory/measurement-units/${id}`,
+    data,
+  );
+  return response;
+};
+
+const toggleMeasurementUnit = async (id: string) => {
+  const response = await httpClient.delete<ApiPostResponse>(
+    `inventory/measurement-units/${id}`,
+  );
+  return response;
+};
+
 // --- PRODUCTS ---
 const getProducts = async (params?: {
   page?: number;
@@ -92,9 +148,11 @@ const getProducts = async (params?: {
 };
 
 const getProductById = async (id: string) => {
-  const response = await httpClient.get<{ data: ProductResponse; statusCode: number; message: string }>(
-    `inventory/products/${id}`,
-  );
+  const response = await httpClient.get<{
+    data: ProductResponse;
+    statusCode: number;
+    message: string;
+  }>(`inventory/products/${id}`);
   return response.data;
 };
 
@@ -185,4 +243,9 @@ export default {
   postMaintenance,
   putMaintenance,
   resolveMaintenance,
+  getMeasurementUnits,
+  getActiveMeasurementUnits,
+  postMeasurementUnit,
+  putMeasurementUnit,
+  toggleMeasurementUnit,
 };
