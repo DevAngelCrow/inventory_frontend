@@ -40,7 +40,7 @@ export function useInvoice() {
     filter_status: 'Todos',
   });
 
-  const findRegex = /[^a-zA-ZáÁéÉíÍóÓúÚñÑ.0-9 ]/g;
+  const findRegex = /[^a-zA-ZáÁéÉíÍóÓúÚñÑ.0-9 \-]/g;
 
   const validateAlphaInput = (
     value: string | undefined,

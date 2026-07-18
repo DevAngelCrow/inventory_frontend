@@ -50,6 +50,7 @@ export interface ReservationResponse {
     phone?: string | null;
     full_address?: string;
   };
+  mnt_invoice?: any[];
 }
 
 export interface ReservationForm {

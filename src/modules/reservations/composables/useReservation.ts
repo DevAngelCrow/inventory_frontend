@@ -24,6 +24,8 @@ type filterType = {
   end_date?: string;
 };
 
+// El estado del formulario volverá a ser estrictamente ReservationForm
+
 export function useReservation() {
   const {
     errors,
@@ -35,7 +37,7 @@ export function useReservation() {
     setFieldError,
     setFieldValue,
     values,
-  } = useForm({
+  } = useForm<ReservationForm>({
     validationSchema: yup.object({
       id: yup.string().nullable(),
       id_customer: yup.string().required('El cliente es requerido'),
@@ -56,16 +58,22 @@ export function useReservation() {
         .number()
         .typeError('Debe ser número')
         .min(0)
-        .default(0),
-      delivery_fee: yup.number().typeError('Debe ser número').min(0).default(0),
+        .default(0)
+        .nullable(),
+      delivery_fee: yup.number().typeError('Debe ser número').min(0).default(0).nullable(),
       deposit_amount: yup
         .number()
         .typeError('Debe ser número')
         .min(0)
-        .default(0),
+        .default(35),
       notes: yup.string().nullable(),
       status: yup.string().nullable(),
     }),
+    initialValues: {
+      deposit_amount: 35,
+      discount_amount: 0,
+      delivery_fee: 0,
+    },
   });
 
   const headers = ref<TableHeaders[]>([
@@ -130,6 +138,7 @@ export function useReservation() {
   ]);
 
   const reservations = ref<ReservationResponse[]>([]);
+  const currentReservation = ref<ReservationResponse | null>(null);
   const customersList = ref<CustomerResponse[]>([]);
   const productsList = ref<ProductResponse[]>([]);
 
@@ -193,7 +202,7 @@ export function useReservation() {
     return cartItems.value.reduce((sum, item) => sum + item.subtotal, 0);
   });
 
-  const taxRate = 0.13; // default local tax rate (IVA)
+  const taxRate = 0; // 0.13; default local tax rate (IVA) - temporalmente 0 por ser informal
 
   const cartTaxAmount = computed(() => {
     return cartSubtotal.value * taxRate;
@@ -393,12 +402,8 @@ export function useReservation() {
         notes: formValues.notes,
         ...(formValues.id
           ? {
-              status:
-                (typeof formValues.status === 'object' &&
-                formValues.status !== null
-                  ? (formValues.status as { code: string }).code
-                  : (formValues.status as string)) || 'PENDING',
-            }
+            status: formValues.status || 'PENDING',
+          }
           : {}),
         items: cartItems.value.map(i => ({
           id_product: i.id_product,
@@ -504,11 +509,11 @@ export function useReservation() {
     setFieldValue('id_customer', value?.id_customer);
     setFieldValue(
       'event_start',
-      FormatDate(value?.event_start, 'DD/MM/YYYY hh:mm a'),
+      FormatDate(value?.event_start, 'DD/MM/YYYY hh:mm a') as string,
     );
     setFieldValue(
       'event_end',
-      FormatDate(value?.event_end, 'DD/MM/YYYY hh:mm a'),
+      FormatDate(value?.event_end, 'DD/MM/YYYY hh:mm a') as string,
     );
     setFieldValue('delivery_address', value?.delivery_address);
     setFieldValue('delivery_address_line2', value?.delivery_address_line2);
@@ -520,7 +525,9 @@ export function useReservation() {
     setFieldValue('delivery_fee', Number(value?.delivery_fee || 0));
     setFieldValue('discount_amount', Number(value?.discount_amount || 0));
     setFieldValue('notes', value?.notes);
-    setFieldValue('status', value?.status);
+    setFieldValue('status', value?.status?.code);
+
+    currentReservation.value = value;
 
     delivery_datetime.value = value?.delivery_datetime;
     pickup_datetime.value = value?.pickup_datetime;
@@ -600,6 +607,7 @@ export function useReservation() {
     filter,
     pagination,
     reservations,
+    currentReservation,
     alert,
   };
 }
