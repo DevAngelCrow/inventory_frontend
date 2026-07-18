@@ -30,4 +30,5 @@ export interface PaymentForm {
   id_payment_method: string;
   reference_number?: string;
   notes?: string;
+  id_invoice?: string;
 }

@@ -148,8 +148,47 @@
             </div>
           </template>
         </AppCard>
+
+        <!-- Invoices List (Facturas) -->
+        <AppCard class="lg:col-span-3" v-if="currentReservation?.mnt_invoice?.length">
+          <template #title>
+            <h3>Facturas de la Reserva</h3>
+          </template>
+          <template #content>
+            <AppDataTable :items="currentReservation.mnt_invoice" :headers="invoiceHeaders" class="p-datatable-sm w-full">
+              <template #body-total="{ data }">
+                ${{ Number(data.total).toFixed(2) }}
+              </template>
+              <template #body-status="{ data }">
+                <span :class="data.ctl_status?.text_color || 'text-gray-600'">
+                  {{ data.ctl_status?.name || 'Desconocido' }}
+                </span>
+              </template>
+              <template #body-accion="{ data }">
+                <Button 
+                  v-if="data.ctl_status?.code !== 'PAID' && data.ctl_status?.code !== 'VOIDED'" 
+                  icon="pi pi-money-bill" 
+                  severity="success" 
+                  variant="text" 
+                  rounded 
+                  v-tooltip.bottom="'Pagar Factura'"
+                  @click="openPaymentModal(data)" 
+                />
+              </template>
+            </AppDataTable>
+          </template>
+        </AppCard>
       </form>
     </section>
+    
+    <PaymentFormModal
+      v-if="showPaymentModal"
+      :modal-state="paymentModalState"
+      :reservation="currentReservation"
+      :invoice="selectedInvoice"
+      @close-modal="closePaymentModal"
+      @payment-registered="onPaymentRegistered"
+    />
   </div>
 </template>
 <script setup lang="ts">
@@ -175,6 +214,7 @@ import { ProductResponse } from '../../inventory/interfaces/inventory.interfaces
 import { useReservation } from '../composables/useReservation';
 import reservationServices from '../Services/reservation.services';
 import { ReservationForm } from '../interfaces/reservation.interfaces';
+import PaymentFormModal from '../../payments/components/PaymentFormModal.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -358,6 +398,43 @@ const onSubMit = handleSubmit(async values => {
 
 const goBack = () => {
   router.push({ name: 'reservations-list' });
+};
+
+const invoiceHeaders: TableHeaders[] = [
+  { field: 'invoice_number', header: 'Número', sortable: false },
+  { field: 'issue_date', header: 'Fecha Emisión', sortable: false },
+  { field: 'total', header: 'Total', sortable: false },
+  { field: 'status', header: 'Estado', sortable: false },
+  { field: 'accion', header: 'Acción', sortable: false, width: 10, alignHeaders: 'center', alignItems: 'center' }
+];
+
+const showPaymentModal = ref(false);
+const paymentModalState = ref({ show: false, mode: 'add' as 'add' | 'view', title: 'Registrar Pago' });
+const selectedInvoice = ref<any>(null);
+
+const openPaymentModal = (invoice: any) => {
+  selectedInvoice.value = invoice;
+  paymentModalState.value = { show: true, mode: 'add', title: `Registrar Pago (Factura ${invoice.invoice_number})` };
+  showPaymentModal.value = true;
+};
+
+const closePaymentModal = () => {
+  showPaymentModal.value = false;
+  selectedInvoice.value = null;
+};
+
+const onPaymentRegistered = async () => {
+  closePaymentModal();
+  if (route.params.id) {
+    try {
+      const resp = await reservationServices.getReservation(route.params.id as string);
+      if (resp.statusCode === 200) {
+        setReservationItem(resp.data);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
 };
 
 onMounted(async () => {

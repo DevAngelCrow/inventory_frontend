@@ -29,12 +29,12 @@
         </div>
         <div class="text-right">
           <span class="block text-gray-600"
-            >Total Alquiler: ${{
-              Number(reservation?.total_amount || 0).toFixed(2)
+            >Total {{ props.invoice ? 'Factura de Daños' : 'Alquiler' }}: ${{
+              Number(props.invoice ? props.invoice.total : (reservation?.total_amount || 0)).toFixed(2)
             }}</span
           >
           <span class="block text-red-600 font-bold"
-            >Saldo Pendiente: ${{ Number(balanceDue).toFixed(2) }}</span
+            >Monto a Pagar: ${{ Number(balanceDue).toFixed(2) }}</span
           >
         </div>
       </div>
@@ -53,6 +53,7 @@
           :error-messages="errors.amount"
           v-bind="amountAttrs"
           :max="balanceDue"
+          :disabled="!!props.invoice"
         />
 
         <AppSelect
@@ -178,6 +179,7 @@ const props = defineProps<{
     title: string;
   };
   reservation: ReservationResponse | null;
+  invoice?: any | null;
 }>();
 
 const emit = defineEmits(['close-modal', 'payment-registered']);
@@ -206,6 +208,9 @@ const {
 } = paymentInstance;
 
 const balanceDue = computed(() => {
+  if (props.invoice) {
+    return Number(props.invoice.total || 0);
+  }
   return Number(props.reservation?.balance_due || 0);
 });
 
@@ -235,6 +240,7 @@ const onSubMit = handleSubmit(async values => {
       id_payment_method: values.id_payment_method,
       reference_number: values.reference_number,
       notes: values.notes,
+      ...(props.invoice && { id_invoice: props.invoice.id }),
     };
     const success = await submitPayment(form, currentIdempotencyKey.value);
     if (success) {
