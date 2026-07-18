@@ -155,7 +155,8 @@
             <h3>Facturas de la Reserva</h3>
           </template>
           <template #content>
-            <AppDataTable :items="currentReservation.mnt_invoice" :headers="invoiceHeaders" class="p-datatable-sm w-full">
+            <AppDataTable :items="currentReservation.mnt_invoice" :headers="invoiceHeaders"
+              class="p-datatable-sm w-full">
               <template #body-total="{ data }">
                 ${{ Number(data.total).toFixed(2) }}
               </template>
@@ -165,27 +166,17 @@
                 </span>
               </template>
               <template #body-accion="{ data }">
-                <Button 
-                  icon="pi pi-file-pdf" 
-                  class="p-button-secondary p-button-sm p-button-text"
-                  v-tooltip.top="'Descargar PDF'"
-                  @click="downloadPdf(data.id, data.invoice_number)"
-                />
+                <Button icon="pi pi-file-pdf" class="p-button-secondary p-button-sm p-button-text"
+                  v-tooltip.top="'Descargar PDF'" @click="downloadPdf(data.id, data.invoice_number)" />
               </template>
             </AppDataTable>
           </template>
         </AppCard>
       </form>
     </section>
-    
-    <PaymentFormModal
-      v-if="showPaymentModal"
-      :modal-state="paymentModalState"
-      :reservation="currentReservation"
-      :invoice="selectedInvoice"
-      @close-modal="closePaymentModal"
-      @payment-registered="onPaymentRegistered"
-    />
+
+    <PaymentFormModal v-if="showPaymentModal" :modal-state="paymentModalState" :reservation="currentReservation"
+      :invoice="selectedInvoice" @close-modal="closePaymentModal" @payment-registered="onPaymentRegistered" />
   </div>
 </template>
 <script setup lang="ts">
@@ -411,12 +402,6 @@ const invoiceHeaders: TableHeaders[] = [
 const showPaymentModal = ref(false);
 const paymentModalState = ref({ show: false, mode: 'add' as 'add' | 'view', title: 'Registrar Pago' });
 const selectedInvoice = ref<any>(null);
-
-const openPaymentModal = (invoice: any) => {
-  selectedInvoice.value = invoice;
-  paymentModalState.value = { show: true, mode: 'add', title: `Registrar Pago (Factura ${invoice.invoice_number})` };
-  showPaymentModal.value = true;
-};
 
 const closePaymentModal = () => {
   showPaymentModal.value = false;
