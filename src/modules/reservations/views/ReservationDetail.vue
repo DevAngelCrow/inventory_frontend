@@ -166,13 +166,10 @@
               </template>
               <template #body-accion="{ data }">
                 <Button 
-                  v-if="data.ctl_status?.code !== 'PAID' && data.ctl_status?.code !== 'VOIDED'" 
-                  icon="pi pi-money-bill" 
-                  severity="success" 
-                  variant="text" 
-                  rounded 
-                  v-tooltip.bottom="'Pagar Factura'"
-                  @click="openPaymentModal(data)" 
+                  icon="pi pi-file-pdf" 
+                  class="p-button-secondary p-button-sm p-button-text"
+                  v-tooltip.top="'Descargar PDF'"
+                  @click="downloadPdf(data.id, data.invoice_number)"
                 />
               </template>
             </AppDataTable>
@@ -215,6 +212,7 @@ import { useReservation } from '../composables/useReservation';
 import reservationServices from '../Services/reservation.services';
 import { ReservationForm } from '../interfaces/reservation.interfaces';
 import PaymentFormModal from '../../payments/components/PaymentFormModal.vue';
+import { useInvoice } from '../../billing/composables/useInvoice';
 
 const route = useRoute();
 const router = useRouter();
@@ -222,6 +220,8 @@ const loaderStore = useLoaderStore();
 
 const reservationInstance = useReservation();
 provide('useReservation', reservationInstance);
+
+const { downloadPdf } = useInvoice();
 
 const {
   errors,
